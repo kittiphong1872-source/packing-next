@@ -1,1 +1,532 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>HILLKOFF GREEN INTELLIGENCE PLATFORM</title>
+    
+    <!-- CDN สำหรับ Libraries สำคัญ -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Tailwind Configuration & Custom Styles -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { 'sans': ['Prompt', 'sans-serif'] },
+                    colors: {
+                        'hk-green-dark': '#14361e',
+                        'hk-green-main': '#1f4d2f',
+                        'hk-green-light': '#e8f5e9',
+                        'hk-accent': '#00ff7f',
+                        'hk-glass': 'rgba(255, 255, 255, 0.9)',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        :root { --safe-area-inset-bottom: env(safe-area-inset-bottom); }
+        body { background-color: #f0fdf4; color: #14361e; -webkit-tap-highlight-color: transparent; }
+        
+        /* Glassmorphism & UI Effects */
+        .glass-card { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.5); }
+        .dark-card { background: #1f4d2f; color: white; border-radius: 2rem; }
+        .gradient-bg { background: linear-gradient(180deg, #e8f5e9 0%, #f0fdf4 100%); }
+        
+        /* สไตล์ปุ่ม Navigation ด้านล่าง */
+        .nav-shadow { box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.05); }
+        .active-tab { color: #1f4d2f; border-top: 3px solid #1f4d2f; }
+        
+        /* Animation */
+        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .page-transition { animation: slideUp 0.4s ease-out forwards; }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-thumb { background: #1f4d2f; border-radius: 10px; }
+
+        /* Camera & Preview */
+        #video-preview { transform: scaleX(-1); }
+        .shimmer { background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; }
+        @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+    </style>
+</head>
+<body class="font-sans min-h-screen pb-24">
+
+    <!-- APP HEADER -->
+    <header class="p-6 flex justify-between items-center bg-transparent">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm overflow-hidden">
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR6-vNsh7hYV0M3N7Jk4C7O9-V5_8H1S8i9OQ&s" alt="Hillkoff" class="w-8 h-8 object-contain">
+            </div>
+            <div>
+                <h1 class="text-xl font-bold leading-tight">Hillkoff</h1>
+                <p class="text-xs text-gray-500">Zero Waste • ESG Platform</p>
+            </div>
+        </div>
+        <div class="flex gap-2">
+            <button class="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm border border-gray-100">
+                <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9"></path></svg>
+            </button>
+            <button class="px-4 py-2 bg-white rounded-full shadow-sm border border-gray-100 text-sm font-semibold flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
+                Customize
+            </button>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT AREA -->
+    <main id="app-container" class="px-4 max-w-lg mx-auto">
+        
+        <!-- PAGE 1: HOME (DASHBOARD) -->
+        <section id="page-home" class="page-transition block">
+            <!-- Main KPI Card (ตามรูปเป๊ะๆ) -->
+            <div class="dark-card p-8 mb-8 text-center shadow-xl relative overflow-hidden">
+                <div class="absolute top-0 right-0 p-4 text-right opacity-80">
+                    <p class="text-[10px]">CO<sub>2</sub>e รวม</p>
+                    <p class="text-xl font-bold">1.26 kg</p>
+                </div>
+                
+                <div class="flex flex-col items-center gap-2 mb-6">
+                    <p class="text-sm opacity-90 flex items-center gap-2">🌍 Carbon Footprint — องค์กร</p>
+                    <h2 class="text-6xl font-bold tracking-tight">1.26 <span class="text-2xl font-light">kg CO<sub>2</sub>e</span></h2>
+                </div>
+
+                <div class="flex justify-center gap-2 mb-8">
+                    <span class="px-3 py-1 bg-white/20 rounded-full text-[10px] backdrop-blur-md">ISO 14064</span>
+                    <span class="px-3 py-1 bg-white/20 rounded-full text-[10px] backdrop-blur-md">GHG Protocol</span>
+                    <span class="px-3 py-1 bg-white/20 rounded-full text-[10px] backdrop-blur-md">WEEE</span>
+                    <span class="px-3 py-1 bg-white/20 rounded-full text-[10px] backdrop-blur-md">SDG 12</span>
+                </div>
+
+                <div class="grid grid-cols-3 gap-1 bg-white/10 rounded-2xl p-4 backdrop-blur-sm mb-6">
+                    <div class="border-r border-white/10">
+                        <p class="text-lg font-bold">1.265</p>
+                        <p class="text-[10px] opacity-70">kg วันนี้</p>
+                    </div>
+                    <div class="border-r border-white/10">
+                        <p class="text-lg font-bold">1.265</p>
+                        <p class="text-[10px] opacity-70">kg เดือนนี้</p>
+                    </div>
+                    <div>
+                        <p class="text-lg font-bold">1</p>
+                        <p class="text-[10px] opacity-70">รายการ</p>
+                    </div>
+                </div>
+
+                <button onclick="navigate('record')" class="w-full bg-white text-hk-green-dark py-4 rounded-2xl font-bold text-lg flex items-center justify-center gap-2 shadow-lg active:scale-95 transition-transform">
+                    📝 บันทึกขยะใหม่
+                </button>
+            </div>
+
+            <!-- Branch Grid (ตามรูปเป๊ะๆ) -->
+            <div class="mb-6">
+                <h3 class="text-lg font-bold mb-4 flex justify-between items-center">
+                    สรุปแต่ละสาขา
+                    <span class="text-xs text-green-600 font-normal">ดูทั้งหมด</span>
+                </h3>
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-4" id="branch-grid">
+                    <!-- Branch Cards will be injected by JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- PAGE 2: RECORD (CAMERA + AI) -->
+        <section id="page-record" class="page-transition hidden">
+            <h2 class="text-2xl font-bold mb-4">คัดแยกขยะใหม่</h2>
+            <div class="glass-card rounded-3xl p-6 mb-6">
+                <div id="camera-section" class="relative rounded-2xl overflow-hidden bg-black aspect-square mb-4 group">
+                    <video id="video-preview" class="w-full h-full object-cover" autoplay playsinline></video>
+                    <canvas id="photo-canvas" class="hidden"></canvas>
+                    <div id="ai-overlay" class="absolute inset-0 border-2 border-hk-accent opacity-0 pointer-events-none transition-opacity">
+                        <div class="absolute top-2 left-2 bg-hk-accent text-hk-green-dark text-[10px] px-2 py-1 font-bold rounded">AI SCANNING...</div>
+                    </div>
+                    <button id="capture-btn" class="absolute bottom-4 left-1/2 -translate-x-1/2 w-16 h-16 bg-white rounded-full border-4 border-gray-200 flex items-center justify-center shadow-xl active:scale-90 transition-transform">
+                        <div class="w-12 h-12 rounded-full border-2 border-hk-green-dark"></div>
+                    </button>
+                </div>
+
+                <div id="ai-result-card" class="hidden animate-pulse bg-green-50 p-4 rounded-2xl border border-green-200 mb-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-hk-green-main rounded-full flex items-center justify-center text-white">🤖</div>
+                        <div>
+                            <p class="text-xs text-gray-500">Gemini Vision AI วิเคราะห์แล้ว:</p>
+                            <p class="font-bold text-hk-green-dark" id="ai-label">กำลังประมวลผล...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <form id="waste-form" class="space-y-4">
+                    <div>
+                        <label class="text-xs font-bold text-gray-500 uppercase">ประเภทขยะ</label>
+                        <select id="waste-type" class="w-full mt-1 p-4 bg-white rounded-xl border border-gray-100 shadow-sm outline-none focus:ring-2 focus:ring-hk-green-main">
+                            <option value="coffee">กากกาแฟ</option>
+                            <option value="plastic">พลาสติก (PET/PP)</option>
+                            <option value="paper">กระดาษ</option>
+                            <option value="food">เศษอาหาร</option>
+                            <option value="glass">แก้ว</option>
+                            <option value="alu">อะลูมิเนียม</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-xs font-bold text-gray-500 uppercase">น้ำหนัก (กิโลกรัม)</label>
+                        <input type="number" id="waste-weight" step="0.01" placeholder="0.00" class="w-full mt-1 p-4 bg-white rounded-xl border border-gray-100 shadow-sm outline-none focus:ring-2 focus:ring-hk-green-main">
+                    </div>
+                    <button type="submit" class="w-full bg-hk-green-main text-white py-4 rounded-xl font-bold text-lg shadow-lg active:scale-95 transition-transform">ยืนยันการบันทึก</button>
+                </form>
+            </div>
+        </section>
+
+        <!-- PAGE 3: ANALYTICS -->
+        <section id="page-analytics" class="page-transition hidden">
+            <h2 class="text-2xl font-bold mb-4">การวิเคราะห์ข้อมูล</h2>
+            <div class="glass-card p-6 rounded-3xl mb-6">
+                <h3 class="font-bold mb-4">สถิติแยกตามประเภท (Monthly)</h3>
+                <canvas id="wasteChart" height="250"></canvas>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div class="glass-card p-4 rounded-2xl">
+                    <p class="text-xs text-gray-500">Carbon Saved</p>
+                    <p class="text-2xl font-bold text-green-600">842 kg</p>
+                </div>
+                <div class="glass-card p-4 rounded-2xl">
+                    <p class="text-xs text-gray-500">Eco Point</p>
+                    <p class="text-2xl font-bold text-orange-500">12,450</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- PAGE 4: RANKING -->
+        <section id="page-ranking" class="page-transition hidden">
+            <h2 class="text-2xl font-bold mb-4">ผู้นำสีเขียว (Ranking)</h2>
+            <div class="flex gap-2 mb-6 overflow-x-auto pb-2 no-scrollbar">
+                <button class="px-6 py-2 bg-hk-green-main text-white rounded-full whitespace-nowrap">รายสัปดาห์</button>
+                <button class="px-6 py-2 bg-white text-gray-500 rounded-full border border-gray-100 whitespace-nowrap">รายเดือน</button>
+                <button class="px-6 py-2 bg-white text-gray-500 rounded-full border border-gray-100 whitespace-nowrap">ตลอดกาล</button>
+            </div>
+            <div class="space-y-3" id="rank-list">
+                <!-- Rank Items -->
+            </div>
+        </section>
+
+        <!-- PAGE 5: COMMUNITY (CHAT) -->
+        <section id="page-community" class="page-transition hidden h-[75vh] flex flex-col">
+            <h2 class="text-2xl font-bold mb-4">Green Community</h2>
+            <div class="flex-grow glass-card rounded-3xl p-4 overflow-y-auto space-y-4 mb-4" id="chat-box">
+                <!-- Chat Messages -->
+                <div class="flex gap-3">
+                    <div class="w-10 h-10 bg-hk-green-light rounded-full flex-shrink-0 flex items-center justify-center font-bold">A</div>
+                    <div class="bg-white p-3 rounded-2xl rounded-tl-none shadow-sm max-w-[80%]">
+                        <p class="text-[10px] font-bold text-green-700">Admin_Hillkoff</p>
+                        <p class="text-sm">ยินดีต้อนรับทุกคนเข้าสู่แพลตฟอร์ม Green Intelligence ครับ! วันนี้สาขาช้างเผือกทำยอด Carbon Save ได้สูงสุดนะ!</p>
+                    </div>
+                </div>
+            </div>
+            <div class="flex gap-2 p-2 bg-white rounded-full shadow-lg border border-gray-100">
+                <input type="text" id="chat-input" placeholder="พิมพ์ข้อความ..." class="flex-grow px-4 outline-none text-sm">
+                <button id="send-chat" class="w-10 h-10 bg-hk-green-main text-white rounded-full flex items-center justify-center">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
+                </button>
+            </div>
+        </section>
+
+        <!-- PAGE 6: REPORT -->
+        <section id="page-report" class="page-transition hidden">
+            <h2 class="text-2xl font-bold mb-4">รายงานความยั่งยืน</h2>
+            <div class="space-y-4">
+                <div class="glass-card p-6 rounded-3xl flex items-center justify-between">
+                    <div>
+                        <p class="font-bold text-lg">ESG Monthly Report</p>
+                        <p class="text-xs text-gray-500">สรุปผลงานด้านสิ่งแวดล้อมประจำเดือน</p>
+                    </div>
+                    <button onclick="generatePDF()" class="p-3 bg-red-50 text-red-600 rounded-xl hover:bg-red-100 transition-colors">
+                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"><path d="M4 18h12V6h-4V2H4v16zm4-7h4v2H8v-2zm0-4h4v2H8V7zm0 8h4v2H8v-2z"></path></svg>
+                    </button>
+                </div>
+                <div class="glass-card p-6 rounded-3xl flex items-center justify-between">
+                    <div>
+                        <p class="font-bold text-lg">Raw Data Export</p>
+                        <p class="text-xs text-gray-500">ข้อมูลขยะทั้งหมดในรูปแบบ CSV</p>
+                    </div>
+                    <button onclick="exportCSV()" class="p-3 bg-blue-50 text-blue-600 rounded-xl hover:bg-blue-100 transition-colors">
+                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"><path d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z"></path></svg>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- BOTTOM NAVIGATION (6 TABS) -->
+    <nav class="fixed bottom-0 left-0 right-0 bg-white nav-shadow border-t border-gray-100 z-50 flex justify-around items-center px-2 py-3 backdrop-blur-md bg-opacity-95">
+        <button onclick="navigate('home')" class="nav-btn flex flex-col items-center gap-1 text-gray-400 flex-1 active" data-id="home">
+            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path></svg>
+            <span class="text-[10px] font-bold">หน้าหลัก</span>
+        </button>
+        <button onclick="navigate('record')" class="nav-btn flex flex-col items-center gap-1 text-gray-400 flex-1" data-id="record">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+            <span class="text-[10px] font-bold">บันทึก</span>
+        </button>
+        <button onclick="navigate('analytics')" class="nav-btn flex flex-col items-center gap-1 text-gray-400 flex-1" data-id="analytics">
+            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"><path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z"></path></svg>
+            <span class="text-[10px] font-bold">Analytics</span>
+        </button>
+        <button onclick="navigate('ranking')" class="nav-btn flex flex-col items-center gap-1 text-gray-400 flex-1" data-id="ranking">
+            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5 2a1 1 0 011 1v1h1a1 1 0 010 2H6v1a1 1 0 01-2 0V6H3a1 1 0 110-2h1V3a1 1 0 011-1zm0 10a1 1 0 011 1v1h1a1 1 0 110 2H6v1a1 1 0 11-2 0v-1H3a1 1 0 110-2h1v-1a1 1 0 011-1zM11 2a1 1 0 011-1h2a1 1 0 110 2h-2V3a1 1 0 01-1-1zm0 10a1 1 0 011-1h2a1 1 0 110 2h-2v1a1 1 0 11-2 0v-1z" clip-rule="evenodd"></path></svg>
+            <span class="text-[10px] font-bold">Ranking</span>
+        </button>
+        <button onclick="navigate('community')" class="nav-btn flex flex-col items-center gap-1 text-gray-400 flex-1" data-id="community">
+            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"><path d="M2 5a2 2 0 012-2h7a2 2 0 012 2v4a2 2 0 01-2 2H9l-3 3v-3H4a2 2 0 01-2-2V5z"></path><path d="M15 7v2a4 4 0 01-4 4H9.828l-1.766 1.767c.28.149.599.233.938.233h2l3 3v-3h2a2 2 0 002-2V9a2 2 0 00-2-2h-1z"></path></svg>
+            <span class="text-[10px] font-bold">คอมมูนิตี้</span>
+        </button>
+        <button onclick="navigate('report')" class="nav-btn flex flex-col items-center gap-1 text-gray-400 flex-1" data-id="report">
+            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"><path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"></path><path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"></path></svg>
+            <span class="text-[10px] font-bold">รายงาน</span>
+        </button>
+    </nav>
+
+    <!-- SUCCESS MODAL -->
+    <div id="success-modal" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300">
+        <div class="glass-card w-4/5 max-w-sm p-8 rounded-[3rem] text-center transform scale-90 transition-transform">
+            <div class="w-20 h-20 bg-hk-accent rounded-full flex items-center justify-center mx-auto mb-4 text-4xl shadow-glow">🎉</div>
+            <h3 class="text-2xl font-bold text-hk-green-dark mb-2">สำเร็จ!</h3>
+            <p class="text-sm text-gray-600 mb-6">คุณช่วยประหยัดคาร์บอนไปได้ <span id="carbon-saved-text" class="font-bold text-green-600">0.00 kg</span></p>
+            <button onclick="closeModal()" class="w-full py-4 bg-hk-green-main text-white rounded-2xl font-bold shadow-lg">ลุยต่อ!</button>
+        </div>
+    </div>
+
+    <!-- SCRIPT SECTION -->
+    <script>
+        // --- DATA & STATE ---
+        const branches = [
+            { id: 1, name: "สำนักงานใหญ่", count: 0, kg: 0, icon: "🏢", color: "blue" },
+            { id: 2, name: "ช้างเผือก", count: 1, kg: 1.265, icon: "🐘", color: "green" },
+            { id: 3, name: "มหิดล", count: 0, kg: 0, icon: "🎓", color: "indigo" },
+            { id: 4, name: "ป่าแพ่ง", count: 0, kg: 0, icon: "🌿", color: "emerald" },
+            { id: 5, name: "ทับเดื่อ", count: 0, kg: 0, icon: "🌱", color: "lime" },
+            { id: 6, name: "ราติก้า", count: 0, kg: 0, icon: "☕", color: "orange" }
+        ];
+
+        const wasteFactors = {
+            coffee: 0.2,
+            plastic: 0.4,
+            paper: 0.15,
+            food: 0.25,
+            glass: 0.6,
+            alu: 1.2
+        };
+
+        let db = JSON.parse(localStorage.getItem('hk_db')) || [];
+
+        // --- NAVIGATION ---
+        function navigate(pageId) {
+            // Hide all pages
+            document.querySelectorAll('section').forEach(p => p.classList.add('hidden'));
+            // Show target page
+            document.getElementById(`page-${pageId}`).classList.remove('hidden');
+            
+            // Update Navigation UI
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('text-hk-green-main', 'active-tab');
+                btn.classList.add('text-gray-400');
+                if(btn.dataset.id === pageId) {
+                    btn.classList.remove('text-gray-400');
+                    btn.classList.add('text-hk-green-main', 'active-tab');
+                }
+            });
+
+            // Specific Page Logic
+            if(pageId === 'home') renderBranches();
+            if(pageId === 'analytics') renderChart();
+            if(pageId === 'ranking') renderRanking();
+            if(pageId === 'record') initCamera();
+        }
+
+        // --- RENDER HOME BRANCHES ---
+        function renderBranches() {
+            const container = document.getElementById('branch-grid');
+            container.innerHTML = branches.map(b => `
+                <div class="glass-card rounded-3xl p-5 flex flex-col items-center justify-center text-center shadow-sm border border-white hover:scale-105 transition-transform cursor-pointer">
+                    <div class="text-3xl mb-2">${b.icon}</div>
+                    <p class="text-xs font-bold mb-1">${b.name}</p>
+                    <p class="text-[10px] text-gray-400 mb-2">${b.count} รายการ</p>
+                    <p class="text-sm font-bold ${b.kg > 0 ? 'text-green-600' : 'text-gray-300'}">${b.kg} kg</p>
+                </div>
+            `).join('');
+        }
+
+        // --- CAMERA & AI LOGIC ---
+        let stream;
+        async function initCamera() {
+            try {
+                if(stream) stream.getTracks().forEach(t => t.stop());
+                stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: false });
+                const video = document.getElementById('video-preview');
+                video.srcObject = stream;
+            } catch (err) {
+                alert("กรุณาอนุญาตการใช้งานกล้องเพื่อบันทึกขยะ");
+            }
+        }
+
+        document.getElementById('capture-btn').onclick = () => {
+            const video = document.getElementById('video-preview');
+            const canvas = document.getElementById('photo-canvas');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            canvas.getContext('2d').drawImage(video, 0, 0);
+            
+            // AI Simulation
+            document.getElementById('ai-overlay').style.opacity = '1';
+            document.getElementById('ai-result-card').classList.remove('hidden');
+            
+            setTimeout(() => {
+                const types = ['พลาสติก (PET/PP)', 'กากกาแฟ', 'เศษอาหาร'];
+                const detected = types[Math.floor(Math.random()*types.length)];
+                document.getElementById('ai-label').innerText = detected;
+                document.getElementById('ai-result-card').classList.remove('animate-pulse');
+                document.getElementById('ai-overlay').style.opacity = '0';
+                
+                // Auto Select
+                const select = document.getElementById('waste-type');
+                if(detected.includes('พลาสติก')) select.value = 'plastic';
+                if(detected.includes('กากกาแฟ')) select.value = 'coffee';
+            }, 1500);
+        };
+
+        // --- FORM SUBMISSION ---
+        document.getElementById('waste-form').onsubmit = (e) => {
+            e.preventDefault();
+            const type = document.getElementById('waste-type').value;
+            const weight = parseFloat(document.getElementById('waste-weight').value);
+
+            if(!weight) return alert("กรุณาระบุตัวเลขน้ำหนัก");
+
+            const saved = weight * wasteFactors[type];
+            const entry = {
+                type,
+                weight,
+                saved,
+                timestamp: new Date().toISOString(),
+                branch: "สำนักงานใหญ่"
+            };
+
+            db.push(entry);
+            localStorage.setItem('hk_db', JSON.stringify(db));
+
+            // Update Animation/Modal
+            document.getElementById('carbon-saved-text').innerText = `${saved.toFixed(2)} kg`;
+            const modal = document.getElementById('success-modal');
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+            modal.querySelector('div').classList.add('scale-100');
+            modal.querySelector('div').classList.remove('scale-90');
+        };
+
+        function closeModal() {
+            const modal = document.getElementById('success-modal');
+            modal.classList.add('opacity-0', 'pointer-events-none');
+            navigate('home');
+        }
+
+        // --- CHARTING ---
+        let myChart;
+        function renderChart() {
+            const ctx = document.getElementById('wasteChart').getContext('2d');
+            if(myChart) myChart.destroy();
+
+            const dataMap = db.reduce((acc, curr) => {
+                acc[curr.type] = (acc[curr.type] || 0) + curr.weight;
+                return acc;
+            }, {});
+
+            myChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(dataMap),
+                    datasets: [{
+                        data: Object.values(dataMap),
+                        backgroundColor: ['#1f4d2f', '#00ff7f', '#e8f5e9', '#orange', '#indigo'],
+                        borderWidth: 0
+                    }]
+                },
+                options: { cutout: '70%', plugins: { legend: { position: 'bottom' } } }
+            });
+        }
+
+        // --- RANKING ---
+        function renderRanking() {
+            const list = document.getElementById('rank-list');
+            const mockRanks = [
+                { name: "คุณสุกิจ (HQ)", score: "12,450", color: "hk-green-main", medal: "🥇" },
+                { name: "สาขาช้างเผือก", score: "10,200", color: "green-500", medal: "🥈" },
+                { name: "คุณปรียา (ทับเดื่อ)", score: "9,850", color: "orange-400", medal: "🥉" }
+            ];
+
+            list.innerHTML = mockRanks.map((r, i) => `
+                <div class="glass-card p-4 rounded-2xl flex items-center justify-between shadow-sm animate-fadeIn">
+                    <div class="flex items-center gap-4">
+                        <span class="text-xl">${r.medal}</span>
+                        <div>
+                            <p class="font-bold">${r.name}</p>
+                            <p class="text-[10px] text-gray-400">Green Champion Level ${10-i}</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-lg font-bold text-green-700">${r.score}</p>
+                        <p class="text-[10px] uppercase font-bold text-gray-300">Points</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // --- CHAT LOGIC ---
+        document.getElementById('send-chat').onclick = () => {
+            const input = document.getElementById('chat-input');
+            if(!input.value) return;
+            const chatBox = document.getElementById('chat-box');
+            const msg = `
+                <div class="flex gap-3 flex-row-reverse">
+                    <div class="w-10 h-10 bg-hk-green-main text-white rounded-full flex-shrink-0 flex items-center justify-center font-bold shadow-sm">U</div>
+                    <div class="bg-hk-green-main p-3 rounded-2xl rounded-tr-none shadow-sm max-w-[80%] text-white">
+                        <p class="text-sm">${input.value}</p>
+                    </div>
+                </div>
+            `;
+            chatBox.innerHTML += msg;
+            input.value = "";
+            chatBox.scrollTop = chatBox.scrollHeight;
+        };
+
+        // --- EXPORT LOGIC ---
+        function generatePDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            doc.text("HILLKOFF ESG REPORT", 10, 10);
+            doc.text(`Total Waste Captured: ${db.length} items`, 10, 20);
+            doc.save("hillkoff_report.pdf");
+        }
+
+        function exportCSV() {
+            let csv = "Timestamp,Type,Weight,CarbonSaved\n";
+            db.forEach(row => {
+                csv += `${row.timestamp},${row.type},${row.weight},${row.saved}\n`;
+            });
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.setAttribute('href', url);
+            a.setAttribute('download', 'hillkoff_data.csv');
+            a.click();
+        }
+
+        // Initial Load
+        renderBranches();
+    </script>
+</body>
+</html>
 
