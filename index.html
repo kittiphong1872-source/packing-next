@@ -3,13 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>HILLKOFF GREEN INTELLIGENCE PLATFORM</title>
+    <title>HILLKOFF GREEN INTELLIGENCE | Enterprise ESG Platform</title>
     
-    <!-- External Libraries -->
+    <!-- External Dependencies -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dayjs@1/dayjs.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
 
     <script>
         tailwind.config = {
@@ -17,407 +19,515 @@
                 extend: {
                     fontFamily: { 'sans': ['Prompt', 'sans-serif'] },
                     colors: {
-                        'hk-dark': '#0a2212',
-                        'hk-green': '#1f4d2f',
-                        'hk-light': '#eef7f0',
-                        'hk-accent': '#34d399'
-                    }
+                        'hk-primary': '#1f4d2f',
+                        'hk-secondary': '#0a2212',
+                        'hk-accent': '#34d399',
+                        'hk-surface': '#f8fafc',
+                        'hk-light-green': '#eef7f0'
+                    },
+                    borderRadius: { '4xl': '2rem', '5xl': '2.5rem' }
                 }
             }
         }
     </script>
 
     <style>
-        body { background: #f8fafc; overflow-x: hidden; }
-        .glass-header { background: rgba(31, 77, 47, 0.98); backdrop-filter: blur(10px); }
-        .nav-active { color: #1f4d2f !important; border-top: 3px solid #1f4d2f; }
-        .card-shadow { box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05); }
-        .tab-content { display: none; animation: fadeIn 0.3s ease-in-out; }
-        .tab-content.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .no-scrollbar::-webkit-scrollbar { display: none; }
+        :root {
+            --hk-green: #1f4d2f;
+            --hk-dark: #0a2212;
+        }
+
+        body { 
+            background-color: var(--hk-surface); 
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 0px; background: transparent; }
+
+        /* Glassmorphism Elements */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        /* Navigation Animation */
+        .nav-item { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .nav-item.active { color: var(--hk-green); transform: translateY(-4px); }
+        .nav-item.active .icon-box { background-color: var(--hk-light-green); color: var(--hk-green); }
+
+        /* Card Hover Effects */
+        .stat-card { transition: transform 0.2s ease; cursor: pointer; }
+        .stat-card:active { transform: scale(0.96); }
+
+        /* Camera Scanner Simulation */
+        .scanner-view {
+            position: relative;
+            overflow: hidden;
+            border-radius: 2rem;
+            box-shadow: inset 0 0 50px rgba(0,0,0,0.5);
+        }
+        .scan-anim {
+            position: absolute;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(to right, transparent, var(--hk-accent), transparent);
+            box-shadow: 0 0 15px var(--hk-accent);
+            animation: scanMove 2.5s infinite ease-in-out;
+            z-index: 10;
+        }
+        @keyframes scanMove {
+            0% { top: 10%; }
+            50% { top: 90%; }
+            100% { top: 10%; }
+        }
+
+        /* Chart Containers */
+        .chart-wrapper { height: 280px; position: relative; }
+
+        /* Tab Transitions */
+        .page-content { display: none; }
+        .page-content.active { display: block; animation: fadeInUp 0.4s ease-out; }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Skeleton Loading Simulation */
+        .skeleton {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+        }
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
     </style>
 </head>
-<body class="font-sans text-hk-dark">
+<body class="font-sans antialiased">
 
-    <!-- HEADER SECTION (Fixed) -->
-    <header class="fixed top-0 left-0 right-0 z-50 p-4 bg-[#f8fafc]">
-        <div class="max-w-md mx-auto flex justify-between items-center">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 bg-white rounded-full p-1 shadow-sm border border-gray-100">
-                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR6-vNsh7hYV0M3N7Jk4C7O9-V5_8H1S8i9OQ&s" alt="Logo" class="w-full h-full object-contain">
+    <!-- APP HEADER -->
+    <header class="fixed top-0 left-0 right-0 z-50 bg-hk-surface/80 backdrop-blur-md border-b border-gray-100">
+        <div class="max-w-md mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-4">
+                <div class="w-12 h-12 bg-white rounded-2xl shadow-sm border border-gray-100 p-2 overflow-hidden">
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR6-vNsh7hYV0M3N7Jk4C7O9-V5_8H1S8i9OQ&s" alt="Hillkoff Logo" class="w-full h-full object-contain">
                 </div>
                 <div>
-                    <h1 class="text-lg font-bold">Hillkoff</h1>
-                    <p class="text-[10px] text-gray-500 uppercase tracking-widest">Zero Waste • ESG Platform</p>
+                    <h1 class="text-xl font-extrabold text-hk-secondary tracking-tight">HILLKOFF</h1>
+                    <p class="text-[10px] font-bold text-hk-accent uppercase tracking-[0.2em]">Green Intelligence</p>
                 </div>
             </div>
-            <div class="flex gap-2">
-                <button class="w-9 h-9 bg-white rounded-full flex items-center justify-center shadow-sm text-gray-400">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
+            <div class="relative">
+                <button class="w-10 h-10 rounded-xl bg-white border border-gray-100 flex items-center justify-center text-gray-400">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
+                    <span class="absolute top-0 right-0 w-3 h-3 bg-red-500 border-2 border-white rounded-full"></span>
                 </button>
             </div>
         </div>
     </header>
 
-    <!-- MAIN APP WRAPPER -->
-    <main class="max-w-md mx-auto pt-24 pb-32 px-4">
-        
-        <!-- PAGE: HOME -->
-        <section id="home" class="tab-content active">
-            <div class="bg-hk-green rounded-[2.5rem] p-8 text-white mb-8 relative overflow-hidden card-shadow">
-                <div class="absolute top-6 right-8 text-right">
-                    <span class="text-[10px] opacity-60">CO<sub>2</sub>e รวม</span>
-                    <p class="text-xl font-bold" id="total-co2-display">0.00 kg</p>
-                </div>
+    <!-- MAIN CONTAINER -->
+    <main class="max-w-md mx-auto pt-28 pb-36 px-6">
+
+        <!-- 1. HOME PAGE -->
+        <div id="home" class="page-content active">
+            <!-- Hero Dashboard Card -->
+            <div class="bg-hk-primary rounded-5xl p-8 text-white relative overflow-hidden shadow-2xl shadow-hk-primary/20 mb-10">
+                <div class="absolute top-0 right-0 w-40 h-40 bg-white/5 rounded-full -mr-20 -mt-20"></div>
                 
-                <div class="flex flex-col items-center mb-8">
-                    <span class="text-xs mb-2 opacity-80">🌍 Carbon Footprint — องค์กร</span>
-                    <h2 class="text-6xl font-bold mb-4" id="main-co2-val">0.00</h2>
-                    <p class="text-xl font-light">kg CO<sub>2</sub>e</p>
-                </div>
-
-                <div class="flex justify-center gap-2 mb-8 overflow-x-auto no-scrollbar">
-                    <span class="px-4 py-1.5 bg-white/10 rounded-full text-[10px] backdrop-blur-md whitespace-nowrap">ISO 14064</span>
-                    <span class="px-4 py-1.5 bg-white/10 rounded-full text-[10px] backdrop-blur-md whitespace-nowrap">GHG Protocol</span>
-                    <span class="px-4 py-1.5 bg-white/10 rounded-full text-[10px] backdrop-blur-md whitespace-nowrap">SDG 12</span>
-                </div>
-
-                <div class="grid grid-cols-3 gap-1 bg-black/10 rounded-3xl p-5 backdrop-blur-xl mb-6 border border-white/5">
-                    <div class="text-center border-r border-white/10">
-                        <p class="text-lg font-bold" id="stat-daily">0.00</p>
-                        <p class="text-[10px] opacity-60">kg วันนี้</p>
+                <div class="flex justify-between items-start mb-10">
+                    <div>
+                        <p class="text-xs font-medium opacity-70 mb-1">Carbon Saved (Total)</p>
+                        <h2 class="text-4xl font-bold" id="main-co2-display">0.00 <span class="text-lg font-normal opacity-60">kgCO<sub>2</sub>e</span></h2>
                     </div>
-                    <div class="text-center border-r border-white/10">
-                        <p class="text-lg font-bold" id="stat-monthly">0.00</p>
-                        <p class="text-[10px] opacity-60">kg เดือนนี้</p>
+                    <div class="bg-white/10 px-3 py-1.5 rounded-full backdrop-blur-md">
+                        <p class="text-[10px] font-bold">2026 ESG GOAL</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-3 gap-2 py-6 border-y border-white/10 mb-8">
+                    <div class="text-center">
+                        <p class="text-xl font-bold" id="val-day">0.0</p>
+                        <p class="text-[9px] opacity-50 uppercase font-bold tracking-wider">Today</p>
+                    </div>
+                    <div class="text-center border-x border-white/10">
+                        <p class="text-xl font-bold" id="val-month">0.0</p>
+                        <p class="text-[9px] opacity-50 uppercase font-bold tracking-wider">Month</p>
                     </div>
                     <div class="text-center">
-                        <p class="text-lg font-bold" id="stat-count">0</p>
-                        <p class="text-[10px] opacity-60">รายการ</p>
+                        <p class="text-xl font-bold" id="val-year">0.0</p>
+                        <p class="text-[9px] opacity-50 uppercase font-bold tracking-wider">Year</p>
                     </div>
                 </div>
 
-                <button onclick="switchTab('record')" class="w-full bg-white text-hk-green py-5 rounded-2xl font-bold text-lg shadow-xl active:scale-95 transition-all">
-                    📝 บันทึกขยะใหม่
+                <button onclick="navigate('record')" class="w-full bg-white text-hk-primary py-5 rounded-2xl font-bold text-lg flex items-center justify-center gap-3 active:scale-95 transition-all shadow-xl">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                    บันทึกขยะใหม่
                 </button>
             </div>
 
-            <div class="mb-4 flex justify-between items-center">
-                <h3 class="text-lg font-bold text-hk-dark">สรุปแต่ละสาขา</h3>
-                <button class="text-xs text-hk-green font-semibold">ดูรายละเอียด</button>
-            </div>
-            <div class="grid grid-cols-2 gap-4" id="branch-stats">
-                <!-- Branch data generated by JS -->
-            </div>
-        </section>
-
-        <!-- PAGE: RECORD -->
-        <section id="record" class="tab-content">
-            <h2 class="text-2xl font-bold mb-6">บันทึกข้อมูลขยะ</h2>
-            <div class="bg-white rounded-[2rem] p-6 card-shadow mb-6">
-                <div id="camera-container" class="relative rounded-3xl overflow-hidden bg-hk-dark aspect-[4/3] mb-6">
-                    <video id="webcam" class="w-full h-full object-cover" autoplay playsinline></video>
-                    <div id="scan-line" class="absolute top-0 left-0 w-full h-1 bg-hk-accent/50 shadow-[0_0_15px_#34d399] animate-bounce hidden"></div>
-                    <button id="shutter" class="absolute bottom-4 left-1/2 -translate-x-1/2 w-16 h-16 bg-white rounded-full border-4 border-hk-green flex items-center justify-center shadow-2xl">
-                        <div class="w-12 h-12 bg-hk-green rounded-full opacity-20"></div>
-                    </button>
+            <!-- Branch Quick View -->
+            <div class="flex justify-between items-end mb-6 px-2">
+                <div>
+                    <h3 class="text-xl font-bold text-hk-secondary">Branches</h3>
+                    <p class="text-xs text-gray-400">สรุปการลดคาร์บอนรายสาขา</p>
                 </div>
+                <button class="text-xs font-bold text-hk-primary">See All</button>
+            </div>
 
-                <form id="record-form" class="space-y-5">
-                    <div>
-                        <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">ประเภทขยะ</label>
-                        <select id="waste-type" class="w-full mt-1 bg-gray-50 border-none p-4 rounded-2xl text-sm focus:ring-2 focus:ring-hk-green outline-none">
-                            <option value="coffee">กากกาแฟ (Coffee Grounds)</option>
-                            <option value="plastic">พลาสติก (PET/PP)</option>
-                            <option value="paper">กระดาษ / ลังคาร์ตั้น</option>
-                            <option value="food">เศษอาหาร (Organic Waste)</option>
-                            <option value="alu">อะลูมิเนียม / กระป๋อง</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">น้ำหนัก (กิโลกรัม)</label>
-                        <input type="number" id="waste-weight" step="0.01" placeholder="0.00" class="w-full mt-1 bg-gray-50 border-none p-4 rounded-2xl text-sm focus:ring-2 focus:ring-hk-green outline-none">
-                    </div>
-                    <button type="submit" class="w-full bg-hk-green text-white py-5 rounded-2xl font-bold shadow-lg shadow-hk-green/20">ยืนยันและบันทึกข้อมูล</button>
-                </form>
+            <div class="grid grid-cols-2 gap-4 mb-10" id="branch-list">
+                <!-- Branches will be injected here -->
             </div>
-        </section>
+        </div>
 
-        <!-- PAGE: ANALYTICS -->
-        <section id="analytics" class="tab-content">
-            <h2 class="text-2xl font-bold mb-6">Dashboard</h2>
-            <div class="bg-white rounded-3xl p-6 card-shadow mb-6">
-                <p class="font-bold mb-4">สถิติการคัดแยกรายเดือน</p>
-                <div class="h-64">
-                    <canvas id="mainChart"></canvas>
-                </div>
-            </div>
-            <div class="grid grid-cols-2 gap-4">
-                <div class="bg-emerald-50 p-6 rounded-3xl border border-emerald-100">
-                    <p class="text-xs text-emerald-600 font-bold mb-1">Total Savings</p>
-                    <p class="text-2xl font-bold" id="sum-saved">0 kg</p>
-                </div>
-                <div class="bg-orange-50 p-6 rounded-3xl border border-orange-100">
-                    <p class="text-xs text-orange-600 font-bold mb-1">Sustainability Score</p>
-                    <p class="text-2xl font-bold" id="sum-points">0</p>
-                </div>
-            </div>
-        </section>
-
-        <!-- PAGE: RANKING -->
-        <section id="ranking" class="tab-content">
-            <h2 class="text-2xl font-bold mb-6">Green Ranking</h2>
-            <div class="flex gap-3 mb-6">
-                <button class="flex-1 py-3 bg-hk-green text-white rounded-2xl text-xs font-bold shadow-md">สาขา</button>
-                <button class="flex-1 py-3 bg-white text-gray-400 rounded-2xl text-xs font-bold border border-gray-100">พนักงาน</button>
-            </div>
-            <div class="space-y-3" id="rank-container">
-                <!-- Ranks generated by JS -->
-            </div>
-        </section>
-
-        <!-- PAGE: COMMUNITY (CHAT) -->
-        <section id="community" class="tab-content h-[70vh] flex flex-col">
-            <h2 class="text-2xl font-bold mb-6 text-hk-dark">Community</h2>
-            <div id="chat-stream" class="flex-grow overflow-y-auto space-y-4 mb-4 pr-2 no-scrollbar">
-                <!-- Chat messages -->
-                <div class="flex gap-3">
-                    <div class="w-10 h-10 bg-hk-light rounded-full flex-shrink-0 flex items-center justify-center">
-                        <span class="text-xs font-bold text-hk-green">HB</span>
-                    </div>
-                    <div class="bg-white p-4 rounded-3xl rounded-tl-none shadow-sm max-w-[85%]">
-                        <p class="text-[10px] font-bold text-hk-green mb-1">Hillkoff Bot</p>
-                        <p class="text-sm">ยินดีต้อนรับสู่สังคมรักษ์โลกครับ! วันนี้สาขาช้างเผือกทำแต้มนำโด่งเลยนะครับ 🌱</p>
-                    </div>
-                </div>
-            </div>
-            <div class="flex items-center gap-2 bg-white p-2 rounded-full shadow-lg border border-gray-50">
-                <input type="text" id="chat-msg" placeholder="ร่วมแบ่งปันไอเดียรักษ์โลก..." class="flex-grow bg-transparent px-4 py-2 outline-none text-sm">
-                <button onclick="sendMessage()" class="w-10 h-10 bg-hk-green text-white rounded-full flex items-center justify-center">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
+        <!-- 2. RECORD PAGE (CAMERA) -->
+        <div id="record" class="page-content">
+            <div class="flex justify-between items-center mb-8">
+                <h2 class="text-2xl font-extrabold text-hk-secondary">Waste Recorder</h2>
+                <button onclick="navigate('home')" class="text-gray-400">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"></path></svg>
                 </button>
             </div>
-        </section>
 
-        <!-- PAGE: REPORT -->
-        <section id="report" class="tab-content">
-            <h2 class="text-2xl font-bold mb-6">รายงานและเอกสาร</h2>
-            <div class="grid gap-4">
-                <div onclick="exportData()" class="bg-white p-6 rounded-[2rem] card-shadow flex items-center justify-between cursor-pointer active:scale-95 transition-all">
-                    <div class="flex items-center gap-4">
-                        <div class="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+            <div class="scanner-view aspect-square bg-hk-secondary mb-8 relative">
+                <video id="camera-stream" class="w-full h-full object-cover opacity-60" autoplay playsinline></video>
+                <div class="scan-anim" id="scanner-line"></div>
+                
+                <!-- AI Overlay Info -->
+                <div class="absolute bottom-6 left-6 right-6 p-4 glass-panel rounded-2xl border-hk-accent/30 hidden animate__animated animate__fadeInUp" id="ai-suggestion">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-hk-accent rounded-xl flex items-center justify-center text-white">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                         </div>
                         <div>
-                            <p class="font-bold text-sm">Export ESG Data</p>
-                            <p class="text-[10px] text-gray-400">ดาวน์โหลดข้อมูลขยะทั้งหมด (CSV)</p>
+                            <p class="text-[10px] font-bold text-hk-primary uppercase">AI Prediction</p>
+                            <p class="text-sm font-bold" id="ai-text">พลาสติก (PET)</p>
                         </div>
                     </div>
-                    <svg class="w-5 h-5 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                </div>
+
+                <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+                    <div class="w-48 h-48 border-2 border-white/20 rounded-3xl"></div>
                 </div>
             </div>
-        </section>
+
+            <form id="waste-form" class="space-y-6">
+                <div>
+                    <label class="block text-[11px] font-extrabold text-gray-400 uppercase tracking-widest mb-2 px-1">Waste Category</label>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="category-btn p-4 rounded-2xl bg-white border border-gray-100 flex flex-col items-center gap-2 cursor-pointer transition-all border-2 border-transparent" data-type="coffee">
+                            <span class="text-2xl">☕</span>
+                            <span class="text-xs font-bold">กากกาแฟ</span>
+                        </div>
+                        <div class="category-btn p-4 rounded-2xl bg-white border border-gray-100 flex flex-col items-center gap-2 cursor-pointer transition-all border-2 border-transparent" data-type="plastic">
+                            <span class="text-2xl">🥤</span>
+                            <span class="text-xs font-bold">พลาสติก</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-[11px] font-extrabold text-gray-400 uppercase tracking-widest mb-2 px-1">Weight (Kilograms)</label>
+                    <input type="number" id="weight-input" step="0.01" class="w-full p-5 bg-white rounded-2xl border border-gray-100 text-xl font-bold focus:ring-2 focus:ring-hk-primary outline-none transition-all shadow-sm" placeholder="0.00">
+                </div>
+
+                <button type="submit" class="w-full bg-hk-primary text-white py-5 rounded-2xl font-bold text-lg shadow-xl shadow-hk-primary/20 active:scale-95 transition-all">
+                    บันทึกข้อมูลเข้าระบบ
+                </button>
+            </form>
+        </div>
+
+        <!-- 3. ANALYTICS PAGE -->
+        <div id="analytics" class="page-content">
+            <h2 class="text-2xl font-extrabold text-hk-secondary mb-8">Intelligence Data</h2>
+            
+            <div class="bg-white rounded-4xl p-6 shadow-sm border border-gray-100 mb-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h4 class="font-bold">รายงานแยกตามประเภท</h4>
+                    <select class="text-xs bg-gray-50 border-none rounded-lg p-1">
+                        <option>7 วันล่าสุด</option>
+                        <option>30 วันล่าสุด</option>
+                    </select>
+                </div>
+                <div class="chart-wrapper">
+                    <canvas id="typeChart"></canvas>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4 mb-6">
+                <div class="bg-emerald-50 p-6 rounded-4xl border border-emerald-100">
+                    <p class="text-[10px] font-bold text-emerald-600 uppercase mb-2">Total Savings</p>
+                    <h4 class="text-2xl font-black text-emerald-700" id="stat-total-saved">0</h4>
+                    <p class="text-[10px] text-emerald-500">kgCO2e Reduced</p>
+                </div>
+                <div class="bg-blue-50 p-6 rounded-4xl border border-blue-100">
+                    <p class="text-[10px] font-bold text-blue-600 uppercase mb-2">Recycle Rate</p>
+                    <h4 class="text-2xl font-black text-blue-700">84.2%</h4>
+                    <p class="text-[10px] text-blue-500">+12% from last month</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. RANKING PAGE -->
+        <div id="ranking" class="page-content">
+            <div class="flex justify-between items-center mb-8">
+                <h2 class="text-2xl font-extrabold text-hk-secondary">Leaderboard</h2>
+                <span class="bg-hk-accent/10 text-hk-accent px-3 py-1 rounded-full text-[10px] font-bold">LIVE UPDATE</span>
+            </div>
+
+            <div class="flex gap-4 mb-8">
+                <button class="flex-1 py-3 bg-hk-primary text-white rounded-xl text-xs font-bold shadow-lg">Branches</button>
+                <button class="flex-1 py-3 bg-white text-gray-400 rounded-xl text-xs font-bold border border-gray-100">Personal</button>
+            </div>
+
+            <div class="space-y-4" id="ranking-list">
+                <!-- Ranking items will be injected -->
+            </div>
+        </div>
+
+        <!-- 5. COMMUNITY CHAT -->
+        <div id="community" class="page-content flex flex-col h-[70vh]">
+            <h2 class="text-2xl font-extrabold text-hk-secondary mb-6">Green Talk</h2>
+            <div id="chat-messages" class="flex-grow overflow-y-auto space-y-4 pr-2 mb-6">
+                <!-- Initial Bot Message -->
+                <div class="flex gap-3">
+                    <div class="w-10 h-10 bg-hk-primary rounded-full flex-shrink-0 flex items-center justify-center text-white font-bold text-xs">HK</div>
+                    <div class="bg-white p-4 rounded-3xl rounded-tl-none shadow-sm max-w-[80%]">
+                        <p class="text-xs font-bold text-hk-primary mb-1">Hillkoff Intelligence</p>
+                        <p class="text-sm leading-relaxed text-gray-600">สวัสดีครับทีมงาน! วันนี้เราคัดแยกกากกาแฟไปได้แล้วกว่า 120kg แล้วนะครับ ช่วยกันรักษาเป้าหมาย Zero Waste ต่อไปครับ! 🌱</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="relative">
+                <input type="text" id="chat-input" class="w-full p-5 bg-white border border-gray-100 rounded-3xl pr-16 shadow-lg outline-none focus:ring-2 focus:ring-hk-primary transition-all" placeholder="แชร์ไอเดียรักษ์โลก...">
+                <button onclick="sendChatMessage()" class="absolute right-2 top-2 w-12 h-12 bg-hk-primary text-white rounded-2xl flex items-center justify-center active:scale-90 transition-all">
+                    <svg class="w-6 h-6 rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
+                </button>
+            </div>
+        </div>
 
     </main>
 
-    <!-- NAVIGATION BAR (Fixed Bottom) -->
-    <nav class="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-xl border-t border-gray-100 z-50 px-2 pb-6 pt-3 flex justify-around items-center">
-        <button onclick="switchTab('home')" class="nav-item flex flex-col items-center gap-1 text-gray-300 flex-1 nav-active" data-id="home">
-            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path></svg>
-            <span class="text-[9px] font-bold">หน้าหลัก</span>
-        </button>
-        <button onclick="switchTab('record')" class="nav-item flex flex-col items-center gap-1 text-gray-300 flex-1" data-id="record">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-            <span class="text-[9px] font-bold">บันทึก</span>
-        </button>
-        <button onclick="switchTab('analytics')" class="nav-item flex flex-col items-center gap-1 text-gray-300 flex-1" data-id="analytics">
-            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"><path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z"></path></svg>
-            <span class="text-[9px] font-bold">Analytics</span>
-        </button>
-        <button onclick="switchTab('ranking')" class="nav-item flex flex-col items-center gap-1 text-gray-300 flex-1" data-id="ranking">
-            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
-            <span class="text-[9px] font-bold">Ranking</span>
-        </button>
-        <button onclick="switchTab('community')" class="nav-item flex flex-col items-center gap-1 text-gray-300 flex-1" data-id="community">
-            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"><path d="M2 5a2 2 0 012-2h7a2 2 0 012 2v4a2 2 0 01-2 2H9l-3 3v-3H4a2 2 0 01-2-2V5z"></path></svg>
-            <span class="text-[9px] font-bold">Chat</span>
-        </button>
-        <button onclick="switchTab('report')" class="nav-item flex flex-col items-center gap-1 text-gray-300 flex-1" data-id="report">
-            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"><path d="M4 4a2 2 0 012-2h4.586A1 1 0 0112 2.586L15.414 6A1 1 0 0116 6.586V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z"></path></svg>
-            <span class="text-[9px] font-bold">Report</span>
+    <!-- BOTTOM NAVIGATION BAR -->
+    <nav class="fixed bottom-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-xl border-t border-gray-100 px-4 pb-8 pt-4">
+        <div class="max-w-md mx-auto flex justify-between items-center">
+            <button onclick="navigate('home')" class="nav-item flex flex-col items-center gap-1.5 flex-1 active" id="nav-home">
+                <div class="icon-box w-12 h-8 flex items-center justify-center rounded-xl transition-all">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+                </div>
+                <span class="text-[9px] font-extrabold uppercase tracking-widest">Home</span>
+            </button>
+            <button onclick="navigate('analytics')" class="nav-item flex flex-col items-center gap-1.5 flex-1" id="nav-analytics">
+                <div class="icon-box w-12 h-8 flex items-center justify-center rounded-xl transition-all">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                </div>
+                <span class="text-[9px] font-extrabold uppercase tracking-widest">Data</span>
+            </button>
+            <div class="w-16"></div> <!-- Space for Record Button -->
+            <button onclick="navigate('ranking')" class="nav-item flex flex-col items-center gap-1.5 flex-1" id="nav-ranking">
+                <div class="icon-box w-12 h-8 flex items-center justify-center rounded-xl transition-all">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
+                </div>
+                <span class="text-[9px] font-extrabold uppercase tracking-widest">Ranking</span>
+            </button>
+            <button onclick="navigate('community')" class="nav-item flex flex-col items-center gap-1.5 flex-1" id="nav-community">
+                <div class="icon-box w-12 h-8 flex items-center justify-center rounded-xl transition-all">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
+                </div>
+                <span class="text-[9px] font-extrabold uppercase tracking-widest">Chat</span>
+            </button>
+        </div>
+
+        <!-- Floating Record Button -->
+        <button onclick="navigate('record')" class="absolute -top-8 left-1/2 -translate-x-1/2 w-16 h-16 bg-hk-primary text-white rounded-2xl shadow-2xl shadow-hk-primary/40 flex items-center justify-center border-4 border-white transition-transform active:scale-90">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
         </button>
     </nav>
 
     <script>
-        // --- CORE STATE MANAGEMENT ---
+        // --- DATA & STATE ---
         const EMISSION_FACTORS = { coffee: 0.2, plastic: 0.5, paper: 0.1, food: 0.3, alu: 1.5 };
+        const BRANCHES = [
+            { id: 'hq', name: "สำนักงานใหญ่", icon: "🏢", co2: 125.4 },
+            { id: 'cp', name: "สาขาช้างเผือก", icon: "🐘", co2: 88.2 },
+            { id: 'md', name: "สาขามหิดล", icon: "🎓", co2: 64.5 },
+            { id: 'rt', name: "ราติก้า", icon: "☕", co2: 92.1 }
+        ];
+
         let state = {
-            data: JSON.parse(localStorage.getItem('hk_production_db')) || [],
-            branches: [
-                { id: 'hq', name: "สำนักงานใหญ่", icon: "🏢", color: "blue" },
-                { id: 'chang', name: "ช้างเผือก", icon: "🐘", color: "green" },
-                { id: 'mahidol', name: "มหิดล", icon: "🎓", color: "indigo" },
-                { id: 'pa', name: "ป่าแพ่ง", icon: "🌿", color: "emerald" },
-                { id: 'tub', name: "ทับเดื่อ", icon: "🌱", color: "lime" },
-                { id: 'ratika', name: "ราติก้า", icon: "☕", color: "orange" }
-            ]
+            records: JSON.parse(localStorage.getItem('hk_v2_db')) || [],
+            activeTab: 'home',
+            selectedWaste: null
         };
 
-        // --- NAVIGATION LOGIC ---
-        function switchTab(tabId) {
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+        // --- NAVIGATION CORE ---
+        function navigate(tabId) {
+            document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active'));
             document.getElementById(tabId).classList.add('active');
             
-            document.querySelectorAll('.nav-item').forEach(el => {
-                el.classList.remove('nav-active');
-                if(el.dataset.id === tabId) el.classList.add('nav-active');
-            });
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.getElementById(`nav-${tabId}`)?.classList.add('active');
 
-            if(tabId === 'home') updateHome();
-            if(tabId === 'analytics') renderCharts();
+            state.activeTab = tabId;
+            
+            if(tabId === 'home') renderHome();
+            if(tabId === 'analytics') renderAnalytics();
             if(tabId === 'ranking') renderRanking();
-            if(tabId === 'record') initCamera();
+            if(tabId === 'record') startCamera();
+            else stopCamera();
+
+            window.scrollTo(0, 0);
         }
 
-        // --- DATA PERSISTENCE ---
-        function saveData(entry) {
-            state.data.push(entry);
-            localStorage.setItem('hk_production_db', JSON.stringify(state.data));
-            Swal.fire({
-                title: 'สำเร็จ!',
-                text: `คุณลด CO2e ไปได้ ${entry.co2.toFixed(2)} kg`,
-                icon: 'success',
-                confirmButtonColor: '#1f4d2f',
-                borderRadius: '2rem'
-            }).then(() => switchTab('home'));
-        }
-
-        // --- HOME PAGE LOGIC ---
-        function updateHome() {
-            const totalCO2 = state.data.reduce((sum, item) => sum + item.co2, 0);
-            const today = new Date().toLocaleDateString();
-            const dailyCO2 = state.data.filter(i => new Date(i.ts).toLocaleDateString() === today)
-                                     .reduce((sum, item) => sum + item.co2, 0);
-
-            document.getElementById('total-co2-display').innerText = `${totalCO2.toFixed(2)} kg`;
-            document.getElementById('main-co2-val').innerText = totalCO2.toFixed(2);
-            document.getElementById('stat-daily').innerText = dailyCO2.toFixed(2);
-            document.getElementById('stat-count').innerText = state.data.length;
-
-            const grid = document.getElementById('branch-stats');
-            grid.innerHTML = state.branches.map(b => {
-                const bData = state.data.filter(d => d.branch === b.id);
-                const bSum = bData.reduce((s, i) => s + i.weight, 0);
-                return `
-                    <div class="bg-white p-5 rounded-[2rem] card-shadow text-center">
-                        <div class="text-3xl mb-2">${b.icon}</div>
-                        <p class="text-xs font-bold mb-1">${b.name}</p>
-                        <p class="text-[10px] text-gray-400 mb-2">${bData.length} รายการ</p>
-                        <p class="text-sm font-bold text-hk-green">${bSum.toFixed(2)} kg</p>
+        // --- HOME RENDERER ---
+        function renderHome() {
+            const total = state.records.reduce((s, r) => s + r.co2, 0);
+            animateValue("main-co2-display", total, 2, " kgCO2e");
+            
+            const bList = document.getElementById('branch-list');
+            bList.innerHTML = BRANCHES.map(b => `
+                <div class="stat-card bg-white p-5 rounded-4xl border border-gray-100 shadow-sm">
+                    <div class="text-3xl mb-3">${b.icon}</div>
+                    <p class="text-[10px] font-bold text-gray-400 uppercase mb-1">${b.name}</p>
+                    <div class="flex items-end justify-between">
+                        <h4 class="text-lg font-black text-hk-secondary">${b.co2}</h4>
+                        <span class="text-[9px] text-hk-accent font-bold">CO2e</span>
                     </div>
-                `;
-            }).join('');
+                </div>
+            `).join('');
         }
 
-        // --- CAMERA LOGIC ---
-        async function initCamera() {
-            const video = document.getElementById('webcam');
+        // --- CAMERA & AI LOGIC ---
+        let streamRef = null;
+        async function startCamera() {
+            const video = document.getElementById('camera-stream');
             try {
-                const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
-                video.srcObject = stream;
-            } catch (err) {
-                console.error("Camera access denied");
+                streamRef = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+                video.srcObject = streamRef;
+                
+                // Simulate AI Recognition after 2s
+                setTimeout(() => {
+                    const aiBox = document.getElementById('ai-suggestion');
+                    aiBox.classList.remove('hidden');
+                }, 2000);
+            } catch (err) { console.log("Camera error:", err); }
+        }
+
+        function stopCamera() {
+            if(streamRef) {
+                streamRef.getTracks().forEach(t => t.stop());
+                document.getElementById('ai-suggestion').classList.add('hidden');
             }
         }
 
-        document.getElementById('shutter').onclick = (e) => {
-            e.preventDefault();
-            const scanLine = document.getElementById('scan-line');
-            scanLine.classList.remove('hidden');
-            setTimeout(() => {
-                scanLine.classList.add('hidden');
-                document.getElementById('waste-type').value = 'plastic'; // AI Mock detection
-            }, 1500);
-        };
+        // --- FORM & DATA HANDLING ---
+        document.querySelectorAll('.category-btn').forEach(btn => {
+            btn.onclick = () => {
+                document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('border-hk-primary', 'bg-hk-light-green'));
+                btn.classList.add('border-hk-primary', 'bg-hk-light-green');
+                state.selectedWaste = btn.dataset.type;
+            };
+        });
 
-        // --- FORM LOGIC ---
-        document.getElementById('record-form').onsubmit = (e) => {
+        document.getElementById('waste-form').onsubmit = (e) => {
             e.preventDefault();
-            const type = document.getElementById('waste-type').value;
-            const weight = parseFloat(document.getElementById('waste-weight').value);
+            const weight = parseFloat(document.getElementById('weight-input').value);
             
-            if(!weight) return Swal.fire('กรุณาระบุตัวเลข', '', 'warning');
+            if(!weight || !state.selectedWaste) {
+                return Swal.fire({ title: 'ข้อมูลไม่ครบ', text: 'กรุณาเลือกประเภทและระบุน้ำหนัก', icon: 'warning', confirmButtonColor: '#1f4d2f' });
+            }
 
-            saveData({
-                type,
-                weight,
-                co2: weight * EMISSION_FACTORS[type],
+            const newRecord = {
+                id: Date.now(),
+                type: state.selectedWaste,
+                weight: weight,
+                co2: weight * EMISSION_FACTORS[state.selectedWaste],
                 branch: 'hq',
-                ts: new Date().toISOString()
+                date: new Date().toISOString()
+            };
+
+            state.records.push(newRecord);
+            localStorage.setItem('hk_v2_db', JSON.stringify(state.records));
+
+            Swal.fire({
+                title: 'บันทึกสำเร็จ!',
+                html: `ลด CO2e ไปได้ <b>${newRecord.co2.toFixed(2)}</b> kg`,
+                icon: 'success',
+                confirmButtonColor: '#1f4d2f'
+            }).then(() => {
+                e.target.reset();
+                navigate('home');
             });
-            e.target.reset();
         };
 
-        // --- CHARTS ---
-        function renderCharts() {
-            const ctx = document.getElementById('mainChart').getContext('2d');
-            const typeSums = state.data.reduce((acc, curr) => {
-                acc[curr.type] = (acc[curr.type] || 0) + curr.weight;
+        // --- ANALYTICS ---
+        function renderAnalytics() {
+            const ctx = document.getElementById('typeChart').getContext('2d');
+            const dataMap = state.records.reduce((acc, r) => {
+                acc[r.type] = (acc[r.type] || 0) + r.weight;
                 return acc;
             }, {});
 
-            document.getElementById('sum-saved').innerText = `${state.data.reduce((s, i) => s + i.co2, 0).toFixed(1)} kg`;
-            document.getElementById('sum-points').innerText = (state.data.length * 10).toLocaleString();
+            document.getElementById('stat-total-saved').innerText = state.records.reduce((s, r) => s + r.co2, 0).toFixed(1);
 
-            if(window.myChart) window.myChart.destroy();
-            window.myChart = new Chart(ctx, {
-                type: 'bar',
+            if(window.mainChart) window.mainChart.destroy();
+            window.mainChart = new Chart(ctx, {
+                type: 'doughnut',
                 data: {
-                    labels: Object.keys(typeSums),
+                    labels: Object.keys(dataMap),
                     datasets: [{
-                        label: 'Weight (kg)',
-                        data: Object.values(typeSums),
-                        backgroundColor: '#1f4d2f',
-                        borderRadius: 12
+                        data: Object.values(dataMap),
+                        backgroundColor: ['#1f4d2f', '#34d399', '#0a2212', '#eef7f0'],
+                        borderWidth: 0
                     }]
                 },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+                options: { cutout: '70%', plugins: { legend: { position: 'bottom' } } }
             });
         }
 
         // --- CHAT ---
-        function sendMessage() {
-            const input = document.getElementById('chat-msg');
+        function sendChatMessage() {
+            const input = document.getElementById('chat-input');
+            const container = document.getElementById('chat-messages');
             if(!input.value) return;
-            const stream = document.getElementById('chat-stream');
-            const msg = `
-                <div class="flex gap-3 flex-row-reverse">
-                    <div class="w-10 h-10 bg-hk-green rounded-full flex items-center justify-center text-white text-xs font-bold shadow-md">YOU</div>
-                    <div class="bg-hk-green text-white p-4 rounded-3xl rounded-tr-none shadow-sm max-w-[85%]">
-                        <p class="text-sm">${input.value}</p>
+
+            const msgHtml = `
+                <div class="flex gap-3 flex-row-reverse animate__animated animate__fadeInRight">
+                    <div class="w-10 h-10 bg-hk-accent rounded-full flex-shrink-0 flex items-center justify-center text-white font-bold text-xs">YOU</div>
+                    <div class="bg-hk-primary text-white p-4 rounded-3xl rounded-tr-none shadow-sm max-w-[80%]">
+                        <p class="text-sm leading-relaxed">${input.value}</p>
                     </div>
                 </div>
             `;
-            stream.innerHTML += msg;
-            input.value = "";
-            stream.scrollTop = stream.scrollHeight;
+            container.innerHTML += msgHtml;
+            input.value = '';
+            container.scrollTo({ top: container.scrollHeight, behavior: 'smooth' });
         }
 
-        // --- EXPORT ---
-        function exportData() {
-            let csv = "Timestamp,Type,Weight,CO2e\n";
-            state.data.forEach(d => csv += `${d.ts},${d.type},${d.weight},${d.co2}\n`);
-            const blob = new Blob([csv], { type: 'text/csv' });
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'hillkoff_esg_data.csv';
-            a.click();
+        // --- HELPERS ---
+        function animateValue(id, end, decimals, suffix) {
+            const obj = document.getElementById(id);
+            let start = 0;
+            const duration = 1000;
+            const step = (timestamp) => {
+                if (!start) start = timestamp;
+                const progress = Math.min((timestamp - start) / duration, 1);
+                const current = (progress * end).toFixed(decimals);
+                obj.innerHTML = current + suffix;
+                if (progress < 1) window.requestAnimationFrame(step);
+            };
+            window.requestAnimationFrame(step);
         }
 
-        // Init
-        updateHome();
+        // Initialize
+        window.onload = () => renderHome();
     </script>
 </body>
 </html>
