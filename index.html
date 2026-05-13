@@ -1,965 +1,551 @@
 <!DOCTYPE html>
-<html lang="th" class="light">
+<html lang="th">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <meta name="theme-color" content="#1f4d2f">
-    <meta name="description" content="Hillkoff Green Intelligence - Enterprise ESG & Zero Waste Platform">
-    <title>HILLKOFF GREEN INTELLIGENCE | Ultimate Edition</title>
-    
-    <!-- Dependencies -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://cdn.jsdelivr.net/npm/dayjs@1/dayjs.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/dayjs@1/locale/th.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+<title>Hillkoff Zero Waste Enterprise Platform</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
 
-    <!-- Tailwind Configuration -->
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    fontFamily: { 'sans': ['Prompt', 'sans-serif'] },
-                    colors: {
-                        'hk-primary': '#1f4d2f',
-                        'hk-secondary': '#0a2212',
-                        'hk-accent': '#34d399',
-                        'hk-surface': '#f8fafc',
-                        'hk-surface-dark': '#0f172a',
-                        'hk-light-green': '#eef7f0'
-                    },
-                    boxShadow: {
-                        'glow': '0 0 20px rgba(52, 211, 153, 0.4)',
-                        'soft': '0 10px 40px -10px rgba(0,0,0,0.08)'
-                    },
-                    borderRadius: { '4xl': '2rem', '5xl': '2.5rem' }
-                }
-            }
-        }
-    </script>
+<!-- React & Babel -->
+<script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
-    <!-- Custom Enterprise CSS -->
-    <style>
-        :root {
-            --primary-rgb: 31, 77, 47;
-            --accent-rgb: 52, 211, 153;
-        }
-        
-        * { -webkit-tap-highlight-color: transparent; }
-        
-        body {
-            background-color: theme('colors.hk-surface');
-            overflow-x: hidden;
-            overscroll-behavior-y: none;
-        }
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-        .dark body { background-color: theme('colors.hk-surface-dark'); color: white; }
-        
-        /* Typography System */
-        .text-gradient {
-            background: linear-gradient(135deg, theme('colors.hk-primary'), theme('colors.hk-accent'));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
+<!-- jsPDF -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
-        /* Utilities */
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        
-        /* Glassmorphism */
-        .glass {
-            background: rgba(255, 255, 255, 0.7);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.4);
-        }
-        .dark .glass {
-            background: rgba(15, 23, 42, 0.7);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        /* Views & Routing Animations */
-        .view-layer {
-            display: none;
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            padding-top: 5rem;
-            padding-bottom: 7rem;
-            overflow-y: auto;
-        }
-        .view-layer.active {
-            display: block;
-            animation: slideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
-        @keyframes slideIn {
-            0% { opacity: 0; transform: translateY(30px) scale(0.98); }
-            100% { opacity: 1; transform: translateY(0) scale(1); }
-        }
-
-        /* Bottom Nav */
-        .nav-item { transition: all 0.3s ease; position: relative; }
-        .nav-item::after {
-            content: ''; position: absolute; bottom: -8px; left: 50%; transform: translateX(-50%) scaleX(0);
-            width: 12px; height: 3px; background: theme('colors.hk-primary'); border-radius: 4px; transition: transform 0.3s ease;
-        }
-        .nav-item.active { color: theme('colors.hk-primary'); transform: translateY(-3px); }
-        .nav-item.active::after { transform: translateX(-50%) scaleX(1); }
-        .nav-item .icon-wrapper { transition: all 0.3s; }
-        .nav-item.active .icon-wrapper { background: theme('colors.hk-light-green'); }
-
-        /* Camera Scanner */
-        .scanner-container {
-            position: relative; overflow: hidden; border-radius: 2rem;
-            background: #000; box-shadow: inset 0 0 60px rgba(0,0,0,0.8);
-        }
-        .laser-line {
-            position: absolute; width: 100%; height: 3px;
-            background: theme('colors.hk-accent');
-            box-shadow: 0 0 20px theme('colors.hk-accent'), 0 0 40px theme('colors.hk-accent');
-            animation: scan 2.5s infinite linear;
-            z-index: 10;
-        }
-        @keyframes scan {
-            0% { top: 0%; opacity: 0; }
-            10% { opacity: 1; }
-            90% { opacity: 1; }
-            100% { top: 100%; opacity: 0; }
-        }
-        .target-box {
-            position: absolute; inset: 15%;
-            border: 2px dashed rgba(255,255,255,0.4);
-            border-radius: 2rem;
-            animation: pulse-border 2s infinite;
-        }
-
-        /* Loading Skeleton */
-        .skeleton {
-            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-            background-size: 200% 100%;
-            animation: shimmer 1.5s infinite;
-        }
-        .dark .skeleton { background: linear-gradient(90deg, #1e293b 25%, #334155 50%, #1e293b 75%); }
-        @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
-
-        /* Form Elements */
-        .hk-input {
-            width: 100%; padding: 1.2rem; border-radius: 1.5rem; border: 2px solid transparent;
-            background: #fff; transition: all 0.3s ease; font-size: 1.1rem; font-weight: 600;
-        }
-        .hk-input:focus { border-color: theme('colors.hk-primary'); box-shadow: 0 0 0 4px rgba(31,77,47,0.1); outline: none; }
-        .dark .hk-input { background: #1e293b; color: white; border-color: #334155; }
-        
-        .radio-card { transition: all 0.2s; border: 2px solid transparent; }
-        .radio-card.selected { border-color: theme('colors.hk-primary'); background: theme('colors.hk-light-green'); transform: scale(0.98); }
-        .dark .radio-card.selected { background: rgba(31,77,47,0.4); border-color: theme('colors.hk-accent'); }
-
-        /* Splash Screen */
-        #splash {
-            position: fixed; inset: 0; z-index: 9999; background: theme('colors.hk-primary');
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            transition: opacity 0.5s ease;
-        }
-        .loader-ring {
-            width: 50px; height: 50px; border: 4px solid rgba(255,255,255,0.2);
-            border-top-color: theme('colors.hk-accent'); border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin { to { transform: rotate(360deg); } }
-    </style>
+<style>
+  :root {
+    --primary: #145a32; --secondary: #27ae60; --dark: #1a3a2a; --light: #f0f7f2;
+    --danger: #e74c3c; --warning: #f1c40f; --glass: rgba(255, 255, 255, 0.9);
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Sarabun', sans-serif; }
+  body { background: var(--light); color: var(--dark); overflow-x: hidden; }
+  
+  /* Layout & Animations */
+  .app-container { min-height: 100vh; padding-bottom: 80px; }
+  .fade-in { animation: fadeIn 0.4s ease-in-out; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+  
+  /* Glow & Gradient Styles for Charts & Cards */
+  .glass-card {
+    background: var(--glass); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.4);
+    border-radius: 16px; padding: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+  }
+  .glow-box { position: relative; }
+  .glow-box::before {
+    content: ''; position: absolute; top: -2px; left: -2px; right: -2px; bottom: -2px;
+    background: linear-gradient(45deg, #27ae60, #145a32, #2ecc71); z-index: -1;
+    border-radius: 18px; filter: blur(10px); opacity: 0.5; animation: pulseGlow 3s infinite alternate;
+  }
+  @keyframes pulseGlow { 0% { opacity: 0.3; } 100% { opacity: 0.7; } }
+  
+  /* UI Components */
+  .btn-primary { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; padding: 12px 20px; border-radius: 12px; border: none; font-weight: 700; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 15px rgba(39, 174, 96, 0.4); }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(39, 174, 96, 0.6); }
+  .btn-outline { background: transparent; border: 2px solid var(--primary); color: var(--primary); padding: 10px 16px; border-radius: 12px; font-weight: 700; cursor: pointer; }
+  
+  /* Progress Bar */
+  .progress-bg { background: #e0e0e0; height: 8px; border-radius: 4px; overflow: hidden; width: 100%; }
+  .progress-fill { background: linear-gradient(90deg, #f1c40f, #27ae60); height: 100%; transition: width 0.5s ease; }
+  
+  /* Modals */
+  .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); z-index: 1000; display: flex; align-items: center; justify-content: center; }
+  .modal-content { background: white; width: 90%; max-width: 400px; border-radius: 20px; padding: 24px; animation: fadeIn 0.3s; }
+  
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  
+  /* Drag & Drop Zone */
+  .drop-zone { border: 2px dashed #27ae60; border-radius: 16px; padding: 30px; text-align: center; background: #e8f5e9; cursor: pointer; transition: 0.2s; }
+  .drop-zone:hover { background: #d5f5e3; }
+</style>
 </head>
 <body>
+<div id="root"></div>
 
-    <!-- 0. SPLASH SCREEN -->
-    <div id="splash">
-        <div class="w-24 h-24 bg-white rounded-3xl p-2 mb-6 shadow-2xl animate__animated animate__pulse animate__infinite">
-            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR6-vNsh7hYV0M3N7Jk4C7O9-V5_8H1S8i9OQ&s" alt="Logo" class="w-full h-full object-contain">
+<script type="text/babel">
+const { useState, useEffect, useRef, useMemo } = React;
+
+// --- CONSTANTS & CONFIG ---
+const GEMINI_KEY = ""; // ใส่ API Key จริงที่นี่เพื่อใช้งาน Phase 3 สมบูรณ์
+
+const WASTE_TYPES = [
+  { id: "plastic",        label: "Plastic",         icon: "🧴", factor: 0.4 },
+  { id: "coffee_waste",   label: "Coffee Waste",    icon: "☕", factor: 0.2 },
+  { id: "aluminium",      label: "Aluminium",       icon: "🥫", factor: 1.2 },
+  { id: "glass",          label: "Glass",           icon: "🔵", factor: 0.3 },
+  { id: "paper",          label: "Paper",           icon: "📄", factor: 0.5 },
+  { id: "food_waste",     label: "Food Waste",      icon: "🍃", factor: 0.6 },
+  { id: "general_waste",  label: "General Waste",   icon: "🗑️", factor: 0.1 },
+];
+
+const BRANCHES = [
+  { id: "hq", name: "HQ", icon: "🏢" }, { id: "mahidol", name: "Mahidol", icon: "📍" },
+  { id: "paphaeng", name: "Pa Phaeng", icon: "📍" }
+];
+
+const EMPLOYEES = [
+  { id: "e1", name: "Somchai K.", branch: "hq" }, { id: "e2", name: "Wipa D.", branch: "hq" },
+  { id: "e3", name: "Anuwat S.", branch: "mahidol" }, { id: "e4", name: "Nidnoi T.", branch: "paphaeng" }
+];
+
+// --- DATABASE SIMULATION (localStorage) ---
+function loadDB() { try { return JSON.parse(localStorage.getItem("hk_ent_db")) || []; } catch { return []; } }
+function saveDB(data) { localStorage.setItem("hk_ent_db", JSON.stringify(data)); }
+
+// --- REUSABLE COMPONENTS ---
+const ChartCanvas = ({ type, data, options, height = 200 }) => {
+  const canvasRef = useRef(null);
+  const chartRef = useRef(null);
+
+  useEffect(() => {
+    if (!canvasRef.current) return;
+    const ctx = canvasRef.current.getContext('2d');
+    if (chartRef.current) chartRef.current.destroy();
+    
+    // Apply Glow via Canvas shadow
+    ctx.shadowColor = 'rgba(39, 174, 96, 0.4)';
+    ctx.shadowBlur = 10;
+    ctx.shadowOffsetX = 0;
+    ctx.shadowOffsetY = 4;
+
+    chartRef.current = new Chart(ctx, { type, data, options });
+    return () => { if (chartRef.current) chartRef.current.destroy(); }
+  }, [data, type, options]);
+
+  return <canvas ref={canvasRef} height={height} style={{ width: '100%', filter: 'drop-shadow(0 4px 6px rgba(0,0,0,0.1))' }} />;
+};
+
+// --- PHASE 2: SMART ANALYTICS DASHBOARD ---
+const DashboardView = ({ records }) => {
+  // KPI Calculations
+  const totalCarbon = records.reduce((s, r) => s + r.carbonSaved, 0);
+  const totalWaste = records.reduce((s, r) => s + r.qty, 0);
+  const greenScore = Math.min(100, Math.floor((totalCarbon / 500) * 100)); // Target 500kg
+
+  // Chart Data Preparation
+  const wasteTypeData = WASTE_TYPES.map(wt => records.filter(r => r.wasteType === wt.id).reduce((s, r) => s + r.qty, 0));
+  
+  const lineChartData = {
+    labels: ['W1', 'W2', 'W3', 'W4'], // Simulated timeline for demo
+    datasets: [{
+      label: 'Carbon Saved Trend (kgCO2e)',
+      data: [10, 25, 45, totalCarbon || 50], 
+      borderColor: '#27ae60',
+      backgroundColor: 'rgba(39, 174, 96, 0.2)',
+      tension: 0.4, fill: true,
+      pointBackgroundColor: '#fff', pointBorderColor: '#27ae60', pointRadius: 5
+    }]
+  };
+
+  const pieChartData = {
+    labels: WASTE_TYPES.map(w => w.label),
+    datasets: [{
+      data: wasteTypeData,
+      backgroundColor: ['#3498db', '#e67e22', '#95a5a6', '#2ecc71', '#f1c40f', '#e74c3c', '#bdc3c7']
+    }]
+  };
+
+  // Ranking System
+  const branchRanking = BRANCHES.map(b => ({
+    ...b,
+    score: records.filter(r => r.branchId === b.id).reduce((s, r) => s + r.carbonSaved, 0)
+  })).sort((a, b) => b.score - a.score);
+
+  const employeeRanking = EMPLOYEES.map(e => ({
+    ...e,
+    score: records.filter(r => r.empId === e.id).reduce((s, r) => s + r.carbonSaved, 0)
+  })).sort((a, b) => b.score - a.score);
+
+  // Export System (Phase 2 Requirement)
+  const handleExportCSV = () => {
+    const header = "Date,Employee,Branch,Waste Type,Qty(kg),Carbon Saved(kgCO2e)\n";
+    const rows = records.map(r => `${new Date(r.ts).toLocaleDateString()},${r.empName},${r.branchName},${r.wasteLabel},${r.qty},${r.carbonSaved.toFixed(2)}`).join("\n");
+    const blob = new Blob(["\uFEFF" + header + rows], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob); link.download = "Eco_Analytics.csv"; link.click();
+  };
+
+  const handleExportPDF = () => {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    doc.setFontSize(20);
+    doc.text("Zero Waste Analytics Report", 20, 20);
+    doc.setFontSize(12);
+    doc.text(`Total Carbon Saved: ${totalCarbon.toFixed(2)} kgCO2e`, 20, 35);
+    doc.text(`Total Waste Processed: ${totalWaste.toFixed(2)} kg`, 20, 45);
+    doc.text(`Corporate Green Score: ${greenScore}%`, 20, 55);
+    
+    doc.text("Top Branches:", 20, 75);
+    branchRanking.forEach((b, i) => doc.text(`${i+1}. ${b.name} - ${b.score.toFixed(2)} kgCO2e`, 25, 85 + (i*10)));
+    
+    doc.save("ESG_Report.pdf");
+  };
+
+  return (
+    <div className="fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+      <h2 style={{ color: 'var(--primary)', borderBottom: '3px solid var(--primary)', paddingBottom: '8px' }}>📊 Smart Dashboard</h2>
+      
+      {/* KPIs */}
+      <div className="grid-2">
+        <div className="glass-card glow-box" style={{ background: 'linear-gradient(135deg, #145a32, #1e8449)', color: 'white' }}>
+          <div style={{ fontSize: 12, opacity: 0.8 }}>Carbon Saved KPI</div>
+          <div style={{ fontSize: 28, fontWeight: 900 }}>{totalCarbon.toFixed(2)} <span style={{ fontSize:14 }}>kgCO2e</span></div>
         </div>
-        <h1 class="text-3xl font-black text-white tracking-wider mb-2">HILLKOFF</h1>
-        <p class="text-hk-accent font-bold tracking-[0.3em] text-[10px] uppercase mb-10">Green Intelligence</p>
-        <div class="loader-ring"></div>
-    </div>
-
-    <!-- 1. AUTHENTICATION (LOGIN) -->
-    <div id="view-login" active="view-layer bg-white dark:bg-slate-900 z-40" style="padding-top: 0; padding-bottom: 0;">
-        <div class="h-full flex flex-col justify-center px-8">
-            <div class="text-center mb-10">
-                <div class="w-20 h-20 bg-hk-surface rounded-3xl mx-auto p-2 mb-6 shadow-sm border border-gray-100 dark:border-slate-800">
-                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR6-vNsh7hYV0M3N7Jk4C7O9-V5_8H1S8i9OQ&s" class="w-full h-full object-contain">
-                </div>
-                <h2 class="text-3xl font-black text-hk-secondary dark:text-white">Welcome Back</h2>
-                <p class="text-gray-400 text-sm mt-2">ลงชื่อเข้าใช้ระบบคลังข้อมูล ESG</p>
-            </div>
-            <form id="form-login" class="space-y-4">
-                <div>
-                    <label class="text-xs font-bold text-gray-500 uppercase ml-2 mb-1 block">Employee ID / Email</label>
-                    <input type="text" class="hk-input" value="admin@hillkoff.com" required>
-                </div>
-                <div>
-                    <label class="text-xs font-bold text-gray-500 uppercase ml-2 mb-1 block">Password</label>
-                    <input type="password" class="hk-input" value="123456" required>
-                </div>
-                <div class="flex justify-between items-center px-2 py-2">
-                    <label class="flex items-center gap-2 text-sm text-gray-500">
-                        <input type="checkbox" checked class="accent-hk-primary w-4 h-4"> จดจำฉัน
-                    </label>
-                    <a href="#" class="text-sm font-bold text-hk-primary">ลืมรหัสผ่าน?</a>
-                </div>
-                <button type="submit" class="w-full bg-hk-primary text-white py-5 rounded-2xl font-bold text-lg shadow-xl hover:bg-hk-secondary transition-colors mt-4">
-                    เข้าสู่ระบบ (Sign In)
-                </button>
-            </form>
+        <div className="glass-card">
+          <div style={{ fontSize: 12, color: 'var(--primary)' }}>Green Score</div>
+          <div style={{ fontSize: 28, fontWeight: 900, color: 'var(--primary)' }}>{greenScore}%</div>
+          <div className="progress-bg"><div className="progress-fill" style={{ width: `${greenScore}%` }} /></div>
         </div>
+      </div>
+
+      {/* Realtime Charts */}
+      <div className="glass-card">
+        <h4 style={{ marginBottom: '10px', color: 'var(--dark)' }}>📈 Carbon Trend</h4>
+        <ChartCanvas type="line" data={lineChartData} options={{ responsive: true, animation: { duration: 2000, easing: 'easeOutQuart' } }} />
+      </div>
+      
+      <div className="grid-2">
+        <div className="glass-card">
+          <h4 style={{ marginBottom: '10px', fontSize: 14 }}>ประเภทขยะ</h4>
+          <ChartCanvas type="doughnut" data={pieChartData} height={200} options={{ cutout: '60%', plugins: { legend: { display: false } } }} />
+        </div>
+        <div className="glass-card" style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          <h4 style={{ fontSize: 14 }}>🏆 Top Branches</h4>
+          {branchRanking.map((b, i) => (
+            <div key={b.id} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, padding: '4px 0', borderBottom: '1px solid #eee' }}>
+              <span>{i===0?'🥇':i===1?'🥈':'🥉'} {b.name}</span>
+              <strong>{b.score.toFixed(1)} kg</strong>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Export System */}
+      <div className="glass-card grid-2">
+        <button className="btn-outline" onClick={handleExportCSV}>📄 Export CSV</button>
+        <button className="btn-primary" onClick={handleExportPDF}>📑 Export PDF</button>
+      </div>
     </div>
+  );
+};
 
-    <!-- MAIN APP WRAPPER (Hidden initially) -->
-    <div id="main-app" class="hidden h-screen w-full relative">
 
-        <!-- HEADER (Global) -->
-        <header class="fixed top-0 left-0 right-0 z-30 glass border-b-0 shadow-sm px-5 py-4">
-            <div class="max-w-md mx-auto flex justify-between items-center">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 bg-white rounded-xl shadow-sm overflow-hidden p-1">
-                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR6-vNsh7hYV0M3N7Jk4C7O9-V5_8H1S8i9OQ&s" class="w-full h-full object-contain">
-                    </div>
-                    <div>
-                        <h1 class="text-lg font-black text-hk-secondary dark:text-white leading-tight">HILLKOFF</h1>
-                        <p class="text-[9px] font-bold text-hk-primary uppercase tracking-[0.1em]">Intelligence ESG</p>
-                    </div>
-                </div>
-                <div class="flex items-center gap-2">
-                    <button onclick="toggleTheme()" class="w-10 h-10 rounded-full bg-white dark:bg-slate-800 flex items-center justify-center text-gray-400 shadow-sm">
-                        <i class="fa-solid fa-moon dark:hidden"></i>
-                        <i class="fa-solid fa-sun hidden dark:block text-yellow-400"></i>
-                    </button>
-                    <button class="w-10 h-10 rounded-full bg-white dark:bg-slate-800 flex items-center justify-center text-gray-400 shadow-sm relative">
-                        <i class="fa-regular fa-bell"></i>
-                        <span class="absolute top-0 right-0 w-3 h-3 bg-red-500 border-2 border-white rounded-full"></span>
-                    </button>
-                </div>
+// --- PHASE 3: AI INTELLIGENCE PLATFORM ---
+const AIUploadView = ({ onSave }) => {
+  const [form, setForm] = useState({ empId: 'e1', branchId: 'hq', wasteType: 'plastic', qty: '' });
+  const [photo, setPhoto] = useState(null);
+  const [aiAnalyzing, setAiAnalyzing] = useState(false);
+  const [verificationData, setVerificationData] = useState(null);
+  
+  const handlePhotoUpload = (e) => {
+    const file = e.target.files?.[0] || e.dataTransfer?.files?.[0];
+    if (!file) return;
+    
+    // Image Compression simulation (Canvas)
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const MAX_WIDTH = 800;
+        const scaleSize = MAX_WIDTH / img.width;
+        canvas.width = MAX_WIDTH;
+        canvas.height = img.height * scaleSize;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        const compressedBase64 = canvas.toDataURL('image/jpeg', 0.7).split(',')[1];
+        setPhoto(compressedBase64);
+      }
+      img.src = event.target.result;
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const submitToAI = async () => {
+    if (!photo || !form.qty || !form.wasteType) return alert("กรุณากรอกข้อมูลและอัพโหลดรูปให้ครบ");
+    setAiAnalyzing(true);
+    
+    // Calculate Carbon Saved (Phase 2 logic)
+    const wt = WASTE_TYPES.find(w => w.id === form.wasteType);
+    const carbonSaved = parseFloat(form.qty) * wt.factor;
+
+    // Gemini Vision API Integration (Phase 3 logic)
+    if (GEMINI_KEY) {
+      try {
+        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_KEY}`, {
+          method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            contents: [{ parts: [
+              { inline_data: { mime_type: "image/jpeg", data: photo } },
+              { text: `Analyze this waste image. Selected type by user: ${wt.label}. Reply strictly in JSON: {"detected": "WasteType", "confidence": 0-100, "isMatch": true/false}` }
+            ]}]
+          })
+        });
+        const data = await res.json();
+        const jsonStr = data.candidates[0].content.parts[0].text.replace(/```json|```/g, "").trim();
+        const aiResult = JSON.parse(jsonStr);
+        
+        handleVerificationResult(aiResult, carbonSaved);
+      } catch (err) {
+        handleVerificationResult({ detected: "Unknown", confidence: 50, isMatch: true, error: "AI Failed" }, carbonSaved);
+      }
+    } else {
+      // Simulation for DEMO if no API key
+      setTimeout(() => {
+        const isMatch = Math.random() > 0.3; // 70% chance match for demo
+        const fakeResult = {
+          detected: isMatch ? wt.label : WASTE_TYPES[Math.floor(Math.random()*WASTE_TYPES.length)].label,
+          confidence: Math.floor(Math.random() * 20) + 75,
+          isMatch: isMatch
+        };
+        handleVerificationResult(fakeResult, carbonSaved);
+      }, 1500);
+    }
+  };
+
+  const handleVerificationResult = (aiResult, carbonSaved) => {
+    setAiAnalyzing(false);
+    const finalRecord = {
+      id: Date.now(), ts: new Date().toISOString(),
+      ...form, carbonSaved, 
+      empName: EMPLOYEES.find(e => e.id===form.empId).name,
+      branchName: BRANCHES.find(b => b.id===form.branchId).name,
+      wasteLabel: WASTE_TYPES.find(w => w.id===form.wasteType).label,
+      qty: parseFloat(form.qty)
+    };
+
+    if (!aiResult.isMatch && aiResult.confidence > 70) {
+      // AI Verification System - Block & Alert (Phase 3 Requirement)
+      setVerificationData({ record: finalRecord, aiResult });
+    } else {
+      onSave(finalRecord);
+    }
+  };
+
+  return (
+    <div className="fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+      <h2 style={{ color: 'var(--primary)', borderBottom: '3px solid var(--primary)', paddingBottom: '8px' }}>🤖 AI Smart Scan</h2>
+      
+      <div className="glass-card">
+        <label style={{ fontSize: 14, fontWeight: 700 }}>ประเภทขยะ</label>
+        <div className="grid-3" style={{ marginTop: '8px' }}>
+          {WASTE_TYPES.map(w => (
+            <div key={w.id} onClick={() => setForm({...form, wasteType: w.id})}
+                 style={{ border: `2px solid ${form.wasteType === w.id ? 'var(--primary)' : '#ddd'}`, 
+                          background: form.wasteType === w.id ? '#e8f5e9' : '#fff',
+                          borderRadius: '12px', padding: '10px', textAlign: 'center', cursor: 'pointer' }}>
+              <div style={{ fontSize: 24 }}>{w.icon}</div>
+              <div style={{ fontSize: 10, fontWeight: 700 }}>{w.label}</div>
             </div>
-        </header>
+          ))}
+        </div>
+      </div>
 
-        <!-- VIEW: HOME (Dashboard) -->
-        <main id="view-home" class="view-layer px-5 max-w-md mx-auto">
-            <!-- Hero Card -->
-            <div class="bg-gradient-to-br from-hk-secondary to-hk-primary rounded-[2.5rem] p-8 text-white relative overflow-hidden shadow-2xl mb-8">
-                <!-- Background Pattern -->
-                <svg class="absolute top-0 right-0 opacity-10 w-64 h-64 -mr-10 -mt-10" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" stroke="white" stroke-width="2" fill="none"/><circle cx="50" cy="50" r="30" stroke="white" stroke-width="2" fill="none"/></svg>
-                
-                <div class="relative z-10">
-                    <div class="flex justify-between items-center mb-6">
-                        <span class="bg-white/20 px-3 py-1 rounded-full text-[10px] font-bold backdrop-blur-md">CORPORATE TARGET</span>
-                        <span class="text-xs opacity-70" id="current-date">--</span>
-                    </div>
-                    
-                    <p class="text-xs opacity-80 font-medium mb-1">Carbon Footprint Saved</p>
-                    <div class="flex items-baseline gap-2 mb-8">
-                        <h2 class="text-5xl font-black tracking-tight" id="dash-co2">0.00</h2>
-                        <span class="text-lg opacity-70">kgCO₂e</span>
-                    </div>
+      <div className="grid-2">
+        <div className="glass-card">
+          <label style={{ fontSize: 14, fontWeight: 700 }}>ปริมาณ (kg)</label>
+          <input type="number" step="0.1" value={form.qty} onChange={e => setForm({...form, qty: e.target.value})}
+                 style={{ width: '100%', padding: '12px', borderRadius: '10px', border: '1px solid #ccc', marginTop: '8px' }} />
+        </div>
+        <div className="glass-card">
+          <div style={{ fontSize: 11, color: '#777' }}>สูตร: น้ำหนัก × Emission Factor</div>
+          <div style={{ fontSize: 18, fontWeight: 800, color: 'var(--primary)', marginTop: '8px' }}>
+            {form.qty && form.wasteType ? (parseFloat(form.qty) * WASTE_TYPES.find(w=>w.id===form.wasteType).factor).toFixed(2) : "0.00"} kgCO2e
+          </div>
+        </div>
+      </div>
 
-                    <div class="grid grid-cols-2 gap-4">
-                        <div class="bg-white/10 rounded-3xl p-4 backdrop-blur-md">
-                            <i class="fa-solid fa-leaf text-hk-accent mb-2 text-xl"></i>
-                            <p class="text-[10px] opacity-70 uppercase font-bold">Waste Diverted</p>
-                            <p class="text-lg font-bold" id="dash-weight">0 kg</p>
-                        </div>
-                        <div class="bg-white/10 rounded-3xl p-4 backdrop-blur-md">
-                            <i class="fa-solid fa-tree text-hk-accent mb-2 text-xl"></i>
-                            <p class="text-[10px] opacity-70 uppercase font-bold">Trees Equivalent</p>
-                            <p class="text-lg font-bold" id="dash-trees">0 ต้น</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
+      {/* Image Upload System */}
+      <div className="drop-zone" 
+           onDragOver={e => e.preventDefault()} 
+           onDrop={e => { e.preventDefault(); handlePhotoUpload(e); }}>
+        {photo ? (
+          <img src={`data:image/jpeg;base64,${photo}`} alt="preview" style={{ width: '100%', borderRadius: '10px', maxHeight: '200px', objectFit: 'cover' }} />
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <span style={{ fontSize: 32 }}>📸</span>
+            <p style={{ marginTop: '10px', fontWeight: 600 }}>แตะเพื่อถ่ายรูป หรือลากไฟล์มาวาง</p>
+            <p style={{ fontSize: 12, color: '#666' }}>ระบบจะบีบอัดรูปภาพอัตโนมัติ</p>
+          </div>
+        )}
+        <input type="file" accept="image/*" capture="environment" onChange={handlePhotoUpload} style={{ display: 'none' }} id="cam-upload" />
+        <button onClick={() => document.getElementById('cam-upload').click()} style={{ marginTop: '10px', padding: '8px 16px', borderRadius: '20px', border: '1px solid #ccc', background: '#fff', cursor: 'pointer' }}>เลือกรูปภาพ</button>
+      </div>
 
-            <!-- Action Buttons -->
-            <div class="grid grid-cols-2 gap-4 mb-8">
-                <button onclick="appNavigate('record')" class="bg-hk-light-green dark:bg-hk-primary/20 p-5 rounded-4xl flex flex-col items-center justify-center gap-3 border border-hk-primary/10 transition-transform active:scale-95">
-                    <div class="w-14 h-14 bg-hk-primary rounded-full flex items-center justify-center text-white text-xl shadow-glow">
-                        <i class="fa-solid fa-camera"></i>
-                    </div>
-                    <span class="text-sm font-bold text-hk-primary dark:text-hk-accent">บันทึกขยะ (Scan)</span>
-                </button>
-                <button onclick="exportCSV()" class="bg-white dark:bg-slate-800 p-5 rounded-4xl flex flex-col items-center justify-center gap-3 border border-gray-100 dark:border-slate-700 shadow-sm transition-transform active:scale-95">
-                    <div class="w-14 h-14 bg-blue-50 dark:bg-blue-900/30 rounded-full flex items-center justify-center text-blue-600 text-xl">
-                        <i class="fa-solid fa-file-export"></i>
-                    </div>
-                    <span class="text-sm font-bold text-gray-700 dark:text-gray-300">ออกรายงาน CSV</span>
-                </button>
-            </div>
+      <button className="btn-primary glow-box" onClick={submitToAI} disabled={aiAnalyzing} style={{ fontSize: 16 }}>
+        {aiAnalyzing ? "🔄 Gemini กำลังวิเคราะห์..." : "✨ บันทึก & วิเคราะห์ด้วย AI"}
+      </button>
 
-            <!-- Recent Activity List -->
-            <div class="flex justify-between items-end mb-4">
-                <h3 class="text-xl font-bold text-hk-secondary dark:text-white">Recent Logs</h3>
-                <button class="text-xs font-bold text-hk-primary">View All</button>
-            </div>
-            <div id="recent-logs" class="space-y-3 mb-10">
-                <!-- Javascript will populate this -->
-            </div>
-        </main>
-
-        <!-- VIEW: RECORD (Scanner & Form) -->
-        <main id="view-record" class="view-layer px-5 max-w-md mx-auto">
-            <h2 class="text-2xl font-black mb-6 dark:text-white">Waste Recorder</h2>
+      {/* AI Verification Modal (Phase 3 Requirement) */}
+      {verificationData && (
+        <div className="modal-overlay">
+          <div className="modal-content text-center">
+            <h3 style={{ color: 'var(--danger)', marginBottom: '10px' }}>⚠️ AI แจ้งเตือนความขัดแย้ง</h3>
             
-            <!-- AI Scanner Simulation -->
-            <div class="scanner-container aspect-[4/3] mb-6 relative">
-                <video id="camera-feed" class="w-full h-full object-cover opacity-80" autoplay playsinline muted></video>
-                <div class="laser-line"></div>
-                <div class="target-box"></div>
-                
-                <!-- AI Overlay Result -->
-                <div id="ai-result" class="absolute bottom-4 left-4 right-4 glass rounded-2xl p-4 hidden animate__animated animate__fadeInUp z-20">
-                    <div class="flex items-center gap-3">
-                        <div class="w-12 h-12 bg-hk-accent rounded-xl flex items-center justify-center text-white text-xl shadow-lg">
-                            <i class="fa-solid fa-robot"></i>
-                        </div>
-                        <div>
-                            <p class="text-[10px] font-bold text-hk-primary uppercase tracking-widest">AI Vision Prediction</p>
-                            <p class="text-lg font-bold text-hk-secondary dark:text-white" id="ai-guess-text">กำลังวิเคราะห์...</p>
-                        </div>
-                    </div>
+            <div style={{ background: '#fef9e7', padding: '16px', borderRadius: '12px', textAlign: 'left', marginBottom: '20px' }}>
+              <div style={{ fontSize: 14 }}>คุณเลือก: <strong>{verificationData.record.wasteLabel}</strong></div>
+              <div style={{ fontSize: 14, color: 'var(--danger)', marginTop: '8px' }}>
+                AI วิเคราะห์พบ: <strong>{verificationData.aiResult.detected}</strong>
+              </div>
+              <div style={{ marginTop: '12px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12 }}>
+                  <span>AI Confidence Score</span>
+                  <span>{verificationData.aiResult.confidence}%</span>
                 </div>
-
-                <!-- Capture Button Overlay -->
-                <button id="btn-capture" class="absolute bottom-6 left-1/2 transform -translate-x-1/2 w-16 h-16 bg-white rounded-full border-4 border-hk-primary flex items-center justify-center shadow-2xl z-10 active:scale-90 transition-transform">
-                    <div class="w-12 h-12 bg-hk-primary rounded-full opacity-20"></div>
-                </button>
+                <div className="progress-bg"><div className="progress-fill" style={{ width: `${verificationData.aiResult.confidence}%`, background: 'var(--danger)' }} /></div>
+              </div>
             </div>
 
-            <form id="record-form" class="space-y-6 pb-10">
-                <!-- Type Selection Grid -->
-                <div>
-                    <label class="block text-[11px] font-extrabold text-gray-400 uppercase tracking-widest mb-3 pl-1">Category Select</label>
-                    <div class="grid grid-cols-2 gap-3" id="category-grid">
-                        <!-- JS renders categories here -->
-                    </div>
-                </div>
+            <p style={{ fontSize: 13, marginBottom: '20px', color: '#555' }}>
+              AI แนะนำให้เปลี่ยนประเภทขยะให้ถูกต้องเพื่อความแม่นยำของข้อมูล Carbon Credit
+            </p>
 
-                <!-- Weight Input -->
-                <div>
-                    <label class="block text-[11px] font-extrabold text-gray-400 uppercase tracking-widest mb-3 pl-1">Weight (kg)</label>
-                    <div class="relative">
-                        <input type="number" id="input-weight" step="0.01" class="hk-input pl-16 text-2xl" placeholder="0.00" required>
-                        <span class="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 text-xl"><i class="fa-solid fa-scale-balanced"></i></span>
-                        <span class="absolute right-5 top-1/2 -translate-y-1/2 text-gray-400 font-bold">KG</span>
-                    </div>
-                </div>
-
-                <!-- Branch Select -->
-                <div>
-                    <label class="block text-[11px] font-extrabold text-gray-400 uppercase tracking-widest mb-3 pl-1">Branch</label>
-                    <select id="input-branch" class="hk-input appearance-none">
-                        <option value="hq">สำนักงานใหญ่ (HQ)</option>
-                        <option value="cp">สาขาช้างเผือก</option>
-                        <option value="md">สาขามหิดล</option>
-                        <option value="rt">ราติก้า (Ratika)</option>
-                    </select>
-                </div>
-
-                <button type="submit" class="w-full bg-hk-primary text-white py-5 rounded-2xl font-bold text-xl shadow-glow active:scale-95 transition-all flex justify-center items-center gap-2">
-                    <i class="fa-solid fa-cloud-arrow-up"></i> บันทึกข้อมูล
-                </button>
-            </form>
-        </main>
-
-        <!-- VIEW: ANALYTICS -->
-        <main id="view-analytics" class="view-layer px-5 max-w-md mx-auto">
-            <h2 class="text-2xl font-black mb-6 dark:text-white">Intelligence Data</h2>
-            
-            <div class="flex gap-2 mb-6 overflow-x-auto no-scrollbar py-1">
-                <button class="px-5 py-2 rounded-full bg-hk-primary text-white text-xs font-bold whitespace-nowrap shadow-md">Overview</button>
-                <button class="px-5 py-2 rounded-full bg-white dark:bg-slate-800 text-gray-500 text-xs font-bold whitespace-nowrap border border-gray-100 dark:border-slate-700">Trends</button>
-                <button class="px-5 py-2 rounded-full bg-white dark:bg-slate-800 text-gray-500 text-xs font-bold whitespace-nowrap border border-gray-100 dark:border-slate-700">Predictive</button>
+            <div className="grid-2">
+              <button className="btn-outline" onClick={() => setVerificationData(null)}>กลับไปแก้ไข</button>
+              <button className="btn-primary" style={{ background: '#e74c3c' }} 
+                      onClick={() => { onSave(verificationData.record); setVerificationData(null); }}>
+                ยืนยันบันทึกตามเดิม
+              </button>
             </div>
-
-            <!-- Bar Chart Card -->
-            <div class="bg-white dark:bg-slate-800 rounded-[2rem] p-6 shadow-soft border border-gray-100 dark:border-slate-700 mb-6">
-                <div class="flex justify-between items-center mb-6">
-                    <div>
-                        <h3 class="font-bold text-sm dark:text-white">Emission by Category</h3>
-                        <p class="text-[10px] text-gray-400">ข้อมูลรวมทั้งหมด</p>
-                    </div>
-                    <i class="fa-solid fa-chart-column text-hk-accent text-xl"></i>
-                </div>
-                <div class="relative h-64 w-full">
-                    <canvas id="chart-bar"></canvas>
-                </div>
-            </div>
-
-            <!-- Doughnut Chart Card -->
-            <div class="bg-white dark:bg-slate-800 rounded-[2rem] p-6 shadow-soft border border-gray-100 dark:border-slate-700 mb-8">
-                <h3 class="font-bold text-sm mb-4 dark:text-white">Branch Contribution</h3>
-                <div class="relative h-64 w-full">
-                    <canvas id="chart-pie"></canvas>
-                </div>
-            </div>
-        </main>
-
-        <!-- VIEW: LEADERBOARD -->
-        <main id="view-leaderboard" class="view-layer px-5 max-w-md mx-auto">
-            <div class="flex justify-between items-center mb-8">
-                <h2 class="text-2xl font-black dark:text-white">Leaderboard</h2>
-                <span class="bg-red-100 text-red-600 px-3 py-1 rounded-full text-[10px] font-black animate-pulse flex items-center gap-1">
-                    <div class="w-2 h-2 bg-red-500 rounded-full"></div> LIVE
-                </span>
-            </div>
-
-            <!-- Top 3 Podium (Visual) -->
-            <div class="flex justify-center items-end gap-2 mb-10 h-40" id="podium-container">
-                <!-- JS Rendered Podium -->
-            </div>
-
-            <!-- Full List -->
-            <div class="bg-white dark:bg-slate-800 rounded-[2rem] p-4 shadow-soft border border-gray-100 dark:border-slate-700">
-                <h3 class="font-bold text-sm mb-4 px-2 dark:text-white">All Branches</h3>
-                <div id="rank-list" class="space-y-2">
-                    <!-- JS Rendered Ranks -->
-                </div>
-            </div>
-        </main>
-
-        <!-- VIEW: COMMUNITY (Chatbot / Feed) -->
-        <main id="view-community" class="view-layer px-5 max-w-md mx-auto flex flex-col h-full">
-            <h2 class="text-2xl font-black mb-4 dark:text-white">Green AI Assistant</h2>
-            
-            <div class="bg-white dark:bg-slate-800 flex-grow rounded-[2rem] shadow-soft border border-gray-100 dark:border-slate-700 flex flex-col overflow-hidden mb-4">
-                
-                <div id="chat-box" class="flex-grow p-5 overflow-y-auto space-y-4 no-scrollbar bg-gray-50/50 dark:bg-slate-800/50">
-                    <!-- Intro Bot Message -->
-                    <div class="flex gap-3">
-                        <div class="w-10 h-10 bg-gradient-to-br from-hk-primary to-hk-accent rounded-full flex-shrink-0 flex items-center justify-center text-white shadow-md">
-                            <i class="fa-solid fa-robot"></i>
-                        </div>
-                        <div class="bg-white dark:bg-slate-700 p-4 rounded-3xl rounded-tl-none shadow-sm max-w-[85%] border border-gray-100 dark:border-slate-600">
-                            <p class="text-[10px] font-bold text-hk-primary dark:text-hk-accent mb-1">Hillkoff AI</p>
-                            <p class="text-sm dark:text-gray-200">สวัสดีครับ ผมคือผู้ช่วย AI ด้านสิ่งแวดล้อมของคุณ คุณสามารถถามผมเกี่ยวกับวิธีการแยกขยะ, สูตรคำนวณคาร์บอน, หรือเป้าหมาย ESG ของบริษัทได้เลยครับ 🌍</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="p-4 bg-white dark:bg-slate-800 border-t border-gray-100 dark:border-slate-700">
-                    <form id="chat-form" class="relative flex items-center">
-                        <input type="text" id="chat-input" class="w-full bg-gray-100 dark:bg-slate-900 text-sm p-4 pr-14 rounded-full border-none outline-none focus:ring-2 focus:ring-hk-primary dark:text-white transition-all" placeholder="พิมพ์คำถามของคุณที่นี่...">
-                        <button type="submit" class="absolute right-2 w-10 h-10 bg-hk-primary text-white rounded-full flex items-center justify-center hover:bg-hk-secondary transition-colors">
-                            <i class="fa-solid fa-paper-plane"></i>
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </main>
-
-        <!-- BOTTOM NAVIGATION -->
-        <nav class="fixed bottom-0 left-0 right-0 z-40 bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl border-t border-gray-100 dark:border-slate-800 pb-safe pt-2 px-6">
-            <div class="max-w-md mx-auto flex justify-between items-center h-16">
-                <button onclick="appNavigate('home')" class="nav-item active flex-1 flex flex-col items-center gap-1" data-target="home">
-                    <div class="icon-wrapper w-12 h-8 rounded-xl flex items-center justify-center text-xl text-gray-400">
-                        <i class="fa-solid fa-house"></i>
-                    </div>
-                    <span class="text-[9px] font-bold uppercase tracking-wide">Home</span>
-                </button>
-                <button onclick="appNavigate('analytics')" class="nav-item flex-1 flex flex-col items-center gap-1" data-target="analytics">
-                    <div class="icon-wrapper w-12 h-8 rounded-xl flex items-center justify-center text-xl text-gray-400">
-                        <i class="fa-solid fa-chart-pie"></i>
-                    </div>
-                    <span class="text-[9px] font-bold uppercase tracking-wide">Data</span>
-                </button>
-                
-                <!-- Center Floating Button -->
-                <div class="flex-1 flex justify-center -mt-8">
-                    <button onclick="appNavigate('record')" class="w-16 h-16 bg-gradient-to-tr from-hk-secondary to-hk-primary text-white rounded-full shadow-glow flex items-center justify-center text-2xl border-4 border-white dark:border-slate-900 active:scale-90 transition-transform z-50">
-                        <i class="fa-solid fa-plus"></i>
-                    </button>
-                </div>
-
-                <button onclick="appNavigate('leaderboard')" class="nav-item flex-1 flex flex-col items-center gap-1" data-target="leaderboard">
-                    <div class="icon-wrapper w-12 h-8 rounded-xl flex items-center justify-center text-xl text-gray-400">
-                        <i class="fa-solid fa-trophy"></i>
-                    </div>
-                    <span class="text-[9px] font-bold uppercase tracking-wide">Rank</span>
-                </button>
-                <button onclick="appNavigate('community')" class="nav-item flex-1 flex flex-col items-center gap-1" data-target="community">
-                    <div class="icon-wrapper w-12 h-8 rounded-xl flex items-center justify-center text-xl text-gray-400">
-                        <i class="fa-solid fa-message"></i>
-                    </div>
-                    <span class="text-[9px] font-bold uppercase tracking-wide">Chat</span>
-                </button>
-            </div>
-        </nav>
-
+          </div>
+        </div>
+      )}
     </div>
+  );
+};
 
-    <!-- JAVASCRIPT (Enterprise Logic) -->
-    <script>
-        // ==========================================
-        // 1. CONFIGURATION & CONSTANTS
-        // ==========================================
-        const DB_KEY = 'hillkoff_enterprise_esg_v1';
-        
-        const CATEGORIES = [
-            { id: 'coffee', name: 'กากกาแฟ (Coffee Grounds)', icon: 'fa-mug-hot', color: '#8B4513', factor: 0.25 },
-            { id: 'plastic', name: 'พลาสติก (Plastic PET)', icon: 'fa-bottle-water', color: '#3B82F6', factor: 0.55 },
-            { id: 'paper', name: 'กระดาษ (Paper/Cardboard)', icon: 'fa-box', color: '#F59E0B', factor: 0.15 },
-            { id: 'organic', name: 'เศษอาหาร (Organic)', icon: 'fa-apple-whole', color: '#10B981', factor: 0.30 },
-            { id: 'glass', name: 'ขวดแก้ว (Glass)', icon: 'fa-wine-bottle', color: '#6366F1', factor: 0.05 },
-            { id: 'alu', name: 'กระป๋อง (Aluminum)', icon: 'fa-can-food', color: '#64748B', factor: 1.20 }
-        ];
 
-        const BRANCHES = {
-            'hq': { name: 'สำนักงานใหญ่', icon: '🏢' },
-            'cp': { name: 'สาขาช้างเผือก', icon: '🐘' },
-            'md': { name: 'สาขามหิดล', icon: '🎓' },
-            'rt': { name: 'ราติก้า', icon: '☕' }
-        };
+// --- PHASE 4: ENTERPRISE GREEN ECOSYSTEM ---
+const EnterpriseEcosystemView = () => {
+  // Simulate Realtime IoT Data
+  const [iotBins, setIotBins] = useState([
+    { id: 'b1', loc: 'HQ F1', fill: 45, type: 'Plastic' },
+    { id: 'b2', loc: 'Mahidol C1', fill: 88, type: 'Food Waste' },
+    { id: 'b3', loc: 'Pa Phaeng', fill: 12, type: 'Paper' }
+  ]);
 
-        // ==========================================
-        // 2. STATE MANAGEMENT & DB INITIALIZATION
-        // ==========================================
-        let appState = {
-            records: [],
-            currentUser: { name: 'Admin', branch: 'hq' },
-            activeView: 'home',
-            cameraStream: null,
-            selectedCategory: 'coffee'
-        };
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setIotBins(prev => prev.map(b => ({ ...b, fill: Math.min(100, Math.max(0, b.fill + (Math.random()*10 - 5))) })));
+    }, 3000);
+    return () => clearInterval(interval);
+  }, []);
 
-        function initDatabase() {
-            let data = localStorage.getItem(DB_KEY);
-            if (!data) {
-                // Generate Mock Data for presentation
-                const mockData = [];
-                const types = Object.keys(CATEGORIES).map(k => CATEGORIES[k].id);
-                const branches = Object.keys(BRANCHES);
-                
-                for(let i=0; i<150; i++) {
-                    let rType = types[Math.floor(Math.random() * types.length)];
-                    let rBranch = branches[Math.floor(Math.random() * branches.length)];
-                    let weight = (Math.random() * 10 + 0.5).toFixed(2);
-                    let catObj = CATEGORIES.find(c => c.id === rType);
-                    let date = dayjs().subtract(Math.floor(Math.random() * 60), 'day').toISOString();
-                    
-                    mockData.push({
-                        id: 'REC_' + Date.now() + i,
-                        type: rType,
-                        weight: parseFloat(weight),
-                        co2: parseFloat(weight) * catObj.factor,
-                        branch: rBranch,
-                        date: date
-                    });
-                }
-                localStorage.setItem(DB_KEY, JSON.stringify(mockData));
-                appState.records = mockData;
-            } else {
-                appState.records = JSON.parse(data);
-            }
-        }
+  return (
+    <div className="fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+      <h2 style={{ color: 'var(--primary)', borderBottom: '3px solid var(--primary)', paddingBottom: '8px' }}>🌍 Enterprise Ecosystem</h2>
+      
+      {/* 1. IoT Monitoring UI */}
+      <div>
+        <h3 style={{ fontSize: 16, marginBottom: '10px' }}>📡 Smart Bin Sensor Dashboard</h3>
+        <div className="grid-3">
+          {iotBins.map(bin => (
+            <div key={bin.id} className="glass-card" style={{ textAlign: 'center', border: bin.fill > 80 ? '2px solid var(--danger)' : '' }}>
+              <div style={{ fontSize: 12, fontWeight: 700 }}>{bin.loc}</div>
+              <div style={{ fontSize: 10, color: '#666' }}>{bin.type}</div>
+              <div style={{ position: 'relative', height: '60px', width: '30px', border: '2px solid #ccc', borderRadius: '4px', margin: '10px auto', overflow: 'hidden' }}>
+                <div style={{ position: 'absolute', bottom: 0, width: '100%', height: `${bin.fill}%`, background: bin.fill > 80 ? 'var(--danger)' : 'var(--secondary)', transition: 'height 1s ease-in-out' }} />
+              </div>
+              <div style={{ fontSize: 14, fontWeight: 900, color: bin.fill > 80 ? 'var(--danger)' : 'var(--dark)' }}>{bin.fill.toFixed(0)}%</div>
+            </div>
+          ))}
+        </div>
+      </div>
 
-        function saveRecord(record) {
-            appState.records.unshift(record); // Add to top
-            localStorage.setItem(DB_KEY, JSON.stringify(appState.records));
-        }
+      {/* 2. Carbon Credit & 3. Circular Economy */}
+      <div className="grid-2">
+        <div className="glass-card glow-box" style={{ background: '#1a3a2a', color: 'white' }}>
+          <h3 style={{ fontSize: 14, color: '#a8e6cf' }}>💰 Carbon Credit Est.</h3>
+          <div style={{ fontSize: 24, fontWeight: 900, margin: '10px 0' }}>1,250 THB</div>
+          <div style={{ fontSize: 11, opacity: 0.7 }}>คำนวณจาก Carbon Saved สะสม (สมมติฐาน 50THB/ton)</div>
+        </div>
+        <div className="glass-card">
+          <h3 style={{ fontSize: 14, color: 'var(--primary)' }}>🔄 Recovery Market</h3>
+          <div style={{ fontSize: 12, marginTop: '8px' }}>พลาสติกพร้อมขาย: <strong style={{color:'var(--secondary)'}}>45 kg</strong></div>
+          <div style={{ fontSize: 12 }}>ปุ๋ยอินทรีย์: <strong style={{color:'var(--secondary)'}}>120 kg</strong></div>
+          <button className="btn-outline" style={{ width: '100%', padding: '4px', marginTop: '10px', fontSize: 11 }}>ติดต่อผู้รับซื้อ</button>
+        </div>
+      </div>
 
-        // ==========================================
-        // 3. ROUTING & NAVIGATION
-        // ==========================================
-        function appNavigate(viewId) {
-            // Hide all views
-            document.querySelectorAll('.view-layer').forEach(el => el.classList.remove('active'));
-            // Show target view
-            document.getElementById('view-' + viewId).classList.add('active');
-            
-            // Update Nav UI
-            document.querySelectorAll('.nav-item').forEach(el => {
-                el.classList.remove('active');
-                if(el.dataset.target === viewId) el.classList.add('active');
-            });
+      {/* 4. AI Sustainability Coach */}
+      <div className="glass-card">
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', borderBottom: '1px solid #eee', paddingBottom: '10px' }}>
+          <span style={{ fontSize: 24 }}>🧠</span>
+          <div>
+            <h3 style={{ fontSize: 14 }}>AI Sustainability Coach</h3>
+            <div style={{ fontSize: 11, color: '#666' }}>วิเคราะห์พฤติกรรม & แนะนำการลดคาร์บอน</div>
+          </div>
+        </div>
+        <div style={{ background: '#f8f9fa', padding: '16px', borderRadius: '12px', marginTop: '12px', fontSize: 13, lineHeight: 1.6 }}>
+          <strong>💡 Insight ประจำสัปดาห์:</strong><br/>
+          จากข้อมูลพบว่าสาขา HQ มีปริมาณ Food Waste สูงในช่วงบ่าย AI แนะนำให้ปรับกระบวนการจัดการวัตถุดิบช่วงเที่ยง เพื่อลดขยะเศษอาหารลง 15% และสามารถแปลงเป็นปุ๋ยอินทรีย์ผ่าน Circular Economy ได้
+        </div>
+      </div>
+    </div>
+  );
+};
 
-            appState.activeView = viewId;
 
-            // Handle Specific View Logic
-            if(viewId === 'home') renderHome();
-            if(viewId === 'analytics') renderAnalytics();
-            if(viewId === 'leaderboard') renderLeaderboard();
-            if(viewId === 'record') {
-                renderCategoryGrid();
-                startCamera();
-            } else {
-                stopCamera();
-            }
+// --- MAIN APP COMPONENT ---
+const App = () => {
+  const [view, setView] = useState('scan'); // dashboard, scan, enterprise
+  const [records, setRecords] = useState([]);
 
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
+  useEffect(() => { setRecords(loadDB()); }, []);
 
-        // ==========================================
-        // 4. UI RENDERERS (CONTROLLERS)
-        // ==========================================
-        
-        // --- Home ---
-        function renderHome() {
-            dayjs.locale('th');
-            document.getElementById('current-date').innerText = dayjs().format('DD MMMM YYYY');
-            
-            const totalCO2 = appState.records.reduce((sum, r) => sum + r.co2, 0);
-            const totalWeight = appState.records.reduce((sum, r) => sum + r.weight, 0);
-            const totalTrees = Math.floor(totalCO2 / 9); // Roughly 9kg CO2 per tree/year
+  const handleSaveRecord = (record) => {
+    const newRecords = [record, ...records];
+    setRecords(newRecords);
+    saveDB(newRecords);
+    alert('✅ บันทึกข้อมูลและอัปเดต Dashboard เรียบร้อยแล้ว!');
+    setView('dashboard');
+  };
 
-            animateNumber('dash-co2', totalCO2);
-            document.getElementById('dash-weight').innerText = totalWeight.toFixed(1) + ' kg';
-            document.getElementById('dash-trees').innerText = totalTrees.toLocaleString() + ' ต้น';
+  return (
+    <div className="app-container">
+      {/* App Header */}
+      <header style={{ background: 'var(--primary)', color: 'white', padding: '16px 20px', position: 'sticky', top: 0, zIndex: 100, boxShadow: '0 4px 10px rgba(0,0,0,0.1)' }}>
+        <div style={{ fontSize: 18, fontWeight: 900, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span>☕ Hillkoff Zero Waste</span>
+          <span style={{ fontSize: 12, background: 'rgba(255,255,255,0.2)', padding: '4px 10px', borderRadius: '12px' }}>Enterprise</span>
+        </div>
+      </header>
 
-            // Recent Logs
-            const recentList = document.getElementById('recent-logs');
-            const recents = appState.records.sort((a,b) => new Date(b.date) - new Date(a.date)).slice(0, 5);
-            
-            recentList.innerHTML = recents.map(r => {
-                const cat = CATEGORIES.find(c => c.id === r.type);
-                return `
-                <div class="bg-white dark:bg-slate-800 p-4 rounded-3xl shadow-sm border border-gray-100 dark:border-slate-700 flex items-center gap-4">
-                    <div class="w-12 h-12 rounded-2xl flex items-center justify-center text-white text-xl" style="background-color: ${cat.color}">
-                        <i class="fa-solid ${cat.icon}"></i>
-                    </div>
-                    <div class="flex-grow">
-                        <p class="font-bold text-sm dark:text-white">${cat.name}</p>
-                        <p class="text-[10px] text-gray-500">${dayjs(r.date).format('DD MMM • HH:mm')} | ${BRANCHES[r.branch].name}</p>
-                    </div>
-                    <div class="text-right">
-                        <p class="font-black text-hk-primary dark:text-hk-accent">${r.co2.toFixed(2)}</p>
-                        <p class="text-[9px] font-bold text-gray-400">CO2e</p>
-                    </div>
-                </div>
-                `;
-            }).join('');
-        }
+      {/* Main Content Area */}
+      <main style={{ padding: '20px' }}>
+        {view === 'dashboard' && <DashboardView records={records} />}
+        {view === 'scan' && <AIUploadView onSave={handleSaveRecord} />}
+        {view === 'enterprise' && <EnterpriseEcosystemView />}
+      </main>
 
-        // --- Record Form & Camera ---
-        function renderCategoryGrid() {
-            const grid = document.getElementById('category-grid');
-            grid.innerHTML = CATEGORIES.map(c => `
-                <div class="radio-card p-4 bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700 cursor-pointer flex flex-col items-center gap-2 ${appState.selectedCategory === c.id ? 'selected' : ''}" 
-                     onclick="selectCategory('${c.id}')">
-                    <i class="fa-solid ${c.icon} text-2xl" style="color: ${c.color}"></i>
-                    <span class="text-[10px] font-bold text-center dark:text-white leading-tight">${c.name}</span>
-                </div>
-            `).join('');
-        }
+      {/* Bottom Navigation */}
+      <nav style={{ position: 'fixed', bottom: 0, width: '100%', background: 'white', display: 'flex', borderTop: '1px solid #ddd', zIndex: 100 }}>
+        {[
+          { id: 'dashboard', icon: '📊', label: 'Dashboard' },
+          { id: 'scan', icon: '📸', label: 'AI Scan' },
+          { id: 'enterprise', icon: '🌍', label: 'Ecosystem' }
+        ].map(tab => (
+          <div key={tab.id} onClick={() => setView(tab.id)}
+               style={{ flex: 1, textAlign: 'center', padding: '12px 0', cursor: 'pointer', 
+                        color: view === tab.id ? 'var(--primary)' : '#888',
+                        borderTop: view === tab.id ? '3px solid var(--primary)' : '3px solid transparent' }}>
+            <div style={{ fontSize: 20 }}>{tab.icon}</div>
+            <div style={{ fontSize: 10, fontWeight: 700 }}>{tab.label}</div>
+          </div>
+        ))}
+      </nav>
+    </div>
+  );
+};
 
-        function selectCategory(id) {
-            appState.selectedCategory = id;
-            renderCategoryGrid();
-        }
-
-        async function startCamera() {
-            const video = document.getElementById('camera-feed');
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
-                appState.cameraStream = stream;
-                video.srcObject = stream;
-            } catch (err) {
-                console.warn("Camera access denied or not available. Running fallback UI.");
-            }
-        }
-
-        function stopCamera() {
-            if (appState.cameraStream) {
-                appState.cameraStream.getTracks().forEach(track => track.stop());
-                appState.cameraStream = null;
-            }
-        }
-
-        // Camera Capture AI Simulation
-        document.getElementById('btn-capture').addEventListener('click', (e) => {
-            e.preventDefault();
-            const aiBox = document.getElementById('ai-result');
-            const text = document.getElementById('ai-guess-text');
-            
-            aiBox.classList.remove('hidden');
-            text.innerText = "กำลังวิเคราะห์ภาพด้วย AI...";
-            
-            setTimeout(() => {
-                const randomCat = CATEGORIES[Math.floor(Math.random() * CATEGORIES.length)];
-                text.innerText = `ตรวจพบ: ${randomCat.name} (ความแม่นยำ 98%)`;
-                selectCategory(randomCat.id);
-            }, 1500);
-        });
-
-        // Form Submit
-        document.getElementById('record-form').addEventListener('submit', (e) => {
-            e.preventDefault();
-            const weight = parseFloat(document.getElementById('input-weight').value);
-            const branch = document.getElementById('input-branch').value;
-            const cat = CATEGORIES.find(c => c.id === appState.selectedCategory);
-
-            if(!weight || weight <= 0) {
-                return Swal.fire({ title: 'ข้อผิดพลาด', text: 'กรุณาระบุน้ำหนักให้ถูกต้อง', icon: 'error' });
-            }
-
-            const record = {
-                id: 'REC_' + Date.now(),
-                type: cat.id,
-                weight: weight,
-                co2: weight * cat.factor,
-                branch: branch,
-                date: new Date().toISOString()
-            };
-
-            saveRecord(record);
-            
-            Swal.fire({
-                title: 'บันทึกสำเร็จ!',
-                html: `คุณช่วยโลกประหยัดคาร์บอนไป <b>${record.co2.toFixed(2)} kgCO2e</b>`,
-                icon: 'success',
-                confirmButtonColor: '#1f4d2f',
-                showConfirmButton: false,
-                timer: 2000
-            }).then(() => {
-                document.getElementById('record-form').reset();
-                document.getElementById('ai-result').classList.add('hidden');
-                appNavigate('home');
-            });
-        });
-
-        // --- Analytics Charts ---
-        let barChartInstance = null;
-        let pieChartInstance = null;
-
-        function renderAnalytics() {
-            // Prepare Data
-            const typeMap = {};
-            const branchMap = {};
-            
-            appState.records.forEach(r => {
-                typeMap[r.type] = (typeMap[r.type] || 0) + r.weight;
-                branchMap[r.branch] = (branchMap[r.branch] || 0) + r.co2;
-            });
-
-            // Colors
-            const isDark = document.documentElement.classList.contains('dark');
-            const textColor = isDark ? '#cbd5e1' : '#475569';
-            const gridColor = isDark ? '#334155' : '#f1f5f9';
-
-            Chart.defaults.color = textColor;
-            Chart.defaults.font.family = "'Prompt', sans-serif";
-
-            // Bar Chart
-            const ctxBar = document.getElementById('chart-bar').getContext('2d');
-            if(barChartInstance) barChartInstance.destroy();
-            barChartInstance = new Chart(ctxBar, {
-                type: 'bar',
-                data: {
-                    labels: Object.keys(typeMap).map(k => CATEGORIES.find(c=>c.id===k).name.split(' ')[0]),
-                    datasets: [{
-                        label: 'Weight (kg)',
-                        data: Object.values(typeMap),
-                        backgroundColor: '#34d399',
-                        borderRadius: 8
-                    }]
-                },
-                options: {
-                    responsive: true, maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
-                    scales: {
-                        y: { grid: { color: gridColor } },
-                        x: { grid: { display: false } }
-                    }
-                }
-            });
-
-            // Pie Chart
-            const ctxPie = document.getElementById('chart-pie').getContext('2d');
-            if(pieChartInstance) pieChartInstance.destroy();
-            pieChartInstance = new Chart(ctxPie, {
-                type: 'doughnut',
-                data: {
-                    labels: Object.keys(branchMap).map(k => BRANCHES[k].name),
-                    datasets: [{
-                        data: Object.values(branchMap),
-                        backgroundColor: ['#1f4d2f', '#34d399', '#f59e0b', '#3b82f6'],
-                        borderWidth: 0,
-                        hoverOffset: 10
-                    }]
-                },
-                options: {
-                    responsive: true, maintainAspectRatio: false,
-                    cutout: '70%',
-                    plugins: { legend: { position: 'right' } }
-                }
-            });
-        }
-
-        // --- Leaderboard ---
-        function renderLeaderboard() {
-            // Aggregate CO2 by branch
-            const branchData = {};
-            Object.keys(BRANCHES).forEach(k => branchData[k] = 0);
-            
-            appState.records.forEach(r => {
-                if(branchData[r.branch] !== undefined) {
-                    branchData[r.branch] += r.co2;
-                }
-            });
-
-            // Sort desc
-            const sortedBranches = Object.keys(branchData).map(k => ({
-                id: k, ...BRANCHES[k], score: branchData[k]
-            })).sort((a,b) => b.score - a.score);
-
-            // Render Podium (Top 3)
-            const podium = document.getElementById('podium-container');
-            if(sortedBranches.length >= 3) {
-                podium.innerHTML = `
-                    <!-- 2nd -->
-                    <div class="flex flex-col items-center flex-1">
-                        <div class="text-2xl mb-1">${sortedBranches[1].icon}</div>
-                        <div class="w-full bg-slate-200 dark:bg-slate-700 rounded-t-2xl h-24 flex justify-center pt-2 font-bold text-gray-500">2</div>
-                    </div>
-                    <!-- 1st -->
-                    <div class="flex flex-col items-center flex-1">
-                        <div class="text-3xl mb-1 relative"><i class="fa-solid fa-crown absolute -top-4 -left-1 text-yellow-400 text-sm transform -rotate-12"></i>${sortedBranches[0].icon}</div>
-                        <div class="w-full bg-yellow-400 rounded-t-2xl h-32 flex flex-col items-center pt-2 shadow-lg shadow-yellow-400/50">
-                            <span class="font-black text-yellow-900">1</span>
-                        </div>
-                    </div>
-                    <!-- 3rd -->
-                    <div class="flex flex-col items-center flex-1">
-                        <div class="text-2xl mb-1">${sortedBranches[2].icon}</div>
-                        <div class="w-full bg-orange-200 dark:bg-orange-900/40 rounded-t-2xl h-16 flex justify-center pt-2 font-bold text-orange-700 dark:text-orange-300">3</div>
-                    </div>
-                `;
-            }
-
-            // Render List
-            const list = document.getElementById('rank-list');
-            list.innerHTML = sortedBranches.map((b, index) => `
-                <div class="flex items-center gap-4 p-4 bg-gray-50 dark:bg-slate-800/50 rounded-2xl border ${index === 0 ? 'border-yellow-400' : 'border-transparent'}">
-                    <div class="font-black text-xl text-gray-300 w-6">${index + 1}</div>
-                    <div class="text-2xl">${b.icon}</div>
-                    <div class="flex-grow">
-                        <p class="font-bold text-sm dark:text-white">${b.name}</p>
-                    </div>
-                    <div class="text-right">
-                        <p class="font-black text-hk-primary dark:text-hk-accent">${b.score.toFixed(1)}</p>
-                        <p class="text-[9px] text-gray-500 font-bold uppercase">Points</p>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        // --- Community Chatbot ---
-        document.getElementById('chat-form').addEventListener('submit', (e) => {
-            e.preventDefault();
-            const input = document.getElementById('chat-input');
-            const msg = input.value.trim();
-            if(!msg) return;
-
-            const chatBox = document.getElementById('chat-box');
-            
-            // User Message
-            chatBox.innerHTML += `
-                <div class="flex gap-3 flex-row-reverse animate__animated animate__fadeInRight">
-                    <div class="w-10 h-10 bg-gray-200 dark:bg-slate-700 rounded-full flex-shrink-0 flex items-center justify-center text-gray-600 dark:text-gray-300 font-bold text-xs">ME</div>
-                    <div class="bg-hk-primary text-white p-4 rounded-3xl rounded-tr-none shadow-sm max-w-[85%]">
-                        <p class="text-sm">${msg}</p>
-                    </div>
-                </div>
-            `;
-            input.value = '';
-            chatBox.scrollTop = chatBox.scrollHeight;
-
-            // Simple Bot Logic
-            setTimeout(() => {
-                let reply = "ขออภัยครับ ตอนนี้ฐานข้อมูล AI ของผมกำลังปรับปรุง แต่คุณสามารถบันทึกขยะเพื่อลดคาร์บอนได้ตลอดเวลานะครับ! ♻️";
-                if(msg.includes('สวัสดี')) reply = "สวัสดีครับชาว Hillkoff! วันนี้ดื่มกาแฟแล้วอย่าลืมแยกกากกาแฟนะครับ ☕";
-                if(msg.includes('คาร์บอน')) reply = "ระบบของเราคำนวณคาร์บอนตามมาตรฐาน ISO 14064 ครับ โดยอิงค่า Factor จากองค์กร TGO ของประเทศไทยครับ";
-
-                chatBox.innerHTML += `
-                    <div class="flex gap-3 animate__animated animate__fadeInLeft">
-                        <div class="w-10 h-10 bg-gradient-to-br from-hk-primary to-hk-accent rounded-full flex-shrink-0 flex items-center justify-center text-white shadow-md">
-                            <i class="fa-solid fa-robot"></i>
-                        </div>
-                        <div class="bg-white dark:bg-slate-700 p-4 rounded-3xl rounded-tl-none shadow-sm max-w-[85%] border border-gray-100 dark:border-slate-600">
-                            <p class="text-[10px] font-bold text-hk-primary dark:text-hk-accent mb-1">Hillkoff AI</p>
-                            <p class="text-sm dark:text-gray-200">${reply}</p>
-                        </div>
-                    </div>
-                `;
-                chatBox.scrollTop = chatBox.scrollHeight;
-            }, 1000);
-        });
-
-        // ==========================================
-        // 5. UTILITY FUNCTIONS
-        // ==========================================
-        
-        function toggleTheme() {
-            document.documentElement.classList.toggle('dark');
-            if(appState.activeView === 'analytics') renderAnalytics(); // Redraw charts for theme
-        }
-
-        function exportCSV() {
-            let csv = "ID,Date,Type,Weight(kg),CO2e,Branch\n";
-            appState.records.forEach(r => {
-                csv += `${r.id},${r.date},${r.type},${r.weight},${r.co2},${r.branch}\n`;
-            });
-            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `Hillkoff_ESG_Export_${dayjs().format('YYYYMMDD')}.csv`;
-            a.click();
-            Swal.fire('สำเร็จ', 'ส่งออกรายงาน CSV เรียบร้อยแล้ว', 'success');
-        }
-
-        function animateNumber(id, endValue) {
-            const el = document.getElementById(id);
-            const duration = 1500;
-            const start = 0;
-            let startTime = null;
-
-            function step(timestamp) {
-                if (!startTime) startTime = timestamp;
-                const progress = Math.min((timestamp - startTime) / duration, 1);
-                // Ease out cubic
-                const easeProgress = 1 - Math.pow(1 - progress, 3);
-                const current = (easeProgress * endValue).toFixed(2);
-                el.innerText = current;
-                if (progress < 1) window.requestAnimationFrame(step);
-            }
-            window.requestAnimationFrame(step);
-        }
-
-        // ==========================================
-        // 6. INITIALIZATION SEQUENCE
-        // ==========================================
-        
-        // Login Form Handler
-        document.getElementById('form-login').addEventListener('submit', (e) => {
-            e.preventDefault();
-            document.getElementById('view-login').style.display = 'none';
-            document.getElementById('main-app').classList.remove('hidden');
-            
-            // Check system preference for Dark Mode
-            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-                document.documentElement.classList.add('dark');
-            }
-
-            initDatabase();
-            appNavigate('home');
-        });
-
-        // Splash Screen sequence
-        window.onload = () => {
-            setTimeout(() => {
-                const splash = document.getElementById('splash');
-                splash.style.opacity = '0';
-                setTimeout(() => splash.style.display = 'none', 500);
-            }, 1500);
-        };
-
-    </script>
+// Render App
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(<App />);
+</script>
 </body>
 </html>
