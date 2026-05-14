@@ -1,212 +1,221 @@
-import { useState, useRef, useEffect, useCallback } from "react"; [2]
+<!DOCTYPE html><html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hillkoff Zero Waste</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-[#f3f8f4] min-h-screen font-sans"><div class="max-w-md mx-auto pb-24">  <!-- HEADER -->  <header class="sticky top-0 z-50 bg-[#145a32] text-white p-4 flex justify-between items-center shadow-lg">
+    <div>
+      <h1 class="text-2xl font-black">☕ Hillkoff</h1>
+      <p class="text-xs opacity-80">Zero Waste ESG Platform</p>
+    </div><div class="text-right">
+  <div class="text-xs opacity-70">CO₂e Total</div>
+  <div id="totalCO2" class="text-xl font-black">0.00 kg</div>
+</div>
 
-/* ═══════════════════════════════════════════════════════════════ 
-   HILLKOFF ZERO WASTE PLATFORM v2 • Gemini Vision AI 
-   ISO 14064 / GHG Protocol / WEEE / SDG 12
-// ── CONFIG & DATABASE STRUCTURE ──────────────────────────────
-const GEMINI_KEY = "YOUR_GEMINI_API_KEY"; [2]
-
-const BRANCHES = [ 
-  { id: "hq",          name: "สำนักงานใหญ่",  short: "HQ",     icon: "🏢", color: "#145a32" }, 
-  { id: "changphueak", name: "ช้างเผือก",      short: "CPK",    icon: "🐘", color: "#1e8449" }, 
-  { id: "mahidol",     name: "มหิดล",          short: "MHD",    icon: "🎓", color: "#27ae60" }, 
-  { id: "paphaeng",    name: "ป่าแพง",         short: "PPG",    icon: "🌿", color: "#2ecc71" }, 
-  { id: "thapduea",    name: "ทับเดื่อ",       short: "TDE",    icon: "🌱", color: "#58d68d" }, 
-  { id: "ratica",      name: "ราติก้า",        short: "RTC",    icon: "☕", color: "#82e0aa" }, 
-]; [3]
-
-const WASTE_TYPES = [ 
-  { id: "coffee_grounds", label: "กากกาแฟ",        icon: "☕", factor: 0.49, unit: "kg", std: "GHG-S3" }, 
-  { id: "plastic",        label: "พลาสติก",        icon: "🧴", factor: 2.53, unit: "kg", std: "ISO14064" }, 
-  { id: "food_waste",     label: "เศษอาหาร",       icon: "🍃", factor: 0.91, unit: "kg", std: "GHG-S3" }, 
-  { id: "paper",          label: "กระดาษ",         icon: "📄", factor: 1.09, unit: "kg", std: "ISO14064" }, 
-  { id: "glass",          label: "แก้ว",           icon: "🔵", factor: 0.31, unit: "kg", std: "ISO14064" }, 
-  { id: "electronic",     label: "อิเล็กทรอนิกส์", icon: "💻", factor: 20.0, unit: "kg", std: "WEEE" }, 
-]; [4]
-
-const QUANTITIES = [ 
-  { id: "xs", label: "น้อยมาก", sub: "< 1 kg",   value: 0.5 }, 
-  { id: "sm", label: "น้อย",   sub: "1–5 kg",   value: 3   }, 
-  { id: "md", label: "ปานกลาง",sub: "5–20 kg",  value: 12.5}, 
-  { id: "lg", label: "มาก",    sub: "> 20 kg",  value: 25  }, 
-]; [5]
-
-const DISPOSALS = [ 
-  { id: "recycle",    label: "รีไซเคิล",       icon: "♻️",  mult: 0.10, tag: "best",  color: "#145a32" }, 
-  { id: "compost",    label: "หมักปุ๋ย",        icon: "🌱",  mult: 0.05, tag: "best",  color: "#1e8449" }, 
-  { id: "reuse",      label: "นำกลับมาใช้ซ้ำ", icon: "🔄",  mult: 0.05, tag: "good",  color: "#27ae60" }, 
-  { id: "landfill",   label: "ฝังกลบ",          icon: "⛏️",  mult: 1.00, tag: "warn",  color: "#e67e22" }, 
-  { id: "incinerate", label: "เผา",             icon: "🔥",  mult: 1.50, tag: "bad",   color: "#e74c3c" }, 
-]; [5]
-
-// ── CO2e CALCULATION & STORAGE ───────────────────────────────
-function calcCO2(wasteId, qtyId, disposalId) { 
-  const w = WASTE_TYPES.find(x => x.id === wasteId); 
-  const q = QUANTITIES.find(x => x.id === qtyId); 
-  const d = DISPOSALS.find(x => x.id === disposalId); 
-  if (!w || !q || !d) return 0; 
-  return +(w.factor * q.value * d.mult).toFixed(4); 
-} [6]
-
-// ── GEMINI VISION API ────────────────────────────────────────
-async function geminiAnalyze(base64, wasteLabel) { 
-  if (GEMINI_KEY === "YOUR_GEMINI_API_KEY") { 
-    await new Promise(r => setTimeout(r, 1500)); 
-    return { match: true, confidence: 85, detected: wasteLabel, remark: "Demo Mode" }; 
-  } 
-  try {
-    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_KEY}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        contents: [{ parts: [{ inline_data: { mime_type: "image/jpeg", data: base64 }}, 
-        { text: `วิเคราะห์ภาพนี้และตอบกลับเป็น JSON: {"match": true/false, "confidence": 0-100, "detected": "ชื่อขยะ", "remark": "ความเห็น"}\nประเภทที่เลือก: "${wasteLabel}"` }] }]
-      })
-    });
-    const data = await res.json();
-    return JSON.parse(data.candidates.content.parts.text.replace(/json|/g, "").trim());
-  } catch (e) { return { match: true, confidence: 70, detected: wasteLabel }; }
-} [7]
-
-// ── MAIN APP COMPONENT ───────────────────────────────────────
-export default function App() {
-  const [view, setView] = useState("home"); [8]
-  const [records, setRecords] = useState([]); [8]
-
-  const addRecord = async (rec) => {
-    const updated = [rec, ...records];
-    setRecords(updated);
-    setView("home");
-  }; [9]
-
-  const branchStats = BRANCHES.map(b => {
-    const recs = records.filter(r => r.branchId === b.id);
-    return { 
-      ...b, 
-      count: recs.length, 
-      totalQty: recs.reduce((s, r) => s + r.qty, 0), 
-      co2: +recs.reduce((s, r) => s + r.co2e, 0).toFixed(4) 
-    };
-  }); [9]
-
-  const totalCO2 = +branchStats.reduce((s, b) => s + b.co2, 0).toFixed(4); [9]
-
-  return (
-    <div style={S.root}>
-      <div style={S.bgMesh} />
-      <header style={S.header}>
-        <div style={S.logoWrap}>
-          <div style={S.logoName}>HILLKOFF</div>
-          <div style={S.logoSub}>ZERO WASTE PLATFORM</div>
-        </div>
-        <div style={S.co2Pill}>
-          <div style={{fontSize: 16, fontWeight: 900}}>{totalCO2.toFixed(2)} kg CO₂e</div>
-        </div>
-      </header> [10]
-
-      <main style={S.main}>
-        {view === "home" && <HomeView branchStats={branchStats} totalCO2={totalCO2} records={records} setView={setView} />}
-        {view === "log" && <LogView onAdd={addRecord} onBack={() => setView("home")} />}
-      </main> [11]
-
-      <nav style={S.nav}>
-        {[ { id: "home", icon: "🏠", label: "หน้าหลัก" }, { id: "log", icon: "📝", label: "บันทึก" } ].map(t => (
-          <button key={t.id} onClick={() => setView(t.id)} style={{...S.navBtn, ...(view === t.id ? S.navActive : {})}}>
-            <span>{t.icon}</span>
-            <span style={{fontSize: 9}}>{t.label}</span>
-          </button>
-        ))}
-      </nav> [9, 10]
+  </header>  <!-- HERO -->  <section class="p-4">
+    <div class="bg-gradient-to-br from-[#145a32] to-[#1e8449] rounded-3xl p-6 text-white shadow-xl">
+      <div class="text-sm opacity-80">🌍 ESG Dashboard</div>
+      <div class="text-5xl font-black mt-2" id="heroCO2">0.00</div>
+      <div class="mt-2 opacity-80">kg CO₂e</div><div class="grid grid-cols-2 gap-3 mt-6">
+    <div class="bg-white/10 rounded-2xl p-3">
+      <div class="text-xs opacity-70">Today</div>
+      <div class="text-2xl font-black" id="todayLogs">0</div>
     </div>
-  );
+
+    <div class="bg-white/10 rounded-2xl p-3">
+      <div class="text-xs opacity-70">Logs</div>
+      <div class="text-2xl font-black" id="totalLogs">0</div>
+    </div>
+  </div>
+</div>
+
+  </section>  <!-- FORM -->  <section class="px-4 space-y-4"><div class="bg-white rounded-3xl p-5 shadow-sm">
+  <h2 class="text-xl font-black text-[#145a32] mb-4">📝 บันทึกขยะ</h2>
+
+  <div class="space-y-4">
+
+    <select id="branch" class="w-full border rounded-2xl p-3">
+      <option value="">เลือกสาขา</option>
+      <option>สำนักงานใหญ่</option>
+      <option>ช้างเผือก</option>
+      <option>มหิดล</option>
+      <option>ป่าแพง</option>
+      <option>ทับเดื่อ</option>
+      <option>ราติก้า</option>
+    </select>
+
+    <select id="waste" class="w-full border rounded-2xl p-3">
+      <option value="coffee">☕ กากกาแฟ</option>
+      <option value="plastic">🧴 พลาสติก</option>
+      <option value="food">🍃 เศษอาหาร</option>
+      <option value="paper">📄 กระดาษ</option>
+      <option value="glass">🔵 แก้ว</option>
+      <option value="electronic">💻 อิเล็กทรอนิกส์</option>
+    </select>
+
+    <input
+      id="qty"
+      type="number"
+      value="1"
+      min="1"
+      class="w-full border rounded-2xl p-3"
+      placeholder="ปริมาณ (kg)"
+    />
+
+    <select id="method" class="w-full border rounded-2xl p-3">
+      <option value="0.1">♻️ รีไซเคิล</option>
+      <option value="0.05">🌱 หมักปุ๋ย</option>
+      <option value="0.05">🔄 ใช้ซ้ำ</option>
+      <option value="1">⛏️ ฝังกลบ</option>
+      <option value="1.5">🔥 เผา</option>
+    </select>
+
+    <input type="file" class="w-full border rounded-2xl p-3 bg-white" />
+
+    <div class="bg-[#145a32] text-white rounded-3xl p-5 text-center">
+      <div class="text-sm opacity-80">CO₂e Preview</div>
+      <div id="previewCO2" class="text-5xl font-black mt-2">0.49</div>
+      <div class="opacity-70">kg CO₂e</div>
+    </div>
+
+    <button
+      onclick="saveLog()"
+      class="w-full bg-gradient-to-r from-[#145a32] to-[#1e8449] text-white rounded-2xl p-4 font-black text-lg shadow-lg"
+    >
+      ✅ Save Waste Log
+    </button>
+
+  </div>
+</div>
+
+  </section>  <!-- LEADERBOARD -->  <section class="p-4 space-y-4"><div class="bg-gradient-to-r from-[#145a32] to-[#1e8449] rounded-3xl p-5 text-white text-center shadow-lg">
+  <div class="text-5xl">🏆</div>
+  <div class="text-2xl font-black mt-2">Green Ranking</div>
+</div>
+
+<div id="leaderboard"></div>
+
+  </section>  <!-- RECENT -->  <section class="p-4 space-y-4">
+    <h2 class="text-lg font-black text-[#145a32]">📊 Recent Activity</h2><div id="logs" class="space-y-3"></div>
+
+  </section></div><script>
+
+const FACTORS = {
+  coffee:0.49,
+  plastic:2.53,
+  food:0.91,
+  paper:1.09,
+  glass:0.31,
+  electronic:20
 }
 
-// ── HOME & LOG VIEWS (SUMMARY) ───────────────────────────────
-function HomeView({ branchStats, totalCO2, records, setView }) {
-  return (
-    <div style={S.col20}>
-      <div style={S.heroCard}>
-        <div style={S.heroNum}>{totalCO2.toFixed(2)} kg CO₂e</div>
-        <button style={S.heroBtnWhite} onClick={() => setView("log")}>📝 บันทึกขยะใหม่</button>
-      </div>
-      {records.map(r => <RecordRow key={r.id} r={r} />)}
-    </div>
-  );
-} [12, 13]
+const logs = JSON.parse(localStorage.getItem('hillkoff_logs') || '[]')
 
-function LogView({ onAdd }) {
-  const [step, setStep] = useState(0);
-  const [form, setForm] = useState({ branch: null, waste: null, qty: null, disposal: null }); [14]
-  
-  const handleFinish = () => {
-    const branch = BRANCHES.find(b => b.id === form.branch);
-    onAdd({
-      id: Date.now(),
-      ts: new Date().toISOString(),
-      branchId: form.branch,
-      branchName: branch.name,
-      wasteLabel: WASTE_TYPES.find(w => w.id === form.waste).label,
-      qty: QUANTITIES.find(q => q.id === form.qty).value,
-      disposalLabel: DISPOSALS.find(d => d.id === form.disposal).label,
-      co2e: calcCO2(form.waste, form.qty, form.disposal),
-    });
-  }; [15]
+function calculate(){
 
-  return (
-    <div style={S.col20}>
-      {step === 0 && <Selection title="เลือกสาขา" items={BRANCHES} onSelect={id => {setForm({...form, branch: id}); setStep(1);}} />}
-      {step === 1 && <Selection title="ประเภทขยะ" items={WASTE_TYPES} onSelect={id => {setForm({...form, waste: id}); setStep(2);}} />}
-      {step === 2 && <button style={S.submitBtn} onClick={handleFinish}>ยืนยันการบันทึก</button>}
-    </div>
-  );
-} [16, 17]
+  const waste = document.getElementById('waste').value
+  const qty = Number(document.getElementById('qty').value)
+  const method = Number(document.getElementById('method').value)
 
-// ── SHARED COMPONENTS & STYLES ───────────────────────────────
-function Selection({ title, items, onSelect }) {
-  return (
-    <div style={S.col20}>
-      <div style={{fontWeight:800, color:"#145a32"}}>{title}</div>
-      <div style={S.grid3}>
-        {items.map(item => (
-          <button key={item.id} onClick={() => onSelect(item.id)} style={S.choiceCard}>
-            <span style={{fontSize:24}}>{item.icon}</span>
-            <span style={{fontSize:10}}>{item.label || item.name}</span>
-          </button>
-        ))}
-      </div>
-    </div>
-  );
-} [10]
+  const co2 = (FACTORS[waste] * qty * method).toFixed(2)
 
-function RecordRow({ r }) {
-  return (
-    <div style={S.recordRow}>
-      <div style={{flex: 1}}>
-        <div style={{fontSize: 12, fontWeight: 700}}>{r.branchName} · {r.wasteLabel}</div>
-        <div style={{fontSize: 10, color: "#888"}}>{new Date(r.ts).toLocaleString("th-TH")}</div>
-      </div>
-      <div style={{fontSize: 12, fontWeight: 800, color: "#145a32"}}>{r.co2e} kg</div>
-    </div>
-  );
-} [13]
-
-const S = {
-  root: { minHeight:"100vh", fontFamily:"Sarabun", background:"#f0f7f2", paddingBottom:80 },
-  bgMesh: { position:"fixed", inset:0, background:"radial-gradient(ellipse at 20% 20%, #d5f5e3 0%, transparent 60%), #f0f7f2", zIndex:0 },
-  header: { background:"#145a32", padding:"12px 18px", color:"#fff", display:"flex", justifyContent:"space-between" },
-  logoWrap: { display:"flex", alignItems:"center", gap:10 },
-  logoName: { fontSize:18, fontWeight:900 },
-  logoSub: { fontSize:9, color:"#82e0aa" },
-  nav: { position:"fixed", bottom:0, left:0, right:0, background:"#fff", display:"flex", borderTop:"1px solid #eee" },
-  navBtn: { flex:1, padding:10, display:"flex", flexDirection:"column", alignItems:"center", background:"none", border:"none" },
-  navActive: { color:"#145a32", borderTop:"3px solid #145a32" },
-  main: { position:"relative", padding:15 },
-  col20: { display:"flex", flexDirection:"column", gap:16 },
-  heroCard: { background:"linear-gradient(135deg,#145a32,#1e8449)", borderRadius:22, padding:25, color:"#fff", textAlign:"center" },
-  heroNum: { fontSize:40, fontWeight:900 },
-  heroBtnWhite: { padding:12, background:"#fff", color:"#145a32", border:"none", borderRadius:12, fontWeight:800 },
-  grid3: { display:"grid", gridTemplateColumns:"repeat(3, 1fr)", gap:10 },
-  choiceCard: { background:"#fff", border:"2px solid #eee", borderRadius:15, padding:15, display:"flex", flexDirection:"column", alignItems:"center" },
-  submitBtn: { width:"100%", padding:15, background:"#145a32", color:"#fff", borderRadius:15, fontWeight:800 },
-  recordRow: { background:"#fff", borderRadius:15, padding:15, display:"flex", justifyContent:"space-between", alignItems:"center", boxShadow:"0 2px 5px rgba(0,0,0,0.05)" }
+  document.getElementById('previewCO2').innerText = co2
 }
+
+function saveLog(){
+
+  const branch = document.getElementById('branch').value
+  const waste = document.getElementById('waste').value
+  const qty = Number(document.getElementById('qty').value)
+  const method = Number(document.getElementById('method').value)
+
+  if(!branch){
+    alert('กรุณาเลือกสาขา')
+    return
+  }
+
+  const co2 = +(FACTORS[waste] * qty * method).toFixed(2)
+
+  logs.unshift({
+    branch,
+    waste,
+    qty,
+    co2,
+    date:new Date().toLocaleString('th-TH')
+  })
+
+  localStorage.setItem('hillkoff_logs', JSON.stringify(logs))
+
+  render()
+
+  alert('✅ บันทึกสำเร็จ')
+}
+
+function render(){
+
+  const total = logs.reduce((s,l)=>s+l.co2,0).toFixed(2)
+
+  document.getElementById('totalCO2').innerText = total + ' kg'
+  document.getElementById('heroCO2').innerText = total
+  document.getElementById('totalLogs').innerText = logs.length
+  document.getElementById('todayLogs').innerText = logs.length
+
+  const logHTML = logs.map(l=>`
+
+    <div class="bg-white rounded-2xl p-4 shadow-sm flex justify-between items-center">
+
+      <div>
+        <div class="font-black text-[#145a32]">${l.branch}</div>
+        <div class="text-sm text-gray-500">${l.waste}</div>
+        <div class="text-xs text-gray-400">${l.date}</div>
+      </div>
+
+      <div class="text-right">
+        <div class="text-lg font-black text-[#145a32]">${l.co2}</div>
+        <div class="text-xs text-gray-500">kg CO₂e</div>
+      </div>
+
+    </div>
+
+  `).join('')
+
+  document.getElementById('logs').innerHTML = logHTML
+
+  const branchScores = {}
+
+  logs.forEach(l=>{
+    if(!branchScores[l.branch]) branchScores[l.branch] = 0
+    branchScores[l.branch] += l.co2
+  })
+
+  const sorted = Object.entries(branchScores)
+    .sort((a,b)=>a[1]-b[1])
+
+  const rankHTML = sorted.map((b,index)=>`
+
+    <div class="bg-white rounded-2xl p-4 flex justify-between items-center shadow-sm mb-3">
+      <div>
+        <div class="font-black text-[#145a32]">#${index+1} ${b[0]}</div>
+      </div>
+
+      <div class="text-xl font-black text-[#145a32]">
+        ${b[1].toFixed(2)}
+      </div>
+    </div>
+
+  `).join('')
+
+  document.getElementById('leaderboard').innerHTML = rankHTML
+}
+
+document.getElementById('waste').addEventListener('change', calculate)
+document.getElementById('qty').addEventListener('input', calculate)
+document.getElementById('method').addEventListener('change', calculate)
+
+calculate()
+render()
+
+</script></body>
+</html>
