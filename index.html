@@ -1,1702 +1,212 @@
-<!DOCTYPE html>
-<html lang="th">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
-<title>Hillkoff Zero Waste Platform v2</title>
-<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
-<script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
-<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
-<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html, body { height: 100%; }
-body { font-family: 'Sarabun', 'Noto Sans Thai', sans-serif; background: #050e07; color: #e8f5e9; overflow-x: hidden; }
-#root { min-height: 100vh; }
-button, input, select { font-family: 'Sarabun', 'Noto Sans Thai', sans-serif; }
+import { useState, useRef, useEffect, useCallback } from "react"; [2]
 
-::-webkit-scrollbar { width: 4px; }
-::-webkit-scrollbar-track { background: #0a1a0d; }
-::-webkit-scrollbar-thumb { background: #1e8449; border-radius: 2px; }
+/* ═══════════════════════════════════════════════════════════════ 
+   HILLKOFF ZERO WASTE PLATFORM v2 • Gemini Vision AI 
+   ISO 14064 / GHG Protocol / WEEE / SDG 12
+// ── CONFIG & DATABASE STRUCTURE ──────────────────────────────
+const GEMINI_KEY = "YOUR_GEMINI_API_KEY"; [2]
 
-@keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 20px rgba(39,174,96,0.3); }
-  50% { box-shadow: 0 0 40px rgba(39,174,96,0.7), 0 0 60px rgba(39,174,96,0.3); }
-}
-@keyframes float {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-6px); }
-}
-@keyframes scan-line {
-  0% { top: -2px; }
-  100% { top: 100%; }
-}
-@keyframes fade-in-up {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-@keyframes spin-slow {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-@keyframes data-stream {
-  0% { background-position: 0% 0%; }
-  100% { background-position: 0% 100%; }
-}
-@keyframes blink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.3; }
-}
-@keyframes bar-fill {
-  from { width: 0%; }
-  to { width: var(--target-width); }
-}
-.glow-green { animation: pulse-glow 2s ease-in-out infinite; }
-.float { animation: float 3s ease-in-out infinite; }
-.fade-in-up { animation: fade-in-up 0.5s ease forwards; }
-.blink { animation: blink 1.5s ease infinite; }
-</style>
-</head>
-<body>
-<div id="root"></div>
+const BRANCHES = [ 
+  { id: "hq",          name: "สำนักงานใหญ่",  short: "HQ",     icon: "🏢", color: "#145a32" }, 
+  { id: "changphueak", name: "ช้างเผือก",      short: "CPK",    icon: "🐘", color: "#1e8449" }, 
+  { id: "mahidol",     name: "มหิดล",          short: "MHD",    icon: "🎓", color: "#27ae60" }, 
+  { id: "paphaeng",    name: "ป่าแพง",         short: "PPG",    icon: "🌿", color: "#2ecc71" }, 
+  { id: "thapduea",    name: "ทับเดื่อ",       short: "TDE",    icon: "🌱", color: "#58d68d" }, 
+  { id: "ratica",      name: "ราติก้า",        short: "RTC",    icon: "☕", color: "#82e0aa" }, 
+]; [3]
 
-<script type="text/babel">
-const { useState, useRef, useEffect, useCallback, useMemo } = React;
+const WASTE_TYPES = [ 
+  { id: "coffee_grounds", label: "กากกาแฟ",        icon: "☕", factor: 0.49, unit: "kg", std: "GHG-S3" }, 
+  { id: "plastic",        label: "พลาสติก",        icon: "🧴", factor: 2.53, unit: "kg", std: "ISO14064" }, 
+  { id: "food_waste",     label: "เศษอาหาร",       icon: "🍃", factor: 0.91, unit: "kg", std: "GHG-S3" }, 
+  { id: "paper",          label: "กระดาษ",         icon: "📄", factor: 1.09, unit: "kg", std: "ISO14064" }, 
+  { id: "glass",          label: "แก้ว",           icon: "🔵", factor: 0.31, unit: "kg", std: "ISO14064" }, 
+  { id: "electronic",     label: "อิเล็กทรอนิกส์", icon: "💻", factor: 20.0, unit: "kg", std: "WEEE" }, 
+]; [4]
 
-const GEMINI_KEY = "AIzaSyC97a8JLeMNFtQc7ikvACU4PJMDfF_o2nQ";
+const QUANTITIES = [ 
+  { id: "xs", label: "น้อยมาก", sub: "< 1 kg",   value: 0.5 }, 
+  { id: "sm", label: "น้อย",   sub: "1–5 kg",   value: 3   }, 
+  { id: "md", label: "ปานกลาง",sub: "5–20 kg",  value: 12.5}, 
+  { id: "lg", label: "มาก",    sub: "> 20 kg",  value: 25  }, 
+]; [5]
 
-/* ============================================================
-   DATA DEFINITIONS
-============================================================ */
-const BRANCHES = [
-  { id:"hq",          name:"สำนักงานใหญ่", short:"HQ",  icon:"🏢", color:"#00ff88" },
-  { id:"changphueak", name:"ช้างเผือก",     short:"CPK", icon:"🌿", color:"#00e5ff" },
-  { id:"mahidol",     name:"มหิดล",         short:"MHD", icon:"🎓", color:"#ff6b6b" },
-  { id:"paphaeng",    name:"ป่าแพง",        short:"PPG", icon:"🌾", color:"#ffd93d" },
-  { id:"thapduea",    name:"ทับเดื่อ",      short:"TDE", icon:"🍃", color:"#c084fc" },
-  { id:"ratica",      name:"ราติก้า",       short:"RTK", icon:"☕", color:"#fb923c" },
-];
+const DISPOSALS = [ 
+  { id: "recycle",    label: "รีไซเคิล",       icon: "♻️",  mult: 0.10, tag: "best",  color: "#145a32" }, 
+  { id: "compost",    label: "หมักปุ๋ย",        icon: "🌱",  mult: 0.05, tag: "best",  color: "#1e8449" }, 
+  { id: "reuse",      label: "นำกลับมาใช้ซ้ำ", icon: "🔄",  mult: 0.05, tag: "good",  color: "#27ae60" }, 
+  { id: "landfill",   label: "ฝังกลบ",          icon: "⛏️",  mult: 1.00, tag: "warn",  color: "#e67e22" }, 
+  { id: "incinerate", label: "เผา",             icon: "🔥",  mult: 1.50, tag: "bad",   color: "#e74c3c" }, 
+]; [5]
 
-const WASTE_TYPES = [
-  { id:"plastic",        label:"พลาสติก",         icon:"🧴", factor:0.4,  unit:"kg", std:"ISO14064", color:"#00e5ff" },
-  { id:"coffee_grounds", label:"กากกาแฟ",         icon:"☕", factor:0.2,  unit:"kg", std:"GHG-S3",   color:"#fb923c" },
-  { id:"aluminium",      label:"อลูมิเนียม",      icon:"🥫", factor:1.2,  unit:"kg", std:"ISO14064", color:"#94a3b8" },
-  { id:"glass",          label:"แก้ว",            icon:"🔵", factor:0.3,  unit:"kg", std:"ISO14064", color:"#38bdf8" },
-  { id:"paper",          label:"กระดาษ",          icon:"📄", factor:0.5,  unit:"kg", std:"ISO14064", color:"#fbbf24" },
-  { id:"food_waste",     label:"เศษอาหาร",        icon:"🍃", factor:0.6,  unit:"kg", std:"GHG-S3",   color:"#4ade80" },
-  { id:"general",        label:"ขยะทั่วไป",       icon:"🗑️", factor:0.1,  unit:"kg", std:"GHG-S3",   color:"#a78bfa" },
-  { id:"electronic",     label:"อิเล็กทรอนิกส์", icon:"💻", factor:20.0, unit:"kg", std:"WEEE",     color:"#f472b6" },
-];
+// ── CO2e CALCULATION & STORAGE ───────────────────────────────
+function calcCO2(wasteId, qtyId, disposalId) { 
+  const w = WASTE_TYPES.find(x => x.id === wasteId); 
+  const q = QUANTITIES.find(x => x.id === qtyId); 
+  const d = DISPOSALS.find(x => x.id === disposalId); 
+  if (!w || !q || !d) return 0; 
+  return +(w.factor * q.value * d.mult).toFixed(4); 
+} [6]
 
-const QUANTITIES = [
-  { id:"xs", label:"น้อยมาก", sub:"< 1 kg",  value:0.5  },
-  { id:"sm", label:"น้อย",    sub:"1–5 kg",  value:3    },
-  { id:"md", label:"ปานกลาง", sub:"5–20 kg", value:12.5 },
-  { id:"lg", label:"มาก",     sub:"> 20 kg", value:25   },
-];
-
-const DISPOSALS = [
-  { id:"recycle",    label:"รีไซเคิล",       icon:"♻️", mult:0.10, tag:"best", color:"#00ff88" },
-  { id:"compost",    label:"หมักปุ๋ย",        icon:"🌱", mult:0.05, tag:"best", color:"#4ade80" },
-  { id:"reuse",      label:"นำกลับมาใช้ซ้ำ", icon:"🔄", mult:0.05, tag:"good", color:"#ffd93d" },
-  { id:"landfill",   label:"ฝังกลบ",          icon:"⛏️", mult:1.00, tag:"warn", color:"#fb923c" },
-  { id:"incinerate", label:"เผา",             icon:"🔥", mult:1.50, tag:"bad",  color:"#ff6b6b" },
-];
-
-const SMART_BINS = [
-  { id:"bin1", name:"Bin A - กาแฟ", type:"coffee_grounds", fill:72, location:"สำนักงานใหญ่", icon:"☕", status:"warn" },
-  { id:"bin2", name:"Bin B - พลาสติก", type:"plastic", fill:45, location:"ช้างเผือก", icon:"🧴", status:"ok" },
-  { id:"bin3", name:"Bin C - กระดาษ", type:"paper", fill:88, location:"มหิดล", icon:"📄", status:"critical" },
-  { id:"bin4", name:"Bin D - แก้ว", type:"glass", fill:30, location:"ป่าแพง", icon:"🔵", status:"ok" },
-];
-
-const EMPLOYEES = [
-  { id:"e1", name:"คุณสมชาย ใจดี",      branch:"hq",          avatar:"👨", score:1250, records:48, co2Saved:12.4, badge:"🏆", level:"Eco Master" },
-  { id:"e2", name:"คุณสมหญิง รักษ์โลก", branch:"changphueak", avatar:"👩", score:980,  records:37, co2Saved:9.8,  badge:"🥈", level:"Green Pro" },
-  { id:"e3", name:"คุณมานะ สีเขียว",    branch:"mahidol",     avatar:"🧑", score:850,  records:32, co2Saved:8.1,  badge:"🥉", level:"Green Pro" },
-  { id:"e4", name:"คุณวันดี ไร้ขยะ",    branch:"paphaeng",    avatar:"👨", score:720,  records:28, co2Saved:6.9,  badge:"🌟", level:"Eco Learner" },
-  { id:"e5", name:"คุณนภา ช่วยโลก",     branch:"thapduea",    avatar:"👩", score:610,  records:24, co2Saved:5.7,  badge:"🌱", level:"Eco Learner" },
-];
-
-/* ============================================================
-   UTILITIES
-============================================================ */
-function calcCO2(wasteId, qtyId, disposalId) {
-  const w = WASTE_TYPES.find(x => x.id === wasteId);
-  const q = QUANTITIES.find(x => x.id === qtyId);
-  const d = DISPOSALS.find(x => x.id === disposalId);
-  if (!w || !q || !d) return 0;
-  return +(w.factor * q.value * d.mult).toFixed(4);
-}
-
-function calcCarbonSaved(wasteId, qty) {
-  const w = WASTE_TYPES.find(x => x.id === wasteId);
-  if (!w) return 0;
-  return +(w.factor * qty * 0.9).toFixed(4);
-}
-
-function dbLoad() {
-  try { const v = localStorage.getItem("hk_v3_records"); return v ? JSON.parse(v) : []; }
-  catch { return []; }
-}
-function dbSave(records) {
-  try { localStorage.setItem("hk_v3_records", JSON.stringify(records)); } catch {}
-}
-
-function getDay(ts)   { return new Date(ts).toISOString().slice(0, 10); }
-function getMonth(ts) { return new Date(ts).toISOString().slice(0, 7); }
-function getYear(ts)  { return new Date(ts).getFullYear().toString(); }
-
-function calcGreenScore(records) {
-  let score = 0;
-  records.forEach(r => {
-    const d = DISPOSALS.find(x => x.id === r.disposalId);
-    if (d?.tag === "best") score += 30;
-    else if (d?.tag === "good") score += 20;
-    else if (d?.tag === "warn") score += 5;
-    else score -= 10;
-    if (r.aiMatch) score += 10;
-    if (r.hasPhoto) score += 5;
-  });
-  return Math.max(0, score);
-}
-
-async function geminiAnalyze(base64, wasteLabel) {
-  if (!GEMINI_KEY) {
-    await new Promise(r => setTimeout(r, 1500));
-    const confidence = 75 + Math.floor(Math.random() * 22);
-    return { match: confidence > 80, confidence, detected: `ตรวจพบ: ${wasteLabel}`, remark: "Demo mode", geminiUsed: false, category: wasteLabel };
-  }
+// ── GEMINI VISION API ────────────────────────────────────────
+async function geminiAnalyze(base64, wasteLabel) { 
+  if (GEMINI_KEY === "YOUR_GEMINI_API_KEY") { 
+    await new Promise(r => setTimeout(r, 1500)); 
+    return { match: true, confidence: 85, detected: wasteLabel, remark: "Demo Mode" }; 
+  } 
   try {
-    const res = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_KEY}`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          contents: [{ parts: [
-            { inline_data: { mime_type: "image/jpeg", data: base64 } },
-            { text: `คุณคือ AI ผู้เชี่ยวชาญด้านการจัดการขยะ Zero Waste ระดับองค์กร\nวิเคราะห์ภาพนี้และตอบกลับเป็น JSON เท่านั้น ไม่มี markdown:\n{\n  "match": true/false,\n  "confidence": 0-100,\n  "detected": "ชื่อขยะที่พบในภาษาไทย",\n  "category": "ประเภทที่ใกล้เคียงที่สุดจาก: plastic/coffee_grounds/aluminium/glass/paper/food_waste/general/electronic",\n  "remark": "ความเห็นสั้น ๆ ไม่เกิน 20 คำ"\n}\nประเภทขยะที่ผู้ใช้เลือก: "${wasteLabel}"` }
-          ]}],
-          generationConfig: { temperature: 0.1, maxOutputTokens: 300 }
-        })
-      }
-    );
+    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_KEY}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        contents: [{ parts: [{ inline_data: { mime_type: "image/jpeg", data: base64 }}, 
+        { text: `วิเคราะห์ภาพนี้และตอบกลับเป็น JSON: {"match": true/false, "confidence": 0-100, "detected": "ชื่อขยะ", "remark": "ความเห็น"}\nประเภทที่เลือก: "${wasteLabel}"` }] }]
+      })
+    });
     const data = await res.json();
-    const text = data.candidates?.[0]?.content?.parts?.[0]?.text || "{}";
-    const parsed = JSON.parse(text.replace(/```json|```/g, "").trim());
-    return { ...parsed, geminiUsed: true };
-  } catch {
-    return { match: true, confidence: 72, detected: wasteLabel, remark: "ไม่สามารถเชื่อมต่อ Gemini", geminiUsed: false, category: wasteLabel };
-  }
-}
-
-async function geminiCoach(records, totalCO2) {
-  const summary = `
-    มีข้อมูลขยะ ${records.length} รายการ
-    CO2e รวม: ${totalCO2} kg
-    ขยะที่มากที่สุด: ${records.length > 0 ? records[0].wasteLabel : "ยังไม่มีข้อมูล"}
-  `;
-  if (!GEMINI_KEY) {
-    return "💡 แนะนำให้เพิ่มการรีไซเคิลพลาสติกและกากกาแฟ เพื่อลด CO2e ได้ถึง 30% ภายในเดือนหน้า ลองเริ่มจากถุงกาแฟที่ใช้แล้วนำมาทำปุ๋ยหมักครับ";
-  }
-  try {
-    const res = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_KEY}`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: `คุณคือ AI Sustainability Coach ของ Hillkoff Coffee\nข้อมูล: ${summary}\nให้คำแนะนำสั้น ๆ 3-4 ประโยค เป็นภาษาไทย เน้นปฏิบัติได้จริง ไม่ต้องมี header หรือ bullet point` }] }],
-          generationConfig: { temperature: 0.7, maxOutputTokens: 200 }
-        })
-      }
-    );
-    const data = await res.json();
-    return data.candidates?.[0]?.content?.parts?.[0]?.text || "ไม่สามารถโหลดคำแนะนำได้";
-  } catch {
-    return "💡 เพิ่มการรีไซเคิลและหมักปุ๋ยจากกากกาแฟเพื่อลด CO2e";
-  }
-}
-
-/* ============================================================
-   EXPORT FUNCTIONS
-============================================================ */
-function exportCSV(records) {
-  const header = ["วันที่","เวลา","สาขา","ประเภทขยะ","ปริมาณ(kg)","วิธีจัดการ","CO2e(kg)","Carbon_Saved(kg)","AI_ยืนยัน","AI_ความมั่นใจ(%)","มาตรฐาน","Green_Score"];
-  const rows = records.map(r => {
-    const saved = calcCarbonSaved(r.wasteType, r.qty);
-    const wt = WASTE_TYPES.find(w => w.id === r.wasteType);
-    return [
-      new Date(r.ts).toLocaleDateString("th-TH"),
-      new Date(r.ts).toLocaleTimeString("th-TH"),
-      r.branchName, r.wasteLabel, r.qty, r.disposalLabel,
-      r.co2e, saved, r.aiMatch ? "ใช่" : "ไม่", r.aiConf || "-",
-      wt?.std || "ISO14064", r.greenScore || 0
-    ];
-  });
-  const csv = [header, ...rows].map(r => r.join(",")).join("\n");
-  const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = `Hillkoff_ESG_${new Date().toISOString().slice(0,10)}.csv`;
-  a.click();
-  URL.revokeObjectURL(a.href);
-}
-
-function exportPDFReport(records, branchStats, totalCO2) {
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF();
-  
-  doc.setFillColor(5, 14, 7);
-  doc.rect(0, 0, 210, 297, 'F');
-  
-  doc.setFontSize(22);
-  doc.setTextColor(0, 255, 136);
-  doc.text("HILLKOFF ZERO WASTE", 105, 25, { align: "center" });
-  doc.setFontSize(12);
-  doc.setTextColor(200, 230, 210);
-  doc.text("ESG & Carbon Report | ISO 14064", 105, 33, { align: "center" });
-  
-  doc.setDrawColor(0, 255, 136);
-  doc.setLineWidth(0.5);
-  doc.line(20, 38, 190, 38);
-  
-  const date = new Date().toLocaleDateString("th-TH");
-  doc.setFontSize(10);
-  doc.setTextColor(150, 200, 160);
-  doc.text(`วันที่จัดทำ: ${date}`, 20, 46);
-  doc.text(`รายการทั้งหมด: ${records.length}`, 20, 53);
-  
-  doc.setFontSize(16);
-  doc.setTextColor(0, 255, 136);
-  doc.text(`CO2e รวม: ${totalCO2.toFixed(3)} kg`, 105, 53, { align: "center" });
-  
-  let y = 68;
-  doc.setFontSize(12);
-  doc.setTextColor(0, 255, 136);
-  doc.text("สรุปแยกสาขา", 20, y);
-  y += 8;
-  
-  doc.setFontSize(9);
-  doc.setTextColor(200, 230, 210);
-  branchStats.forEach(b => {
-    doc.text(`${b.name}: ${b.count} รายการ | ${b.totalQty.toFixed(1)} kg | ${b.co2} kg CO2e`, 20, y);
-    y += 7;
-  });
-  
-  y += 5;
-  doc.setFontSize(12);
-  doc.setTextColor(0, 255, 136);
-  doc.text("มาตรฐานสากลที่ใช้", 20, y);
-  y += 8;
-  
-  const standards = [
-    "ISO 14064-1:2018 — วัดก๊าซเรือนกระจกระดับองค์กร",
-    "GHG Protocol Corporate Standard — Carbon Footprint Scope 1-3",
-    "WEEE Directive 2012/19/EU — ขยะอิเล็กทรอนิกส์",
-    "UN SDG Goal 12 — การผลิตและบริโภคที่ยั่งยืน",
-  ];
-  doc.setFontSize(9);
-  doc.setTextColor(200, 230, 210);
-  standards.forEach(s => {
-    doc.text(s, 20, y);
-    y += 7;
-  });
-  
-  y += 5;
-  doc.setFontSize(12);
-  doc.setTextColor(0, 255, 136);
-  doc.text("10 รายการล่าสุด", 20, y);
-  y += 8;
-  
-  doc.setFontSize(8);
-  doc.setTextColor(200, 230, 210);
-  records.slice(0, 10).forEach(r => {
-    const line = `${new Date(r.ts).toLocaleDateString("th-TH")} | ${r.branchName} | ${r.wasteLabel} | ${r.qty}kg | ${r.co2e}kg CO2e`;
-    doc.text(line, 20, y);
-    y += 6;
-  });
-  
-  doc.save(`Hillkoff_ESG_${new Date().toISOString().slice(0,10)}.pdf`);
-}
-
-/* ============================================================
-   CHART COMPONENTS
-============================================================ */
-function CarbonTrendChart({ records }) {
-  const canvasRef = useRef(null);
-  const chartRef  = useRef(null);
-
-  useEffect(() => {
-    if (!canvasRef.current) return;
-    const ctx = canvasRef.current.getContext("2d");
-
-    const last7 = Array.from({ length: 7 }, (_, i) => {
-      const d = new Date(); d.setDate(d.getDate() - (6 - i));
-      return d.toISOString().slice(0, 10);
-    });
-    const data = last7.map(day => +records.filter(r => getDay(r.ts) === day).reduce((s, r) => s + r.co2e, 0).toFixed(3));
-    const labels = last7.map(d => d.slice(5));
-
-    if (chartRef.current) chartRef.current.destroy();
-    chartRef.current = new Chart(ctx, {
-      type: "line",
-      data: {
-        labels,
-        datasets: [{
-          label: "CO₂e (kg)",
-          data,
-          borderColor: "#00ff88",
-          backgroundColor: "rgba(0,255,136,0.08)",
-          pointBackgroundColor: "#00ff88",
-          pointBorderColor: "#050e07",
-          pointRadius: 5,
-          pointHoverRadius: 8,
-          borderWidth: 2,
-          fill: true,
-          tension: 0.4,
-        }]
-      },
-      options: {
-        responsive: true, maintainAspectRatio: false,
-        animation: { duration: 1200, easing: "easeInOutQuart" },
-        plugins: {
-          legend: { labels: { color: "#82e0aa", font: { family: "Sarabun" } } },
-          tooltip: {
-            backgroundColor: "rgba(5,14,7,0.95)",
-            borderColor: "#00ff88", borderWidth: 1,
-            titleColor: "#00ff88", bodyColor: "#e8f5e9",
-          }
-        },
-        scales: {
-          x: { ticks: { color: "#82e0aa" }, grid: { color: "rgba(0,255,136,0.08)" } },
-          y: { ticks: { color: "#82e0aa" }, grid: { color: "rgba(0,255,136,0.08)" }, beginAtZero: true },
-        }
-      }
-    });
-    return () => { if (chartRef.current) chartRef.current.destroy(); };
-  }, [records]);
-
-  return (
-    <div style={{ height: 200, background: "rgba(0,255,136,0.03)", borderRadius: 14, padding: "10px", border: "1px solid rgba(0,255,136,0.15)" }}>
-      <canvas ref={canvasRef} />
-    </div>
-  );
-}
-
-function WastePieChart({ records }) {
-  const canvasRef = useRef(null);
-  const chartRef  = useRef(null);
-
-  useEffect(() => {
-    if (!canvasRef.current) return;
-    const ctx = canvasRef.current.getContext("2d");
-    const breakdown = WASTE_TYPES.map(wt => ({
-      label: wt.label,
-      value: +records.filter(r => r.wasteType === wt.id).reduce((s, r) => s + r.co2e, 0).toFixed(3),
-      color: wt.color,
-    })).filter(w => w.value > 0);
-
-    if (chartRef.current) chartRef.current.destroy();
-    if (breakdown.length === 0) return;
-    chartRef.current = new Chart(ctx, {
-      type: "doughnut",
-      data: {
-        labels: breakdown.map(b => b.label),
-        datasets: [{
-          data: breakdown.map(b => b.value),
-          backgroundColor: breakdown.map(b => b.color + "cc"),
-          borderColor: breakdown.map(b => b.color),
-          borderWidth: 2,
-          hoverOffset: 8,
-        }]
-      },
-      options: {
-        responsive: true, maintainAspectRatio: false,
-        animation: { duration: 1000, animateScale: true },
-        plugins: {
-          legend: { position: "right", labels: { color: "#82e0aa", font: { family: "Sarabun", size: 10 }, boxWidth: 12, padding: 8 } },
-          tooltip: {
-            backgroundColor: "rgba(5,14,7,0.95)",
-            borderColor: "#00ff88", borderWidth: 1,
-            titleColor: "#00ff88", bodyColor: "#e8f5e9",
-          }
-        }
-      }
-    });
-    return () => { if (chartRef.current) chartRef.current.destroy(); };
-  }, [records]);
-
-  return (
-    <div style={{ height: 180, background: "rgba(0,255,136,0.03)", borderRadius: 14, padding: "10px", border: "1px solid rgba(0,255,136,0.15)" }}>
-      <canvas ref={canvasRef} />
-    </div>
-  );
-}
-
-function BranchBarChart({ branchStats }) {
-  const canvasRef = useRef(null);
-  const chartRef  = useRef(null);
-
-  useEffect(() => {
-    if (!canvasRef.current) return;
-    const ctx = canvasRef.current.getContext("2d");
-    if (chartRef.current) chartRef.current.destroy();
-    chartRef.current = new Chart(ctx, {
-      type: "bar",
-      data: {
-        labels: branchStats.map(b => b.short),
-        datasets: [{
-          label: "CO₂e (kg)",
-          data: branchStats.map(b => b.co2),
-          backgroundColor: branchStats.map(b => b.color + "66"),
-          borderColor: branchStats.map(b => b.color),
-          borderWidth: 2,
-          borderRadius: 6,
-        }]
-      },
-      options: {
-        responsive: true, maintainAspectRatio: false,
-        animation: { duration: 1000, easing: "easeOutBounce" },
-        plugins: {
-          legend: { labels: { color: "#82e0aa", font: { family: "Sarabun" } } },
-          tooltip: {
-            backgroundColor: "rgba(5,14,7,0.95)",
-            borderColor: "#00ff88", borderWidth: 1,
-            titleColor: "#00ff88", bodyColor: "#e8f5e9",
-          }
-        },
-        scales: {
-          x: { ticks: { color: "#82e0aa" }, grid: { color: "rgba(0,255,136,0.06)" } },
-          y: { ticks: { color: "#82e0aa" }, grid: { color: "rgba(0,255,136,0.06)" }, beginAtZero: true },
-        }
-      }
-    });
-    return () => { if (chartRef.current) chartRef.current.destroy(); };
-  }, [branchStats]);
-
-  return (
-    <div style={{ height: 180, background: "rgba(0,255,136,0.03)", borderRadius: 14, padding: "10px", border: "1px solid rgba(0,255,136,0.15)" }}>
-      <canvas ref={canvasRef} />
-    </div>
-  );
-}
-
-function GreenScoreGauge({ score, maxScore }) {
-  const canvasRef = useRef(null);
-  const chartRef  = useRef(null);
-  const pct = Math.min((score / Math.max(maxScore, 1)) * 100, 100);
-
-  useEffect(() => {
-    if (!canvasRef.current) return;
-    const ctx = canvasRef.current.getContext("2d");
-    if (chartRef.current) chartRef.current.destroy();
-    chartRef.current = new Chart(ctx, {
-      type: "doughnut",
-      data: {
-        datasets: [{
-          data: [pct, 100 - pct],
-          backgroundColor: ["rgba(0,255,136,0.8)", "rgba(0,255,136,0.05)"],
-          borderColor: ["#00ff88", "transparent"],
-          borderWidth: [2, 0],
-          circumference: 270, rotation: 225,
-        }]
-      },
-      options: {
-        responsive: true, maintainAspectRatio: false, cutout: "75%",
-        animation: { duration: 1500, easing: "easeInOutQuart" },
-        plugins: { legend: { display: false }, tooltip: { enabled: false } }
-      }
-    });
-    return () => { if (chartRef.current) chartRef.current.destroy(); };
-  }, [pct]);
-
-  return (
-    <div style={{ position: "relative", width: 120, height: 120, margin: "0 auto" }}>
-      <canvas ref={canvasRef} />
-      <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", paddingTop: 10 }}>
-        <span style={{ fontSize: 22, fontWeight: 900, color: "#00ff88" }}>{Math.round(pct)}</span>
-        <span style={{ fontSize: 9, color: "#82e0aa" }}>Green Score</span>
-      </div>
-    </div>
-  );
-}
-
-/* ============================================================
-   SHARED UI COMPONENTS
-============================================================ */
-function GlowCard({ children, style = {}, color = "#00ff88", onClick }) {
-  return (
-    <div onClick={onClick} style={{
-      background: `linear-gradient(135deg, rgba(0,255,136,0.05), rgba(5,14,7,0.9))`,
-      border: `1px solid ${color}33`,
-      borderRadius: 16,
-      padding: "14px 16px",
-      boxShadow: `0 0 20px ${color}11, inset 0 0 20px rgba(0,0,0,0.3)`,
-      cursor: onClick ? "pointer" : "default",
-      transition: "all 0.2s",
-      ...style,
-    }}
-    onMouseEnter={e => { if (onClick) e.currentTarget.style.boxShadow = `0 0 30px ${color}33`; }}
-    onMouseLeave={e => { if (onClick) e.currentTarget.style.boxShadow = `0 0 20px ${color}11, inset 0 0 20px rgba(0,0,0,0.3)`; }}
-    >
-      {children}
-    </div>
-  );
-}
-
-function KPICard({ label, value, unit, icon, color = "#00ff88", sub }) {
-  return (
-    <GlowCard color={color} style={{ textAlign: "center", padding: "12px 8px" }}>
-      <div style={{ fontSize: 22 }}>{icon}</div>
-      <div style={{ fontSize: 20, fontWeight: 900, color, lineHeight: 1.2, fontFamily: "'Space Mono', monospace" }}>
-        {value}
-      </div>
-      <div style={{ fontSize: 9, color }}>
-        {unit}
-      </div>
-      <div style={{ fontSize: 10, color: "#6b8c74", marginTop: 3 }}>{label}</div>
-      {sub && <div style={{ fontSize: 9, color: "#4a7a54" }}>{sub}</div>}
-    </GlowCard>
-  );
-}
-
-function SectionTitle({ children, color = "#00ff88" }) {
-  return (
-    <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 4 }}>
-      <div style={{ width: 3, height: 16, background: color, borderRadius: 2 }} />
-      <span style={{ fontSize: 11, fontWeight: 800, color, letterSpacing: 1.5, textTransform: "uppercase" }}>
-        {children}
-      </span>
-    </div>
-  );
-}
-
-function GlowButton({ children, onClick, color = "#00ff88", style = {}, disabled = false }) {
-  return (
-    <button
-      onClick={onClick}
-      disabled={disabled}
-      style={{
-        background: `linear-gradient(135deg, ${color}22, ${color}11)`,
-        border: `1px solid ${color}66`,
-        color,
-        borderRadius: 12,
-        padding: "12px 20px",
-        fontSize: 13,
-        fontWeight: 700,
-        cursor: disabled ? "not-allowed" : "pointer",
-        opacity: disabled ? 0.5 : 1,
-        boxShadow: `0 0 15px ${color}22`,
-        transition: "all 0.2s",
-        width: "100%",
-        ...style,
-      }}
-    >
-      {children}
-    </button>
-  );
-}
-
-function ProgressBar({ value, max, color = "#00ff88", label, showPct = true }) {
-  const pct = Math.min((value / Math.max(max, 0.001)) * 100, 100);
-  return (
-    <div>
-      {label && <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
-        <span style={{ fontSize: 11, color: "#82e0aa" }}>{label}</span>
-        {showPct && <span style={{ fontSize: 11, color, fontFamily: "monospace" }}>{pct.toFixed(0)}%</span>}
-      </div>}
-      <div style={{ height: 8, background: "rgba(255,255,255,0.05)", borderRadius: 4, overflow: "hidden" }}>
-        <div style={{
-          height: "100%",
-          width: `${pct}%`,
-          background: `linear-gradient(90deg, ${color}88, ${color})`,
-          borderRadius: 4,
-          boxShadow: `0 0 8px ${color}66`,
-          transition: "width 1s ease",
-        }} />
-      </div>
-    </div>
-  );
-}
-
-function StatusDot({ status }) {
-  const colors = { ok: "#00ff88", warn: "#ffd93d", critical: "#ff6b6b" };
-  const labels = { ok: "ปกติ", warn: "เกือบเต็ม", critical: "ต้องเก็บด่วน!" };
-  return (
-    <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-      <div style={{ width: 8, height: 8, borderRadius: "50%", background: colors[status], boxShadow: `0 0 6px ${colors[status]}` }} className="blink" />
-      <span style={{ fontSize: 10, color: colors[status] }}>{labels[status]}</span>
-    </div>
-  );
-}
-
-function Badge({ text, color = "#00ff88" }) {
-  return (
-    <span style={{ background: color + "22", color, border: `1px solid ${color}44`, borderRadius: 20, padding: "2px 8px", fontSize: 9.5, fontWeight: 700 }}>
-      {text}
-    </span>
-  );
-}
-
-/* ============================================================
-   VIEWS
-============================================================ */
-// ── HOME / DASHBOARD ──
-function HomeView({ branchStats, totalCO2, records, onLog }) {
-  const greenScore = calcGreenScore(records);
-  const totalCarbonSaved = +records.reduce((s, r) => s + calcCarbonSaved(r.wasteType, r.qty), 0).toFixed(3);
-  const totalQty  = +records.reduce((s, r) => s + r.qty, 0).toFixed(1);
-  const thisMonth = records.filter(r => getMonth(r.ts) === getMonth(Date.now()));
-  const lastMonth = records.filter(r => {
-    const d = new Date(); d.setMonth(d.getMonth() - 1);
-    return getMonth(r.ts) === d.toISOString().slice(0, 7);
-  });
-  const monthCO2 = thisMonth.reduce((s, r) => s + r.co2e, 0);
-  const lastMonthCO2 = lastMonth.reduce((s, r) => s + r.co2e, 0);
-  const improvement = lastMonthCO2 > 0 ? (((lastMonthCO2 - monthCO2) / lastMonthCO2) * 100).toFixed(1) : "—";
-  const goalTarget = 50;
-  const goalPct = Math.min((totalCarbonSaved / goalTarget) * 100, 100);
-
-  return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-      {/* Hero */}
-      <div style={{
-        background: "linear-gradient(135deg, #0a2e15 0%, #050e07 100%)",
-        border: "1px solid rgba(0,255,136,0.2)",
-        borderRadius: 20,
-        padding: "22px 18px",
-        textAlign: "center",
-        boxShadow: "0 0 40px rgba(0,255,136,0.08)",
-        position: "relative",
-        overflow: "hidden",
-      }}>
-        {/* scan line */}
-        <div style={{
-          position: "absolute", left: 0, right: 0, height: 2,
-          background: "linear-gradient(90deg, transparent, rgba(0,255,136,0.4), transparent)",
-          animation: "scan-line 3s linear infinite",
-        }} />
-        <div style={{ fontSize: 11, color: "#4ade80", letterSpacing: 2, marginBottom: 4 }}>🌍 CARBON FOOTPRINT — HILLKOFF CORP</div>
-        <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 42, fontWeight: 700, color: "#00ff88", lineHeight: 1, textShadow: "0 0 20px rgba(0,255,136,0.5)" }}>
-          {totalCO2.toFixed(3)}
-        </div>
-        <div style={{ fontSize: 13, color: "#4ade80", marginBottom: 14 }}>kg CO₂e สะสม</div>
-        <div style={{ display: "flex", gap: 6, flexWrap: "wrap", justifyContent: "center", marginBottom: 14 }}>
-          {["ISO 14064","GHG Protocol","WEEE","SDG 12"].map(b => (
-            <Badge key={b} text={b} color="#00ff88" />
-          ))}
-        </div>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 6, marginBottom: 14 }}>
-          <div style={{ background: "rgba(0,255,136,0.07)", borderRadius: 10, padding: "8px 4px", textAlign: "center" }}>
-            <div style={{ fontSize: 16, fontWeight: 800, color: "#00ff88", fontFamily: "monospace" }}>{totalCarbonSaved}</div>
-            <div style={{ fontSize: 9, color: "#4ade80" }}>kg Carbon Saved</div>
-          </div>
-          <div style={{ background: "rgba(0,255,136,0.07)", borderRadius: 10, padding: "8px 4px", textAlign: "center" }}>
-            <div style={{ fontSize: 16, fontWeight: 800, color: "#00ff88", fontFamily: "monospace" }}>{records.length}</div>
-            <div style={{ fontSize: 9, color: "#4ade80" }}>รายการ</div>
-          </div>
-          <div style={{ background: "rgba(0,255,136,0.07)", borderRadius: 10, padding: "8px 4px", textAlign: "center" }}>
-            <div style={{ fontSize: 16, fontWeight: 800, color: improvement !== "—" && improvement > 0 ? "#00ff88" : "#ff6b6b", fontFamily: "monospace" }}>
-              {improvement !== "—" ? `${improvement}%` : "—"}
-            </div>
-            <div style={{ fontSize: 9, color: "#4ade80" }}>vs เดือนที่แล้ว</div>
-          </div>
-        </div>
-        <GlowButton onClick={onLog}>📝 บันทึกขยะใหม่</GlowButton>
-      </div>
-
-      {/* KPI Grid */}
-      <SectionTitle>KPI Dashboard</SectionTitle>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(2,1fr)", gap: 10 }}>
-        <KPICard label="Green Score" value={greenScore} unit="คะแนน" icon="🌿" color="#00ff88" />
-        <KPICard label="Carbon Saved" value={totalCarbonSaved} unit="kg CO₂e" icon="💚" color="#4ade80" />
-        <KPICard label="ปริมาณขยะ" value={totalQty} unit="kg" icon="♻️" color="#00e5ff" />
-        <KPICard label="AI ยืนยัน" value={records.filter(r => r.aiMatch).length} unit="รายการ" icon="🤖" color="#c084fc" />
-      </div>
-
-      {/* Goal Progress */}
-      <GlowCard color="#ffd93d">
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-          <span style={{ fontSize: 12, fontWeight: 700, color: "#ffd93d" }}>🎯 เป้าหมาย Carbon Saved</span>
-          <span style={{ fontSize: 11, color: "#ffd93d", fontFamily: "monospace" }}>{totalCarbonSaved}/{goalTarget} kg</span>
-        </div>
-        <ProgressBar value={totalCarbonSaved} max={goalTarget} color="#ffd93d" />
-        <div style={{ fontSize: 10, color: "#6b8c74", marginTop: 6 }}>
-          {goalPct >= 100 ? "🎉 บรรลุเป้าหมายแล้ว!" : `เหลืออีก ${(goalTarget - totalCarbonSaved).toFixed(1)} kg จะบรรลุเป้า`}
-        </div>
-      </GlowCard>
-
-      {/* Carbon Trend */}
-      <SectionTitle>Carbon Trend (7 วันล่าสุด)</SectionTitle>
-      <CarbonTrendChart records={records} />
-
-      {/* Branch Summary */}
-      <SectionTitle>สรุปแต่ละสาขา</SectionTitle>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 8 }}>
-        {branchStats.map(b => (
-          <GlowCard key={b.id} color={b.color} style={{ padding: "10px 8px", textAlign: "center" }}>
-            <div style={{ fontSize: 20 }}>{b.icon}</div>
-            <div style={{ fontSize: 10, fontWeight: 700, color: b.color }}>{b.name}</div>
-            <div style={{ fontSize: 9, color: "#6b8c74" }}>{b.count} รายการ</div>
-            <div style={{ fontSize: 12, color: b.color, fontWeight: 800, fontFamily: "monospace" }}>{b.co2} kg</div>
-          </GlowCard>
-        ))}
-      </div>
-
-      {/* Recent */}
-      <SectionTitle>รายการล่าสุด</SectionTitle>
-      {records.slice(0, 5).map(r => <RecordRow key={r.id} r={r} />)}
-      {records.length === 0 && <EmptyState />}
-    </div>
-  );
-}
-
-function RecordRow({ r }) {
-  const wt = WASTE_TYPES.find(w => w.id === r.wasteType);
-  return (
-    <GlowCard color={wt?.color || "#00ff88"} style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 12px" }}>
-      <span style={{ fontSize: 20 }}>{wt?.icon}</span>
-      <div style={{ flex: 1 }}>
-        <div style={{ fontSize: 12, fontWeight: 700, color: "#e8f5e9" }}>{r.branchName} · {r.wasteLabel}</div>
-        <div style={{ fontSize: 9, color: "#6b8c74" }}>{new Date(r.ts).toLocaleString("th-TH")}</div>
-      </div>
-      <div style={{ textAlign: "right" }}>
-        <div style={{ fontSize: 12, fontWeight: 800, color: wt?.color || "#00ff88", fontFamily: "monospace" }}>{r.co2e} kg</div>
-        {r.aiMatch && <Badge text="✅ AI" color="#00ff88" />}
-      </div>
-    </GlowCard>
-  );
-}
-
-function EmptyState() {
-  return (
-    <div style={{ textAlign: "center", padding: 28, color: "#2d5a3d", fontSize: 13 }}>
-      <div style={{ fontSize: 32, marginBottom: 8 }}>🌱</div>
-      ยังไม่มีข้อมูล เริ่มบันทึกขยะแรกได้เลย!
-    </div>
-  );
-}
-
-// ── LOG VIEW ──
-function LogView({ onAdd, showToast }) {
-  const [step, setStep]             = useState(0);
-  const [form, setForm]             = useState({ branch: null, waste: null, qty: null, disposal: null });
-  const [photo, setPhoto]           = useState(null);
-  const [photoPreview, setPhotoPreview] = useState(null);
-  const [aiRes, setAiRes]           = useState(null);
-  const [aiLoading, setAiLoading]   = useState(false);
-  const [saving, setSaving]         = useState(false);
-  const [aiBlocked, setAiBlocked]   = useState(false);
-  const [dragOver, setDragOver]     = useState(false);
-  const fileRef = useRef();
-
-  const w  = WASTE_TYPES.find(x => x.id === form.waste);
-  const q  = QUANTITIES.find(x => x.id === form.qty);
-  const d  = DISPOSALS.find(x => x.id === form.disposal);
-  const co2Preview = (form.waste && form.qty && form.disposal) ? calcCO2(form.waste, form.qty, form.disposal) : null;
-  const carbonSaved = (form.waste && q) ? calcCarbonSaved(form.waste, q.value) : null;
-  const canNext = [!!form.branch, !!form.waste, !!form.qty, !!form.disposal, true];
-
-  const handleFile = (file) => {
-    if (!file || !file.type.startsWith("image/")) return;
-    const reader = new FileReader();
-    reader.onload = ev => {
-      const fullData = ev.target.result;
-      setPhotoPreview(fullData);
-      setPhoto(fullData.split(",")[1]);
-      setAiRes(null); setAiBlocked(false);
-    };
-    reader.readAsDataURL(file);
-  };
-
-  const handlePhoto = (e) => handleFile(e.target.files[0]);
-  const handleDrop  = (e) => { e.preventDefault(); setDragOver(false); handleFile(e.dataTransfer.files[0]); };
-
-  const runGemini = async () => {
-    if (!photo || !form.waste) return;
-    setAiLoading(true);
-    const result = await geminiAnalyze(photo, w?.label || "");
-    setAiRes(result);
-    const blocked = !result.match && result.confidence > 60;
-    setAiBlocked(blocked);
-    if (blocked) showToast("⚠️ AI ตรวจพบขยะไม่ตรงประเภท กรุณาแก้ไข", "err");
-    setAiLoading(false);
-  };
-
-  const handleSubmit = async () => {
-    if (aiBlocked) { showToast("⚠️ กรุณาแก้ไขประเภทขยะตาม AI แนะนำ", "err"); return; }
-    setSaving(true);
-    const branch = BRANCHES.find(b => b.id === form.branch);
-    const rec = {
-      id: Date.now(), ts: new Date().toISOString(),
-      branchId: form.branch, branchName: branch?.name,
-      wasteType: form.waste, wasteLabel: w?.label,
-      qty: q?.value, disposalId: form.disposal, disposalLabel: d?.label,
-      co2e: co2Preview, hasPhoto: !!photo,
-      aiMatch: aiRes?.match ?? false, aiConf: aiRes?.confidence ?? null, geminiUsed: aiRes?.geminiUsed ?? false,
-      greenScore: d?.tag === "best" ? 30 : d?.tag === "good" ? 20 : 5,
-    };
-    await onAdd(rec);
-    setSaving(false);
-  };
-
-  const STEPS = ["สาขา","ประเภท","ปริมาณ","วิธีจัดการ","หลักฐาน"];
-
-  return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-      {/* Progress */}
-      <div style={{ display: "flex", gap: 4, alignItems: "center" }}>
-        {STEPS.map((lbl, i) => (
-          <div key={i} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 3 }}>
-            <div style={{
-              width: 26, height: 26, borderRadius: "50%",
-              background: i < step ? "#00ff88" : i === step ? "#145a32" : "rgba(0,255,136,0.1)",
-              border: i === step ? "2px solid #00ff88" : "2px solid transparent",
-              color: i < step ? "#050e07" : i === step ? "#00ff88" : "#2d5a3d",
-              display: "flex", alignItems: "center", justifyContent: "center",
-              fontSize: 11, fontWeight: 700,
-              boxShadow: i === step ? "0 0 12px rgba(0,255,136,0.4)" : "none",
-              transition: "all 0.3s",
-            }}>
-              {i < step ? "✓" : i + 1}
-            </div>
-            <span style={{ fontSize: 8, color: i <= step ? "#00ff88" : "#2d5a3d" }}>{lbl}</span>
-          </div>
-        ))}
-      </div>
-
-      {/* Step 0: Branch */}
-      {step === 0 && (
-        <>
-          <div style={{ fontSize: 18, fontWeight: 800, color: "#e8f5e9" }}>เลือกสาขา</div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 8 }}>
-            {BRANCHES.map(b => (
-              <GlowCard key={b.id} color={b.color}
-                style={{ textAlign: "center", padding: "14px 8px", border: `2px solid ${form.branch === b.id ? b.color : b.color + "22"}`, cursor: "pointer" }}
-                onClick={() => setForm(f => ({ ...f, branch: b.id }))}>
-                <div style={{ fontSize: 24 }}>{b.icon}</div>
-                <div style={{ fontSize: 10, fontWeight: 700, color: form.branch === b.id ? b.color : "#82e0aa", marginTop: 4 }}>{b.name}</div>
-              </GlowCard>
-            ))}
-          </div>
-        </>
-      )}
-
-      {/* Step 1: Waste Type */}
-      {step === 1 && (
-        <>
-          <div style={{ fontSize: 18, fontWeight: 800, color: "#e8f5e9" }}>ประเภทของเสีย</div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(2,1fr)", gap: 8 }}>
-            {WASTE_TYPES.map(wt => (
-              <GlowCard key={wt.id} color={wt.color}
-                style={{ textAlign: "center", padding: "12px 8px", border: `2px solid ${form.waste === wt.id ? wt.color : wt.color + "22"}`, cursor: "pointer" }}
-                onClick={() => setForm(f => ({ ...f, waste: wt.id }))}>
-                <div style={{ fontSize: 24 }}>{wt.icon}</div>
-                <div style={{ fontSize: 11, fontWeight: 700, color: form.waste === wt.id ? wt.color : "#e8f5e9", marginTop: 3 }}>{wt.label}</div>
-                <div style={{ fontSize: 9, color: "#4a7a54" }}>{wt.factor} kg CO₂e/kg</div>
-                <Badge text={wt.std} color={wt.color} />
-              </GlowCard>
-            ))}
-          </div>
-        </>
-      )}
-
-      {/* Step 2: Quantity */}
-      {step === 2 && (
-        <>
-          <div style={{ fontSize: 18, fontWeight: 800, color: "#e8f5e9" }}>ปริมาณโดยประมาณ</div>
-          {QUANTITIES.map(qt => (
-            <GlowCard key={qt.id} color="#00ff88"
-              style={{ display: "flex", alignItems: "center", gap: 12, border: `2px solid ${form.qty === qt.id ? "#00ff88" : "rgba(0,255,136,0.15)"}`, cursor: "pointer" }}
-              onClick={() => setForm(f => ({ ...f, qty: qt.id }))}>
-              <span style={{ fontSize: 22 }}>⚖️</span>
-              <div style={{ flex: 1 }}>
-                <div style={{ fontWeight: 700, fontSize: 14, color: "#e8f5e9" }}>{qt.label}</div>
-                <div style={{ fontSize: 12, color: "#6b8c74" }}>{qt.sub}</div>
-              </div>
-              <span style={{ fontWeight: 800, fontSize: 14, color: "#00ff88", fontFamily: "monospace" }}>{qt.value} kg</span>
-            </GlowCard>
-          ))}
-        </>
-      )}
-
-      {/* Step 3: Disposal */}
-      {step === 3 && (
-        <>
-          <div style={{ fontSize: 18, fontWeight: 800, color: "#e8f5e9" }}>วิธีจัดการของเสีย</div>
-          {DISPOSALS.map(dp => (
-            <GlowCard key={dp.id} color={dp.color}
-              style={{ display: "flex", alignItems: "center", gap: 12, border: `2px solid ${form.disposal === dp.id ? dp.color : dp.color + "22"}`, cursor: "pointer" }}
-              onClick={() => setForm(f => ({ ...f, disposal: dp.id }))}>
-              <span style={{ fontSize: 22 }}>{dp.icon}</span>
-              <div style={{ flex: 1 }}>
-                <div style={{ fontWeight: 700, fontSize: 14, color: "#e8f5e9" }}>{dp.label}</div>
-                <div style={{ fontSize: 11, color: dp.color }}>
-                  {dp.tag==="best" ? "✅ ดีที่สุด — ลด CO₂e มากที่สุด" : dp.tag==="good" ? "🟡 ดี" : dp.tag==="warn" ? "⚠️ ควรหลีกเลี่ยง" : "🔴 ผลกระทบสูงมาก"}
-                </div>
-              </div>
-              <span style={{ fontSize: 11, color: "#6b8c74", fontFamily: "monospace" }}>×{dp.mult}</span>
-            </GlowCard>
-          ))}
-          {co2Preview !== null && (
-            <GlowCard color={co2Preview < 1 ? "#00ff88" : "#ff6b6b"} style={{ textAlign: "center" }}>
-              <div style={{ fontSize: 11, color: "#82e0aa", marginBottom: 4 }}>CO₂e ที่ปล่อย (GHG Scope 3)</div>
-              <div style={{ fontSize: 36, fontWeight: 900, color: co2Preview < 1 ? "#00ff88" : "#ff6b6b", fontFamily: "monospace" }}>
-                {co2Preview} kg
-              </div>
-              {carbonSaved !== null && (
-                <div style={{ fontSize: 12, color: "#4ade80", marginTop: 4 }}>
-                  💚 Carbon Saved: {carbonSaved} kg CO₂e
-                </div>
-              )}
-            </GlowCard>
-          )}
-        </>
-      )}
-
-      {/* Step 4: Photo + AI */}
-      {step === 4 && (
-        <>
-          <div style={{ fontSize: 18, fontWeight: 800, color: "#e8f5e9" }}>ถ่ายรูป + Gemini Vision AI</div>
-
-          {/* Summary */}
-          <GlowCard color="#00ff88">
-            {[
-              ["สาขา",      BRANCHES.find(b => b.id === form.branch)?.name],
-              ["ประเภท",    `${w?.icon} ${w?.label}`],
-              ["ปริมาณ",    `${q?.value} kg (${q?.label})`],
-              ["วิธีจัดการ",`${d?.icon} ${d?.label}`],
-              ["CO₂e",     `${co2Preview} kg`],
-              ["Carbon Saved", `${carbonSaved} kg`],
-            ].map(([k, v]) => (
-              <div key={k} style={{ display: "flex", justifyContent: "space-between", padding: "3px 0", borderBottom: "1px solid rgba(0,255,136,0.08)" }}>
-                <span style={{ fontSize: 11, color: "#6b8c74" }}>{k}</span>
-                <span style={{ fontSize: 11, fontWeight: 700, color: "#e8f5e9" }}>{v}</span>
-              </div>
-            ))}
-          </GlowCard>
-
-          {/* Upload Zone */}
-          <div
-            onDragOver={e => { e.preventDefault(); setDragOver(true); }}
-            onDragLeave={() => setDragOver(false)}
-            onDrop={handleDrop}
-            onClick={() => fileRef.current?.click()}
-            style={{
-              border: `2px dashed ${dragOver ? "#00ff88" : "rgba(0,255,136,0.3)"}`,
-              borderRadius: 14,
-              padding: "20px 14px",
-              textAlign: "center",
-              cursor: "pointer",
-              background: dragOver ? "rgba(0,255,136,0.05)" : "transparent",
-              transition: "all 0.2s",
-            }}>
-            {photoPreview ? (
-              <img src={photoPreview} alt="waste" style={{ width: "100%", maxHeight: 180, objectFit: "cover", borderRadius: 10 }} />
-            ) : (
-              <>
-                <div style={{ fontSize: 32, marginBottom: 8 }}>📷</div>
-                <div style={{ fontSize: 13, color: "#82e0aa" }}>ถ่ายรูปหรือ Drag & Drop ที่นี่</div>
-                <div style={{ fontSize: 10, color: "#4a7a54", marginTop: 4 }}>รองรับ: JPG, PNG, HEIC</div>
-              </>
-            )}
-          </div>
-          <input ref={fileRef} type="file" accept="image/*" capture="environment" style={{ display: "none" }} onChange={handlePhoto} />
-
-          {photo && (
-            <GlowButton onClick={runGemini} disabled={aiLoading} color="#c084fc">
-              {aiLoading ? "🤖 Gemini กำลังวิเคราะห์..." : "🤖 วิเคราะห์ด้วย Gemini Vision AI"}
-            </GlowButton>
-          )}
-
-          {aiLoading && (
-            <div style={{ textAlign: "center", padding: 16 }}>
-              <div style={{ fontSize: 28, animation: "spin-slow 1s linear infinite", display: "inline-block" }}>⚙️</div>
-              <div style={{ fontSize: 12, color: "#82e0aa", marginTop: 8 }}>AI กำลังวิเคราะห์ภาพ...</div>
-              <ProgressBar value={70} max={100} color="#c084fc" label="" showPct={false} />
-            </div>
-          )}
-
-          {aiRes && (
-            <GlowCard color={aiRes.match ? "#00ff88" : "#ff6b6b"} style={{ border: `2px solid ${aiRes.match ? "#00ff88" : "#ff6b6b"}66` }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
-                <span style={{ fontSize: 28 }}>{aiRes.match ? "✅" : "⚠️"}</span>
-                <div style={{ flex: 1 }}>
-                  <div style={{ fontWeight: 700, color: aiRes.match ? "#00ff88" : "#ff6b6b", fontSize: 13 }}>
-                    {aiRes.match ? "Gemini ยืนยัน: ตรงประเภท" : "⚠️ ประเภทไม่ตรง — กรุณาแก้ไข"}
-                  </div>
-                  <div style={{ fontSize: 12, color: "#82e0aa" }}>{aiRes.detected}</div>
-                  <div style={{ fontSize: 11, color: "#6b8c74" }}>{aiRes.remark}</div>
-                </div>
-                <div style={{
-                  background: aiRes.match ? "#00ff8822" : "#ff6b6b22",
-                  border: `1px solid ${aiRes.match ? "#00ff88" : "#ff6b6b"}`,
-                  borderRadius: 20, padding: "4px 10px",
-                  fontSize: 13, fontWeight: 700, color: aiRes.match ? "#00ff88" : "#ff6b6b",
-                  fontFamily: "monospace",
-                }}>
-                  {aiRes.confidence}%
-                </div>
-              </div>
-              <ProgressBar value={aiRes.confidence} max={100} color={aiRes.match ? "#00ff88" : "#ff6b6b"} />
-              {!aiRes.match && (
-                <div style={{ marginTop: 10, padding: "8px 10px", background: "rgba(255,107,107,0.1)", borderRadius: 8, fontSize: 11, color: "#ff6b6b" }}>
-                  🔴 AI ตรวจพบ: <strong>{aiRes.detected}</strong><br />
-                  กรุณากลับไปแก้ไขประเภทขยะก่อนบันทึก
-                </div>
-              )}
-            </GlowCard>
-          )}
-
-          <GlowButton onClick={handleSubmit} disabled={saving || aiBlocked} color={aiBlocked ? "#ff6b6b" : "#00ff88"}>
-            {saving ? "⏳ กำลังบันทึก..." : aiBlocked ? "🔴 แก้ไขประเภทก่อนบันทึก" : "✅ บันทึกข้อมูล (ISO 14064)"}
-          </GlowButton>
-        </>
-      )}
-
-      {/* Navigation */}
-      <div style={{ display: "flex", gap: 10 }}>
-        {step > 0 && (
-          <button onClick={() => setStep(s => s - 1)} style={{
-            flex: 1, padding: 12, background: "transparent", border: "1px solid rgba(0,255,136,0.3)",
-            borderRadius: 12, color: "#82e0aa", fontSize: 13, cursor: "pointer",
-          }}>← ย้อนกลับ</button>
-        )}
-        {step < 4 && (
-          <button
-            disabled={!canNext[step]}
-            onClick={() => setStep(s => s + 1)}
-            style={{
-              flex: 2, padding: 12, background: canNext[step] ? "rgba(0,255,136,0.15)" : "rgba(255,255,255,0.03)",
-              border: `1px solid ${canNext[step] ? "#00ff8866" : "rgba(255,255,255,0.08)"}`,
-              borderRadius: 12, color: canNext[step] ? "#00ff88" : "#2d5a3d",
-              fontSize: 14, fontWeight: 700, cursor: canNext[step] ? "pointer" : "not-allowed",
-              boxShadow: canNext[step] ? "0 0 15px rgba(0,255,136,0.15)" : "none",
-              transition: "all 0.2s",
-            }}>
-            ถัดไป →
-          </button>
-        )}
-      </div>
-    </div>
-  );
-}
-
-// ── ANALYTICS VIEW ──
-function AnalyticsView({ records, branchStats }) {
-  const [period, setPeriod]           = useState("monthly");
-  const [selectedBranch, setSelectedBranch] = useState("all");
-
-  const filtered = selectedBranch === "all" ? records : records.filter(r => r.branchId === selectedBranch);
-
-  const grouped = {};
-  filtered.forEach(r => {
-    const key = period === "daily" ? getDay(r.ts) : period === "monthly" ? getMonth(r.ts) : getYear(r.ts);
-    if (!grouped[key]) grouped[key] = { co2: 0, count: 0, qty: 0, saved: 0 };
-    grouped[key].co2   += r.co2e;
-    grouped[key].count += 1;
-    grouped[key].qty   += r.qty;
-    grouped[key].saved += calcCarbonSaved(r.wasteType, r.qty);
-  });
-
-  const entries  = Object.entries(grouped).sort((a, b) => a[0].localeCompare(b[0])).slice(-12);
-  const totalSaved = +filtered.reduce((s, r) => s + calcCarbonSaved(r.wasteType, r.qty), 0).toFixed(3);
-  const totalCO2Filtered = +filtered.reduce((s, r) => s + r.co2e, 0).toFixed(3);
-  const wasteBreak = WASTE_TYPES.map(wt => ({
-    ...wt,
-    total: +filtered.filter(r => r.wasteType === wt.id).reduce((s, r) => s + r.co2e, 0).toFixed(3),
-    count: filtered.filter(r => r.wasteType === wt.id).length,
-  })).filter(w => w.total > 0).sort((a, b) => b.total - a.total);
-
-  return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-      {/* Period Toggle */}
-      <div style={{ display: "flex", gap: 6 }}>
-        {[["daily","รายวัน"],["monthly","รายเดือน"],["yearly","รายปี"]].map(([p, lbl]) => (
-          <button key={p}
-            onClick={() => setPeriod(p)}
-            style={{
-              flex: 1, padding: "8px 0", borderRadius: 10, fontSize: 12, cursor: "pointer",
-              background: period === p ? "rgba(0,255,136,0.15)" : "transparent",
-              border: `1px solid ${period === p ? "#00ff8866" : "rgba(0,255,136,0.15)"}`,
-              color: period === p ? "#00ff88" : "#6b8c74", fontWeight: period === p ? 700 : 400,
-            }}>{lbl}</button>
-        ))}
-      </div>
-
-      {/* Branch filter */}
-      <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-        <button onClick={() => setSelectedBranch("all")} style={{ padding: "4px 10px", borderRadius: 20, fontSize: 11, cursor: "pointer", background: selectedBranch === "all" ? "rgba(0,255,136,0.15)" : "transparent", border: `1px solid ${selectedBranch === "all" ? "#00ff8866" : "rgba(0,255,136,0.15)"}`, color: selectedBranch === "all" ? "#00ff88" : "#6b8c74" }}>ทุกสาขา</button>
-        {BRANCHES.map(b => (
-          <button key={b.id} onClick={() => setSelectedBranch(b.id)} style={{ padding: "4px 10px", borderRadius: 20, fontSize: 11, cursor: "pointer", background: selectedBranch === b.id ? b.color + "22" : "transparent", border: `1px solid ${selectedBranch === b.id ? b.color + "66" : "rgba(0,255,136,0.15)"}`, color: selectedBranch === b.id ? b.color : "#6b8c74" }}>{b.icon} {b.short}</button>
-        ))}
-      </div>
-
-      {/* Summary KPIs */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(2,1fr)", gap: 8 }}>
-        <KPICard label="CO₂e รวม" value={totalCO2Filtered} unit="kg" icon="💨" color="#ff6b6b" />
-        <KPICard label="Carbon Saved" value={totalSaved} unit="kg" icon="💚" color="#00ff88" />
-      </div>
-
-      {/* Trend Chart */}
-      <SectionTitle>Carbon Trend</SectionTitle>
-      <CarbonTrendChart records={filtered} />
-
-      {/* Pie Chart */}
-      <SectionTitle>แยกตามประเภทขยะ</SectionTitle>
-      <WastePieChart records={filtered} />
-
-      {/* Branch Bar */}
-      <SectionTitle>เปรียบเทียบสาขา</SectionTitle>
-      <BranchBarChart branchStats={branchStats} />
-
-      {/* Breakdown list */}
-      <SectionTitle>รายละเอียด CO₂e</SectionTitle>
-      {wasteBreak.map(w => (
-        <GlowCard key={w.id} color={w.color} style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <span style={{ fontSize: 22 }}>{w.icon}</span>
-          <div style={{ flex: 1 }}>
-            <div style={{ fontSize: 12, fontWeight: 700, color: "#e8f5e9" }}>{w.label}</div>
-            <ProgressBar value={w.total} max={totalCO2Filtered || 1} color={w.color} showPct={false} />
-            <div style={{ fontSize: 9, color: "#6b8c74", marginTop: 3 }}>{w.std} · factor {w.factor} · {w.count} รายการ</div>
-          </div>
-          <div style={{ fontWeight: 800, fontSize: 13, color: w.color, fontFamily: "monospace" }}>{w.total} kg</div>
-        </GlowCard>
-      ))}
-      {wasteBreak.length === 0 && <EmptyState />}
-    </div>
-  );
-}
-
-// ── LEADERBOARD VIEW ──
-function LeaderboardView({ branchStats, totalCO2, records }) {
-  const [metric, setMetric]  = useState("co2");
-  const [tab, setTab]        = useState("branch");
-
-  const sorted = [...branchStats].sort((a, b) => metric === "co2" ? a.co2 - b.co2 : b.count - a.count);
-  const medals = ["🥇","🥈","🥉"];
-  const medalColors = ["#ffd700","#c0c0c0","#cd7f32"];
-
-  const thisMonth = getMonth(Date.now());
-  const monthlyStats = BRANCHES.map(b => {
-    const recs = records.filter(r => r.branchId === b.id && getMonth(r.ts) === thisMonth);
-    return { ...b, mCO2: +recs.reduce((s, r) => s + r.co2e, 0).toFixed(3), mCount: recs.length, mSaved: +recs.reduce((s, r) => s + calcCarbonSaved(r.wasteType, r.qty), 0).toFixed(3) };
-  }).sort((a, b) => a.mCO2 - b.mCO2);
-
-  const BADGES = { "Eco Master": "#ffd700", "Green Pro": "#00ff88", "Eco Learner": "#00e5ff" };
-
-  return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-      {/* Hero */}
-      <GlowCard color="#ffd93d" style={{ textAlign: "center", padding: "20px 14px" }}>
-        <div style={{ fontSize: 38, marginBottom: 4 }} className="float">🏆</div>
-        <div style={{ fontSize: 20, fontWeight: 900, color: "#ffd93d" }}>Green Leaderboard</div>
-        <div style={{ fontSize: 12, color: "#6b8c74", marginBottom: 12 }}>CO₂e น้อยที่สุด = แชมป์สาขา</div>
-        <div style={{ display: "flex", gap: 6 }}>
-          {[["branch","สาขา"],["employee","พนักงาน"]].map(([t, lbl]) => (
-            <button key={t} onClick={() => setTab(t)} style={{ flex: 1, padding: "8px 0", borderRadius: 10, fontSize: 12, cursor: "pointer", background: tab === t ? "rgba(255,217,61,0.2)" : "transparent", border: `1px solid ${tab === t ? "#ffd93d66" : "rgba(255,217,61,0.2)"}`, color: tab === t ? "#ffd93d" : "#6b8c74", fontWeight: tab === t ? 700 : 400 }}>{lbl}</button>
-          ))}
-        </div>
-      </GlowCard>
-
-      {tab === "branch" && (
-        <>
-          <div style={{ display: "flex", gap: 6 }}>
-            {[["co2","CO₂e ต่ำสุด"],["count","บันทึกมากสุด"]].map(([m, lbl]) => (
-              <button key={m} onClick={() => setMetric(m)} style={{ flex: 1, padding: "7px 0", borderRadius: 10, fontSize: 11, cursor: "pointer", background: metric === m ? "rgba(0,255,136,0.15)" : "transparent", border: `1px solid ${metric === m ? "#00ff8866" : "rgba(0,255,136,0.15)"}`, color: metric === m ? "#00ff88" : "#6b8c74", fontWeight: metric === m ? 700 : 400 }}>{lbl}</button>
-            ))}
-          </div>
-
-          <SectionTitle color="#ffd93d">ตลอดเวลา</SectionTitle>
-          {sorted.map((b, i) => (
-            <GlowCard key={b.id} color={i === 0 ? "#ffd93d" : b.color} style={{ display: "flex", alignItems: "center", gap: 10, borderLeft: `4px solid ${i < 3 ? medalColors[i] : b.color}` }}>
-              <div style={{ fontSize: 24 }}>{i < 3 ? medals[i] : `#${i + 1}`}</div>
-              <div style={{ fontSize: 22 }}>{b.icon}</div>
-              <div style={{ flex: 1 }}>
-                <div style={{ fontWeight: 700, fontSize: 13, color: "#e8f5e9" }}>{b.name}</div>
-                <div style={{ fontSize: 10, color: "#6b8c74" }}>{b.count} รายการ · {b.totalQty.toFixed(1)} kg ขยะ</div>
-                <ProgressBar value={metric === "co2" ? (sorted[sorted.length-1].co2 - b.co2 + 0.001) : b.count} max={metric === "co2" ? sorted[sorted.length-1].co2 : sorted[0].count} color={i < 3 ? medalColors[i] : b.color} showPct={false} />
-              </div>
-              <div style={{ textAlign: "right" }}>
-                <div style={{ fontSize: 15, fontWeight: 800, color: i === 0 ? "#ffd93d" : "#e8f5e9", fontFamily: "monospace" }}>
-                  {metric === "co2" ? `${b.co2} kg` : `${b.count} รายการ`}
-                </div>
-                {i === 0 && <div style={{ fontSize: 10, color: "#ffd93d" }}>🌟 อันดับ 1!</div>}
-              </div>
-            </GlowCard>
-          ))}
-
-          <SectionTitle color="#ffd93d">เดือนนี้</SectionTitle>
-          {monthlyStats.map((b, i) => (
-            <GlowCard key={b.id} color={i === 0 ? "#ffd93d" : b.color} style={{ display: "flex", alignItems: "center", gap: 10 }}>
-              <span style={{ fontSize: 18 }}>{i < 3 ? medals[i] : `#${i + 1}`}</span>
-              <span style={{ fontSize: 20 }}>{b.icon}</span>
-              <div style={{ flex: 1 }}>
-                <div style={{ fontSize: 12, fontWeight: 700, color: "#e8f5e9" }}>{b.name}</div>
-                <div style={{ fontSize: 10, color: "#6b8c74" }}>{b.mCount} รายการ · Saved: {b.mSaved} kg</div>
-              </div>
-              <div style={{ fontWeight: 800, fontSize: 13, color: i === 0 ? "#ffd93d" : b.color, fontFamily: "monospace" }}>{b.mCO2} kg</div>
-            </GlowCard>
-          ))}
-        </>
-      )}
-
-      {tab === "employee" && (
-        <>
-          <SectionTitle color="#c084fc">Top พนักงาน</SectionTitle>
-          {EMPLOYEES.map((emp, i) => (
-            <GlowCard key={emp.id} color={i === 0 ? "#ffd93d" : "#c084fc"} style={{ display: "flex", alignItems: "center", gap: 10 }}>
-              <div style={{ fontSize: 24 }}>{i < 3 ? medals[i] : `#${i + 1}`}</div>
-              <div style={{ fontSize: 28 }}>{emp.avatar}</div>
-              <div style={{ flex: 1 }}>
-                <div style={{ fontSize: 12, fontWeight: 700, color: "#e8f5e9" }}>{emp.name}</div>
-                <div style={{ fontSize: 10, color: "#6b8c74" }}>{BRANCHES.find(b => b.id === emp.branch)?.name} · {emp.records} รายการ</div>
-                <div style={{ display: "flex", gap: 4, marginTop: 3, flexWrap: "wrap" }}>
-                  <Badge text={emp.badge + " " + emp.level} color={BADGES[emp.level] || "#c084fc"} />
-                </div>
-                <ProgressBar value={emp.score} max={EMPLOYEES[0].score} color={i === 0 ? "#ffd93d" : "#c084fc"} showPct={false} />
-              </div>
-              <div style={{ textAlign: "right" }}>
-                <div style={{ fontSize: 14, fontWeight: 800, color: i === 0 ? "#ffd93d" : "#c084fc", fontFamily: "monospace" }}>{emp.score}</div>
-                <div style={{ fontSize: 9, color: "#6b8c74" }}>คะแนน</div>
-                <div style={{ fontSize: 10, color: "#4ade80" }}>💚{emp.co2Saved}kg</div>
-              </div>
-            </GlowCard>
-          ))}
-        </>
-      )}
-
-      {/* Target */}
-      <GlowCard color="#00ff88" style={{ border: "1px solid rgba(0,255,136,0.2)" }}>
-        <div style={{ fontWeight: 700, fontSize: 13, color: "#00ff88", marginBottom: 8 }}>🎯 เป้าหมายองค์กร 2025</div>
-        <div style={{ fontSize: 11, color: "#6b8c74", lineHeight: 1.9 }}>
-          ลด CO₂e รวม 20% จากฐาน<br />
-          เป้า: ลด {(totalCO2 * 0.2).toFixed(3)} kg CO₂e<br />
-          อิงเกณฑ์ Science Based Targets (SBTi)
-        </div>
-        <ProgressBar value={totalCO2 * 0.1} max={totalCO2 * 0.2} color="#00ff88" label="ความคืบหน้า" />
-      </GlowCard>
-    </div>
-  );
-}
-
-// ── REPORT VIEW ──
-function ReportView({ records, branchStats, totalCO2, showToast }) {
-  const [period, setPeriod]   = useState("all");
-  const [emailTo, setEmailTo] = useState("");
-  const [sending, setSending] = useState(false);
-
-  const filtered = period === "all" ? records :
-    period === "monthly" ? records.filter(r => getMonth(r.ts) === getMonth(Date.now())) :
-    records.filter(r => getYear(r.ts) === getYear(Date.now()));
-
-  const fStats = BRANCHES.map(b => {
-    const recs = filtered.filter(r => r.branchId === b.id);
-    return { ...b, count: recs.length, totalQty: recs.reduce((s, r) => s + r.qty, 0), co2: +recs.reduce((s, r) => s + r.co2e, 0).toFixed(4) };
-  });
-  const fTotal  = +fStats.reduce((s, b) => s + b.co2, 0).toFixed(4);
-  const fSaved  = +filtered.reduce((s, r) => s + calcCarbonSaved(r.wasteType, r.qty), 0).toFixed(3);
-  const greenSc = calcGreenScore(filtered);
-
-  const handleEmail = async () => {
-    if (!emailTo) { showToast("กรุณากรอก Email ผู้รับ", "err"); return; }
-    setSending(true);
-    await new Promise(r => setTimeout(r, 1500));
-    showToast(`📧 ส่งรายงานไปยัง ${emailTo} แล้ว (Demo)`, "ok");
-    setSending(false);
-  };
-
-  return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-      <GlowCard color="#00e5ff" style={{ textAlign: "center" }}>
-        <div style={{ fontSize: 11, color: "#00e5ff", letterSpacing: 1 }}>📋 ESG REPORT CENTER</div>
-        <div style={{ fontSize: 26, fontWeight: 900, color: "#fff", fontFamily: "monospace" }}>ISO 14064</div>
-        <div style={{ fontSize: 11, color: "#6b8c74" }}>GHG Protocol · WEEE · SDG 12</div>
-      </GlowCard>
-
-      {/* Period */}
-      <div style={{ display: "flex", gap: 6 }}>
-        {[["all","ทั้งหมด"],["monthly","เดือนนี้"],["yearly","ปีนี้"]].map(([p, l]) => (
-          <button key={p} onClick={() => setPeriod(p)} style={{ flex: 1, padding: "8px 0", borderRadius: 10, fontSize: 12, cursor: "pointer", background: period === p ? "rgba(0,229,255,0.15)" : "transparent", border: `1px solid ${period === p ? "#00e5ff66" : "rgba(0,229,255,0.15)"}`, color: period === p ? "#00e5ff" : "#6b8c74", fontWeight: period === p ? 700 : 400 }}>{l}</button>
-        ))}
-      </div>
-
-      {/* KPI Summary */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(2,1fr)", gap: 8 }}>
-        <KPICard label="CO₂e รวม" value={fTotal} unit="kg" icon="💨" color="#ff6b6b" />
-        <KPICard label="Carbon Saved" value={fSaved} unit="kg" icon="💚" color="#00ff88" />
-        <KPICard label="Green Score" value={greenSc} unit="pts" icon="🌿" color="#ffd93d" />
-        <KPICard label="AI Verified" value={filtered.filter(r => r.aiMatch).length} unit="รายการ" icon="🤖" color="#c084fc" />
-      </div>
-
-      <GlowCard color="#00e5ff">
-        {[
-          ["รายการทั้งหมด", `${filtered.length} รายการ`],
-          ["tCO₂e", `${(fTotal * 0.001).toFixed(6)} t`],
-          ["Gemini Vision", `${filtered.filter(r => r.geminiUsed).length} รายการ`],
-          ["สาขาที่ดีที่สุด", branchStats.reduce((a, b) => a.co2 < b.co2 ? a : b, branchStats[0])?.name || "—"],
-        ].map(([k, v]) => (
-          <div key={k} style={{ display: "flex", justifyContent: "space-between", padding: "4px 0", borderBottom: "1px solid rgba(0,229,255,0.08)" }}>
-            <span style={{ fontSize: 11, color: "#6b8c74" }}>{k}</span>
-            <span style={{ fontSize: 11, fontWeight: 700, color: "#e8f5e9" }}>{v}</span>
-          </div>
-        ))}
-      </GlowCard>
-
-      {/* Export Buttons */}
-      <SectionTitle color="#00e5ff">ส่งออกรายงาน</SectionTitle>
-      <GlowButton onClick={() => exportCSV(filtered)} color="#00ff88">
-        📊 Export CSV (Excel / Google Sheets)
-      </GlowButton>
-      <GlowButton onClick={() => exportPDFReport(filtered, fStats, fTotal)} color="#00e5ff">
-        📄 Export PDF (ISO 14064 Report)
-      </GlowButton>
-
-      {/* Email */}
-      <SectionTitle color="#c084fc">📧 ส่งรายงานทาง Email</SectionTitle>
-      <GlowCard color="#c084fc">
-        <div style={{ fontSize: 11, color: "#6b8c74", marginBottom: 10 }}>ส่งรายงาน ESG สรุปให้ผู้บริหาร (โหมด Demo)</div>
-        <input
-          value={emailTo}
-          onChange={e => setEmailTo(e.target.value)}
-          placeholder="อีเมลผู้รับ เช่น ceo@hillkoff.com"
-          type="email"
-          style={{
-            width: "100%", padding: "10px 12px", marginBottom: 10,
-            background: "rgba(0,0,0,0.4)", border: "1px solid rgba(192,132,252,0.3)",
-            borderRadius: 10, color: "#e8f5e9", fontSize: 13, outline: "none",
-          }}
-        />
-        <GlowButton onClick={handleEmail} disabled={sending} color="#c084fc">
-          {sending ? "📧 กำลังส่ง..." : "📧 ส่ง ESG Report"}
-        </GlowButton>
-      </GlowCard>
-
-      {/* Standards */}
-      <SectionTitle color="#00e5ff">มาตรฐานสากล</SectionTitle>
-      {[
-        ["ISO 14064-1:2018","วัดก๊าซเรือนกระจกระดับองค์กร","#00e5ff"],
-        ["GHG Protocol","Carbon Footprint Scope 1-2-3","#00ff88"],
-        ["WEEE 2012/19/EU","จัดการขยะอิเล็กทรอนิกส์","#ffd93d"],
-        ["UN SDG Goal 12","การผลิตและบริโภคที่ยั่งยืน","#c084fc"],
-        ["SBTi","Science Based Targets Initiative","#ff6b6b"],
-      ].map(([std, desc, col]) => (
-        <div key={std} style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
-          <Badge text={std} color={col} />
-          <span style={{ fontSize: 10, color: "#6b8c74", flex: 1 }}>{desc}</span>
-        </div>
-      ))}
-
-      {/* Branch breakdown */}
-      <SectionTitle color="#00e5ff">สรุปแยกสาขา</SectionTitle>
-      {fStats.map(b => (
-        <GlowCard key={b.id} color={b.color} style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <span style={{ fontSize: 20 }}>{b.icon}</span>
-          <div style={{ flex: 1 }}>
-            <div style={{ fontSize: 12, fontWeight: 700, color: "#e8f5e9" }}>{b.name}</div>
-            <div style={{ fontSize: 9, color: "#6b8c74" }}>{b.count} รายการ · {b.totalQty.toFixed(1)} kg</div>
-            <ProgressBar value={b.co2} max={fTotal || 1} color={b.color} showPct={false} />
-          </div>
-          <div style={{ fontWeight: 800, fontSize: 13, color: b.color, fontFamily: "monospace" }}>{b.co2} kg</div>
-        </GlowCard>
-      ))}
-    </div>
-  );
-}
-
-// ── IOT VIEW ──
-function IoTView({ records }) {
-  const [bins, setBins] = useState(SMART_BINS);
-  const totalCarbonSaved = +records.reduce((s, r) => s + calcCarbonSaved(r.wasteType, r.qty), 0).toFixed(3);
-  const totalCO2 = +records.reduce((s, r) => s + r.co2e, 0).toFixed(3);
-  const creditEst = +(totalCarbonSaved * 0.5).toFixed(2);
-  const greenScore = calcGreenScore(records);
-
-  const [coachLoading, setCoachLoading] = useState(false);
-  const [coachMsg, setCoachMsg]         = useState("");
-
-  const loadCoach = async () => {
-    setCoachLoading(true);
-    const msg = await geminiCoach(records, totalCO2);
-    setCoachMsg(msg);
-    setCoachLoading(false);
-  };
-
-  const simulateFill = () => {
-    setBins(b => b.map(bin => {
-      const newFill = Math.min(100, bin.fill + Math.floor(Math.random() * 15));
-      return { ...bin, fill: newFill, status: newFill > 80 ? "critical" : newFill > 60 ? "warn" : "ok" };
-    }));
-  };
-
-  const STATUS_COLORS = { ok: "#00ff88", warn: "#ffd93d", critical: "#ff6b6b" };
-
-  return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-      {/* Header */}
-      <GlowCard color="#00e5ff" style={{ textAlign: "center" }}>
-        <div style={{ fontSize: 13, color: "#00e5ff", letterSpacing: 1 }}>🌐 IoT & AI PLATFORM</div>
-        <div style={{ fontSize: 11, color: "#6b8c74", marginTop: 2 }}>Smart Monitoring · Carbon Credit · AI Coach</div>
-      </GlowCard>
-
-      {/* IoT Smart Bins */}
-      <SectionTitle color="#00e5ff">Smart Bin Monitoring</SectionTitle>
-      <div style={{ display: "flex", justifyContent: "flex-end" }}>
-        <button onClick={simulateFill} style={{ padding: "6px 12px", borderRadius: 8, border: "1px solid rgba(0,229,255,0.3)", background: "transparent", color: "#00e5ff", fontSize: 11, cursor: "pointer" }}>
-          🔄 Simulate Sensor Update
-        </button>
-      </div>
-      {bins.map(bin => (
-        <GlowCard key={bin.id} color={STATUS_COLORS[bin.status]}>
-          <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
-            <span style={{ fontSize: 26 }}>{bin.icon}</span>
-            <div style={{ flex: 1 }}>
-              <div style={{ fontSize: 13, fontWeight: 700, color: "#e8f5e9" }}>{bin.name}</div>
-              <div style={{ fontSize: 10, color: "#6b8c74" }}>{bin.location}</div>
-            </div>
-            <StatusDot status={bin.status} />
-          </div>
-          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
-            <span style={{ fontSize: 11, color: "#82e0aa" }}>ระดับความเต็ม</span>
-            <span style={{ fontSize: 12, fontWeight: 800, color: STATUS_COLORS[bin.status], fontFamily: "monospace" }}>{bin.fill}%</span>
-          </div>
-          <ProgressBar value={bin.fill} max={100} color={STATUS_COLORS[bin.status]} showPct={false} />
-          {bin.status === "critical" && (
-            <div style={{ marginTop: 8, padding: "6px 10px", background: "rgba(255,107,107,0.15)", borderRadius: 8, fontSize: 11, color: "#ff6b6b" }}>
-              🚨 ต้องเก็บขยะด่วน! ถังเต็มแล้ว {bin.fill}%
-            </div>
-          )}
-        </GlowCard>
-      ))}
-
-      {/* Carbon Credit */}
-      <SectionTitle color="#ffd93d">Carbon Credit Dashboard</SectionTitle>
-      <GlowCard color="#ffd93d" style={{ textAlign: "center" }}>
-        <GreenScoreGauge score={greenScore} maxScore={Math.max(greenScore, 500)} />
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 8, marginTop: 12 }}>
-          <div style={{ background: "rgba(255,217,61,0.08)", borderRadius: 10, padding: "8px 4px", textAlign: "center" }}>
-            <div style={{ fontSize: 15, fontWeight: 800, color: "#ffd93d", fontFamily: "monospace" }}>{totalCarbonSaved}</div>
-            <div style={{ fontSize: 9, color: "#6b8c74" }}>kg CO₂ Saved</div>
-          </div>
-          <div style={{ background: "rgba(255,217,61,0.08)", borderRadius: 10, padding: "8px 4px", textAlign: "center" }}>
-            <div style={{ fontSize: 15, fontWeight: 800, color: "#ffd93d", fontFamily: "monospace" }}>{creditEst}</div>
-            <div style={{ fontSize: 9, color: "#6b8c74" }}>Carbon Credits (est.)</div>
-          </div>
-          <div style={{ background: "rgba(255,217,61,0.08)", borderRadius: 10, padding: "8px 4px", textAlign: "center" }}>
-            <div style={{ fontSize: 15, fontWeight: 800, color: "#ffd93d", fontFamily: "monospace" }}>{greenScore}</div>
-            <div style={{ fontSize: 9, color: "#6b8c74" }}>Sustainability Score</div>
-          </div>
-        </div>
-        <div style={{ marginTop: 12, fontSize: 10, color: "#6b8c74" }}>
-          อ้างอิง: Verra VCS Standard · Gold Standard · Thailand Carbon Market
-        </div>
-      </GlowCard>
-
-      {/* Circular Economy */}
-      <SectionTitle color="#4ade80">Circular Economy</SectionTitle>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(2,1fr)", gap: 8 }}>
-        {[
-          { icon:"♻️", label:"วัสดุรีไซเคิล", value:`${records.filter(r=>r.disposalId==="recycle").length} รายการ`, color:"#00ff88" },
-          { icon:"🌱", label:"ปุ๋ยหมัก", value:`${records.filter(r=>r.disposalId==="compost").length} รายการ`, color:"#4ade80" },
-          { icon:"🔄", label:"Reuse", value:`${records.filter(r=>r.disposalId==="reuse").length} รายการ`, color:"#ffd93d" },
-          { icon:"📦", label:"วัสดุกู้คืน", value:`${(totalCarbonSaved*0.8).toFixed(1)} kg`, color:"#00e5ff" },
-        ].map(item => (
-          <KPICard key={item.label} label={item.label} value={item.value} unit="" icon={item.icon} color={item.color} />
-        ))}
-      </div>
-
-      {/* Marketplace mockup */}
-      <GlowCard color="#4ade80">
-        <div style={{ fontSize: 12, fontWeight: 700, color: "#4ade80", marginBottom: 10 }}>🏪 Recycling Marketplace</div>
-        {[
-          { item:"กากกาแฟ", qty:"50 kg", price:"฿150", buyer:"ฟาร์มอินทรีย์เชียงใหม่", status:"เสนอซื้อ" },
-          { item:"พลาสติก HDPE", qty:"20 kg", price:"฿80", buyer:"โรงงาน Recycle", status:"รอยืนยัน" },
-          { item:"กระดาษลัง", qty:"100 kg", price:"฿200", buyer:"โรงงานกระดาษ", status:"สำเร็จ" },
-        ].map((m, i) => (
-          <div key={i} style={{ display: "flex", alignItems: "center", gap: 8, padding: "7px 0", borderBottom: i < 2 ? "1px solid rgba(74,222,128,0.1)" : "none" }}>
-            <div style={{ flex: 1 }}>
-              <div style={{ fontSize: 12, fontWeight: 700, color: "#e8f5e9" }}>{m.item} · {m.qty}</div>
-              <div style={{ fontSize: 10, color: "#6b8c74" }}>{m.buyer}</div>
-            </div>
-            <div style={{ textAlign: "right" }}>
-              <div style={{ fontSize: 12, fontWeight: 800, color: "#4ade80" }}>{m.price}</div>
-              <Badge text={m.status} color={m.status === "สำเร็จ" ? "#00ff88" : m.status === "รอยืนยัน" ? "#ffd93d" : "#00e5ff"} />
-            </div>
-          </div>
-        ))}
-      </GlowCard>
-
-      {/* AI Coach */}
-      <SectionTitle color="#c084fc">🤖 AI Sustainability Coach</SectionTitle>
-      <GlowCard color="#c084fc">
-        {coachMsg ? (
-          <div style={{ fontSize: 12, color: "#e8f5e9", lineHeight: 1.8 }}>
-            <div style={{ fontSize: 10, color: "#c084fc", marginBottom: 6 }}>💡 คำแนะนำจาก Gemini AI</div>
-            {coachMsg}
-          </div>
-        ) : (
-          <div style={{ textAlign: "center" }}>
-            <div style={{ fontSize: 32, marginBottom: 8 }}>🤖</div>
-            <div style={{ fontSize: 12, color: "#6b8c74", marginBottom: 12 }}>ให้ AI วิเคราะห์พฤติกรรมการจัดการขยะของคุณ และให้คำแนะนำแบบเฉพาะบุคคล</div>
-            <GlowButton onClick={loadCoach} disabled={coachLoading} color="#c084fc">
-              {coachLoading ? "🤖 AI กำลังวิเคราะห์..." : "🤖 ขอคำแนะนำจาก AI Coach"}
-            </GlowButton>
-          </div>
-        )}
-        {coachMsg && (
-          <div style={{ marginTop: 10 }}>
-            <GlowButton onClick={() => { setCoachMsg(""); }} color="#c084fc" style={{ padding: "8px", fontSize: 11 }}>
-              🔄 ขอคำแนะนำใหม่
-            </GlowButton>
-          </div>
-        )}
-      </GlowCard>
-
-      {/* AI Insights */}
-      <SectionTitle color="#c084fc">AI Insights</SectionTitle>
-      {[
-        { icon:"⚠️", title:"แจ้งเตือน", msg:`Bin C มหิดล เต็ม 88% ควรเก็บก่อน 16:00`, color:"#ff6b6b" },
-        { icon:"📈", title:"Predict Waste Trend", msg:`คาดการณ์: สัปดาห์หน้ากากกาแฟจะเพิ่ม 15% จากกิจกรรม HQ`, color:"#ffd93d" },
-        { icon:"💡", title:"Smart Recommendation", msg:`หมักปุ๋ยจากกากกาแฟสามารถลด CO₂e ได้ถึง ${(records.length * 0.15).toFixed(1)} kg/เดือน`, color:"#00ff88" },
-        { icon:"🌍", title:"Sustainability Insight", msg:`Hillkoff อยู่ใน Top 20% ขององค์กรที่มีคะแนน ESG ดีในกลุ่ม F&B`, color:"#00e5ff" },
-      ].map(item => (
-        <GlowCard key={item.title} color={item.color} style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
-          <span style={{ fontSize: 20 }}>{item.icon}</span>
-          <div>
-            <div style={{ fontSize: 11, fontWeight: 700, color: item.color, marginBottom: 3 }}>{item.title}</div>
-            <div style={{ fontSize: 11, color: "#82e0aa", lineHeight: 1.6 }}>{item.msg}</div>
-          </div>
-        </GlowCard>
-      ))}
-    </div>
-  );
-}
-
-/* ============================================================
-   MAIN APP
-============================================================ */
-function App() {
-  const [view, setView]     = useState("home");
-  const [records, setRecords] = useState([]);
-  const [logKey, setLogKey] = useState(0);
-  const [toast, setToast]   = useState(null);
-
-  useEffect(() => { setRecords(dbLoad()); }, []);
-
-  const showToast = (msg, type = "ok") => {
-    setToast({ msg, type });
-    setTimeout(() => setToast(null), 3500);
-  };
+    return JSON.parse(data.candidates.content.parts.text.replace(/json|/g, "").trim());
+  } catch (e) { return { match: true, confidence: 70, detected: wasteLabel }; }
+} [7]
+
+// ── MAIN APP COMPONENT ───────────────────────────────────────
+export default function App() {
+  const [view, setView] = useState("home"); [8]
+  const [records, setRecords] = useState([]); [8]
 
   const addRecord = async (rec) => {
     const updated = [rec, ...records];
     setRecords(updated);
-    dbSave(updated);
-    showToast("✅ บันทึกสำเร็จ!");
     setView("home");
-  };
+  }; [9]
 
   const branchStats = BRANCHES.map(b => {
     const recs = records.filter(r => r.branchId === b.id);
-    return { ...b, count: recs.length, totalQty: recs.reduce((s, r) => s + r.qty, 0), co2: +recs.reduce((s, r) => s + r.co2e, 0).toFixed(4) };
-  });
-  const totalCO2 = +branchStats.reduce((s, b) => s + b.co2, 0).toFixed(4);
+    return { 
+      ...b, 
+      count: recs.length, 
+      totalQty: recs.reduce((s, r) => s + r.qty, 0), 
+      co2: +recs.reduce((s, r) => s + r.co2e, 0).toFixed(4) 
+    };
+  }); [9]
 
-  const TABS = [
-    { id:"home",      icon:"🏠", label:"หน้าหลัก" },
-    { id:"log",       icon:"📝", label:"บันทึก" },
-    { id:"analytics", icon:"📊", label:"Analytics" },
-    { id:"ranking",   icon:"🏆", label:"Ranking" },
-    { id:"report",    icon:"📋", label:"รายงาน" },
-    { id:"iot",       icon:"🤖", label:"AI·IoT" },
-  ];
+  const totalCO2 = +branchStats.reduce((s, b) => s + b.co2, 0).toFixed(4); [9]
 
   return (
-    <div style={{ minHeight: "100vh", fontFamily: "'Sarabun','Noto Sans Thai',sans-serif", background: "#050e07", paddingBottom: 80, position: "relative" }}>
-      {/* BG Grid */}
-      <div style={{
-        position: "fixed", inset: 0, zIndex: 0,
-        backgroundImage: "linear-gradient(rgba(0,255,136,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0,255,136,0.03) 1px, transparent 1px)",
-        backgroundSize: "40px 40px",
-        pointerEvents: "none",
-      }} />
-
-      {/* Toast */}
-      {toast && (
-        <div style={{
-          position: "fixed", top: 16, left: "50%", transform: "translateX(-50%)",
-          zIndex: 999, color: "#050e07", fontWeight: 700, fontSize: 13,
-          padding: "10px 24px", borderRadius: 30,
-          background: toast.type === "ok" ? "#00ff88" : "#ff6b6b",
-          boxShadow: `0 4px 20px ${toast.type === "ok" ? "rgba(0,255,136,0.4)" : "rgba(255,107,107,0.4)"}`,
-          whiteSpace: "nowrap",
-        }}>
-          {toast.msg}
+    <div style={S.root}>
+      <div style={S.bgMesh} />
+      <header style={S.header}>
+        <div style={S.logoWrap}>
+          <div style={S.logoName}>HILLKOFF</div>
+          <div style={S.logoSub}>ZERO WASTE PLATFORM</div>
         </div>
-      )}
-
-      {/* Header */}
-      <header style={{
-        position: "sticky", top: 0, zIndex: 100,
-        background: "rgba(5,14,7,0.95)", backdropFilter: "blur(20px)",
-        borderBottom: "1px solid rgba(0,255,136,0.15)",
-        padding: "10px 16px",
-        display: "flex", alignItems: "center", justifyContent: "space-between",
-      }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <span style={{ fontSize: 24 }}>☕</span>
-          <div>
-            <div style={{ fontSize: 17, fontWeight: 900, color: "#00ff88", letterSpacing: 1, fontFamily: "'Space Mono', monospace" }}>HILLKOFF</div>
-            <div style={{ fontSize: 8.5, color: "#2d5a3d", letterSpacing: 1.5 }}>ZERO WASTE · ESG PLATFORM</div>
-          </div>
+        <div style={S.co2Pill}>
+          <div style={{fontSize: 16, fontWeight: 900}}>{totalCO2.toFixed(2)} kg CO₂e</div>
         </div>
-        <div style={{ textAlign: "right" }}>
-          <div style={{ fontSize: 9, color: "#2d5a3d" }}>CO₂e รวม</div>
-          <div style={{ fontSize: 16, fontWeight: 800, color: "#00ff88", fontFamily: "monospace" }}>{totalCO2.toFixed(2)} kg</div>
-        </div>
-      </header>
+      </header> [10]
 
-      {/* Content */}
-      <main style={{ position: "relative", zIndex: 1, padding: "16px 14px 16px" }}>
-        {view === "home"      && <HomeView      branchStats={branchStats} totalCO2={totalCO2} records={records} onLog={() => { setLogKey(k => k + 1); setView("log"); }} />}
-        {view === "log"       && <LogView       key={logKey} onAdd={addRecord} showToast={showToast} />}
-        {view === "analytics" && <AnalyticsView records={records} branchStats={branchStats} />}
-        {view === "ranking"   && <LeaderboardView branchStats={branchStats} totalCO2={totalCO2} records={records} />}
-        {view === "report"    && <ReportView    records={records} branchStats={branchStats} totalCO2={totalCO2} showToast={showToast} />}
-        {view === "iot"       && <IoTView       records={records} />}
-      </main>
+      <main style={S.main}>
+        {view === "home" && <HomeView branchStats={branchStats} totalCO2={totalCO2} records={records} setView={setView} />}
+        {view === "log" && <LogView onAdd={addRecord} onBack={() => setView("home")} />}
+      </main> [11]
 
-      {/* Bottom Nav */}
-      <nav style={{
-        position: "fixed", bottom: 0, left: 0, right: 0, zIndex: 100,
-        background: "rgba(5,14,7,0.98)", backdropFilter: "blur(20px)",
-        borderTop: "1px solid rgba(0,255,136,0.15)",
-        display: "flex",
-      }}>
-        {TABS.map(t => (
-          <button key={t.id}
-            onClick={() => { if (t.id === "log") setLogKey(k => k + 1); setView(t.id); }}
-            style={{
-              flex: 1, padding: "8px 0", display: "flex", flexDirection: "column",
-              alignItems: "center", gap: 1, background: "none", border: "none", cursor: "pointer",
-              color: view === t.id ? "#00ff88" : "#2d5a3d",
-              borderTop: view === t.id ? "2px solid #00ff88" : "2px solid transparent",
-              transition: "all 0.2s",
-            }}>
-            <span style={{ fontSize: 18 }}>{t.icon}</span>
-            <span style={{ fontSize: 8.5 }}>{t.label}</span>
+      <nav style={S.nav}>
+        {[ { id: "home", icon: "🏠", label: "หน้าหลัก" }, { id: "log", icon: "📝", label: "บันทึก" } ].map(t => (
+          <button key={t.id} onClick={() => setView(t.id)} style={{...S.navBtn, ...(view === t.id ? S.navActive : {})}}>
+            <span>{t.icon}</span>
+            <span style={{fontSize: 9}}>{t.label}</span>
           </button>
         ))}
-      </nav>
+      </nav> [9, 10]
     </div>
   );
 }
 
-ReactDOM.createRoot(document.getElementById("root")).render(<App />);
-</script>
-</body>
-</html>
+// ── HOME & LOG VIEWS (SUMMARY) ───────────────────────────────
+function HomeView({ branchStats, totalCO2, records, setView }) {
+  return (
+    <div style={S.col20}>
+      <div style={S.heroCard}>
+        <div style={S.heroNum}>{totalCO2.toFixed(2)} kg CO₂e</div>
+        <button style={S.heroBtnWhite} onClick={() => setView("log")}>📝 บันทึกขยะใหม่</button>
+      </div>
+      {records.map(r => <RecordRow key={r.id} r={r} />)}
+    </div>
+  );
+} [12, 13]
+
+function LogView({ onAdd }) {
+  const [step, setStep] = useState(0);
+  const [form, setForm] = useState({ branch: null, waste: null, qty: null, disposal: null }); [14]
+  
+  const handleFinish = () => {
+    const branch = BRANCHES.find(b => b.id === form.branch);
+    onAdd({
+      id: Date.now(),
+      ts: new Date().toISOString(),
+      branchId: form.branch,
+      branchName: branch.name,
+      wasteLabel: WASTE_TYPES.find(w => w.id === form.waste).label,
+      qty: QUANTITIES.find(q => q.id === form.qty).value,
+      disposalLabel: DISPOSALS.find(d => d.id === form.disposal).label,
+      co2e: calcCO2(form.waste, form.qty, form.disposal),
+    });
+  }; [15]
+
+  return (
+    <div style={S.col20}>
+      {step === 0 && <Selection title="เลือกสาขา" items={BRANCHES} onSelect={id => {setForm({...form, branch: id}); setStep(1);}} />}
+      {step === 1 && <Selection title="ประเภทขยะ" items={WASTE_TYPES} onSelect={id => {setForm({...form, waste: id}); setStep(2);}} />}
+      {step === 2 && <button style={S.submitBtn} onClick={handleFinish}>ยืนยันการบันทึก</button>}
+    </div>
+  );
+} [16, 17]
+
+// ── SHARED COMPONENTS & STYLES ───────────────────────────────
+function Selection({ title, items, onSelect }) {
+  return (
+    <div style={S.col20}>
+      <div style={{fontWeight:800, color:"#145a32"}}>{title}</div>
+      <div style={S.grid3}>
+        {items.map(item => (
+          <button key={item.id} onClick={() => onSelect(item.id)} style={S.choiceCard}>
+            <span style={{fontSize:24}}>{item.icon}</span>
+            <span style={{fontSize:10}}>{item.label || item.name}</span>
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+} [10]
+
+function RecordRow({ r }) {
+  return (
+    <div style={S.recordRow}>
+      <div style={{flex: 1}}>
+        <div style={{fontSize: 12, fontWeight: 700}}>{r.branchName} · {r.wasteLabel}</div>
+        <div style={{fontSize: 10, color: "#888"}}>{new Date(r.ts).toLocaleString("th-TH")}</div>
+      </div>
+      <div style={{fontSize: 12, fontWeight: 800, color: "#145a32"}}>{r.co2e} kg</div>
+    </div>
+  );
+} [13]
+
+const S = {
+  root: { minHeight:"100vh", fontFamily:"Sarabun", background:"#f0f7f2", paddingBottom:80 },
+  bgMesh: { position:"fixed", inset:0, background:"radial-gradient(ellipse at 20% 20%, #d5f5e3 0%, transparent 60%), #f0f7f2", zIndex:0 },
+  header: { background:"#145a32", padding:"12px 18px", color:"#fff", display:"flex", justifyContent:"space-between" },
+  logoWrap: { display:"flex", alignItems:"center", gap:10 },
+  logoName: { fontSize:18, fontWeight:900 },
+  logoSub: { fontSize:9, color:"#82e0aa" },
+  nav: { position:"fixed", bottom:0, left:0, right:0, background:"#fff", display:"flex", borderTop:"1px solid #eee" },
+  navBtn: { flex:1, padding:10, display:"flex", flexDirection:"column", alignItems:"center", background:"none", border:"none" },
+  navActive: { color:"#145a32", borderTop:"3px solid #145a32" },
+  main: { position:"relative", padding:15 },
+  col20: { display:"flex", flexDirection:"column", gap:16 },
+  heroCard: { background:"linear-gradient(135deg,#145a32,#1e8449)", borderRadius:22, padding:25, color:"#fff", textAlign:"center" },
+  heroNum: { fontSize:40, fontWeight:900 },
+  heroBtnWhite: { padding:12, background:"#fff", color:"#145a32", border:"none", borderRadius:12, fontWeight:800 },
+  grid3: { display:"grid", gridTemplateColumns:"repeat(3, 1fr)", gap:10 },
+  choiceCard: { background:"#fff", border:"2px solid #eee", borderRadius:15, padding:15, display:"flex", flexDirection:"column", alignItems:"center" },
+  submitBtn: { width:"100%", padding:15, background:"#145a32", color:"#fff", borderRadius:15, fontWeight:800 },
+  recordRow: { background:"#fff", borderRadius:15, padding:15, display:"flex", justifyContent:"space-between", alignItems:"center", boxShadow:"0 2px 5px rgba(0,0,0,0.05)" }
+}
