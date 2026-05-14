@@ -1,10 +1,14 @@
+<!-- MOBILE-FIRST VERSION -->
+<!-- HILLKOFF ZERO WASTE PLATFORM -->
+<!-- REALTIME READY -->
+
 <!DOCTYPE html>
 <html lang="th">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Hillkoff Zero Waste Platform</title>
+<title>Hillkoff Zero Waste</title>
 
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -12,568 +16,368 @@
 <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700;800&display=swap" rel="stylesheet">
 
 <style>
+
 *{
 font-family:'Sarabun',sans-serif;
+-webkit-tap-highlight-color:transparent;
 }
 
 body{
-background:#eef7f0;
+background:#eef6f0;
+margin:0;
+padding:0;
 overflow:hidden;
 }
 
-.glass{
-background:rgba(255,255,255,.75);
-backdrop-filter:blur(16px);
-border:1px solid rgba(255,255,255,.4);
+.page{
+display:none;
+padding-bottom:110px;
 }
 
-.sidebar-btn{
-transition:.2s;
-}
-
-.sidebar-btn:hover{
-transform:translateX(4px);
-background:#14532d;
-color:white;
-}
-
-.sidebar-active{
-background:#14532d;
-color:white;
+.active-page{
+display:block;
 }
 
 .card{
-border-radius:24px;
 background:white;
-box-shadow:0 4px 20px rgba(0,0,0,.06);
+border-radius:26px;
+box-shadow:0 4px 18px rgba(0,0,0,.06);
 }
 
-.fade{
-animation:fade .25s ease;
+.green-card{
+background:linear-gradient(135deg,#0f6a33,#1f9d4b);
+color:white;
+border-radius:30px;
 }
 
-@keyframes fade{
-from{
-opacity:0;
-transform:translateY(10px);
-}
-to{
-opacity:1;
-transform:translateY(0px);
-}
+.nav-btn{
+transition:.2s;
 }
 
-.badge{
-padding:4px 10px;
-border-radius:999px;
-font-size:12px;
-font-weight:700;
-}
-
-.green{
-background:#dcfce7;
+.nav-active{
 color:#166534;
+font-weight:800;
 }
 
-.red{
-background:#fee2e2;
-color:#991b1b;
+.branch-card{
+transition:.2s;
 }
 
-.blue{
-background:#dbeafe;
-color:#1d4ed8;
+.branch-card:active{
+transform:scale(.96);
 }
+
 </style>
 </head>
 
 <body>
 
-<div class="flex h-screen">
+<!-- APP -->
+<div class="max-w-md mx-auto bg-[#eef6f0] h-screen overflow-auto">
 
-<!-- SIDEBAR -->
-<div class="w-[290px] bg-[#0f3d22] text-white p-5 flex flex-col">
+<!-- TOP -->
+<div class="bg-[#166534] text-white px-5 pt-5 pb-6 rounded-b-[35px]">
 
-<div class="flex items-center gap-3 mb-8">
-<div class="text-4xl">☕</div>
-<div>
-<div class="font-extrabold text-2xl">Hillkoff</div>
-<div class="text-sm opacity-80">Zero Waste Platform</div>
+<div class="flex justify-between items-center">
+
+<div class="flex items-center gap-3">
+
+<div class="text-4xl">
+☕
 </div>
-</div>
-
-<div class="space-y-2">
-
-<button onclick="showPage('dashboard')" class="sidebar-btn sidebar-active w-full text-left p-4 rounded-2xl font-bold" id="btn-dashboard">
-📊 Dashboard
-</button>
-
-<button onclick="showPage('waste')" class="sidebar-btn w-full text-left p-4 rounded-2xl font-bold" id="btn-waste">
-📝 บันทึกขยะ
-</button>
-
-<button onclick="showPage('analytics')" class="sidebar-btn w-full text-left p-4 rounded-2xl font-bold" id="btn-analytics">
-📈 Analytics
-</button>
-
-<button onclick="showPage('leaderboard')" class="sidebar-btn w-full text-left p-4 rounded-2xl font-bold" id="btn-leaderboard">
-🏆 Ranking
-</button>
-
-<button onclick="showPage('report')" class="sidebar-btn w-full text-left p-4 rounded-2xl font-bold" id="btn-report">
-📄 รายงาน ESG
-</button>
-
-<button onclick="showPage('executive')" class="sidebar-btn w-full text-left p-4 rounded-2xl font-bold" id="btn-executive">
-🌍 Executive
-</button>
-
-<button onclick="showPage('ai')" class="sidebar-btn w-full text-left p-4 rounded-2xl font-bold" id="btn-ai">
-🤖 Gemini AI
-</button>
-
-<button onclick="showPage('setting')" class="sidebar-btn w-full text-left p-4 rounded-2xl font-bold" id="btn-setting">
-⚙️ ตั้งค่า
-</button>
-
-</div>
-
-<div class="mt-auto">
-
-<div class="glass rounded-3xl p-4 text-black">
-
-<div class="font-bold text-sm mb-2">
-🌱 Carbon Footprint
-</div>
-
-<div class="text-3xl font-extrabold text-green-700" id="totalCO2">
-124.6
-</div>
-
-<div class="text-xs opacity-70">
-kg CO₂e ทั้งองค์กร
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-<!-- MAIN -->
-<div class="flex-1 overflow-hidden">
-
-<!-- TOPBAR -->
-<div class="h-[85px] bg-white flex items-center justify-between px-8 border-b">
 
 <div>
 
-<div class="text-3xl font-extrabold text-[#14532d]">
-Hillkoff ESG Platform
+<div class="font-extrabold text-3xl">
+Hillkoff
 </div>
 
-<div class="text-sm text-gray-500">
-ISO 14064 · GHG Protocol · SDG 12
+<div class="opacity-80 text-sm">
+Zero Waste · ESG Platform
 </div>
 
 </div>
 
-<div class="flex items-center gap-4">
+</div>
 
 <div class="text-right">
-<div class="font-bold">
-ผู้ดูแลระบบ
-</div>
-<div class="text-sm text-gray-500">
-admin@hillkoff.com
-</div>
+
+<div class="text-xs opacity-80">
+CO₂e รวม
 </div>
 
-<img src="https://i.pravatar.cc/100" class="w-14 h-14 rounded-full">
+<div class="font-extrabold text-3xl" id="totalCO2">
+0
+</div>
+
+</div>
 
 </div>
 
 </div>
 
 <!-- CONTENT -->
-<div class="h-[calc(100vh-85px)] overflow-auto p-8">
+<div class="px-4 pt-4">
 
-<!-- DASHBOARD -->
-<div id="dashboard" class="page fade">
+<!-- HOME -->
+<div id="home" class="page active-page">
 
-<div class="grid grid-cols-4 gap-6 mb-6">
+<!-- HERO -->
+<div class="green-card p-6 text-center">
 
-<div class="card p-6">
-<div class="text-gray-500 text-sm">
-CO₂e รวม
+<div class="text-lg opacity-90 mb-3">
+🌍 Carbon Footprint — องค์กร
 </div>
-<div class="text-4xl font-extrabold text-green-700 mt-2">
-124.6
+
+<div class="text-6xl font-extrabold" id="heroCO2">
+0
 </div>
-<div class="text-sm mt-2">
+
+<div class="text-2xl mb-4">
 kg CO₂e
 </div>
+
+<div class="flex justify-center gap-2 flex-wrap mb-5">
+
+<div class="bg-white/20 px-3 py-1 rounded-full text-sm">
+ISO 14064
 </div>
 
-<div class="card p-6">
-<div class="text-gray-500 text-sm">
-รายการวันนี้
-</div>
-<div class="text-4xl font-extrabold text-blue-700 mt-2">
-68
-</div>
-<div class="text-sm mt-2">
-Waste Logs
-</div>
+<div class="bg-white/20 px-3 py-1 rounded-full text-sm">
+GHG Protocol
 </div>
 
-<div class="card p-6">
-<div class="text-gray-500 text-sm">
-AI Verified
-</div>
-<div class="text-4xl font-extrabold text-purple-700 mt-2">
-92%
-</div>
-<div class="text-sm mt-2">
-Gemini Accuracy
-</div>
+<div class="bg-white/20 px-3 py-1 rounded-full text-sm">
+WEEE
 </div>
 
-<div class="card p-6">
-<div class="text-gray-500 text-sm">
-รีไซเคิล
-</div>
-<div class="text-4xl font-extrabold text-orange-600 mt-2">
-71%
-</div>
-<div class="text-sm mt-2">
-Recycling Rate
-</div>
+<div class="bg-white/20 px-3 py-1 rounded-full text-sm">
+SDG 12
 </div>
 
 </div>
 
-<div class="grid grid-cols-3 gap-6">
+<div class="bg-white/10 rounded-3xl grid grid-cols-3 overflow-hidden mb-6">
 
-<div class="card p-6 col-span-2">
+<div class="p-4 border-r border-white/10">
 
-<div class="flex items-center justify-between mb-5">
-
-<div class="font-bold text-xl">
-📈 แนวโน้ม Carbon Footprint
+<div class="font-extrabold text-3xl" id="todayCO2">
+0
 </div>
 
-<select class="border rounded-xl px-4 py-2">
-<option>รายวัน</option>
-<option>รายเดือน</option>
-<option>รายปี</option>
+<div class="text-sm opacity-80">
+kg วันนี้
+</div>
+
+</div>
+
+<div class="p-4 border-r border-white/10">
+
+<div class="font-extrabold text-3xl" id="monthCO2">
+0
+</div>
+
+<div class="text-sm opacity-80">
+kg เดือนนี้
+</div>
+
+</div>
+
+<div class="p-4">
+
+<div class="font-extrabold text-3xl" id="totalLogs">
+0
+</div>
+
+<div class="text-sm opacity-80">
+รายการ
+</div>
+
+</div>
+
+</div>
+
+<button onclick="openPage('log')" class="bg-white text-[#166534] font-extrabold text-xl px-8 py-4 rounded-3xl shadow-lg">
+📝 บันทึกขยะใหม่
+</button>
+
+</div>
+
+<!-- BRANCH -->
+<div class="mt-7">
+
+<div class="font-extrabold text-2xl text-[#166534] mb-4">
+สรุปแต่ละสาขา
+</div>
+
+<div class="grid grid-cols-2 gap-4" id="branchGrid">
+
+</div>
+
+</div>
+
+<!-- RECENT -->
+<div class="mt-7">
+
+<div class="font-extrabold text-2xl text-[#166534] mb-4">
+รายการล่าสุด
+</div>
+
+<div id="recentLogs" class="space-y-3">
+
+<div class="card p-5 text-center text-gray-400">
+ยังไม่มีข้อมูล
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- LOG -->
+<div id="log" class="page">
+
+<div class="card p-5">
+
+<div class="font-extrabold text-3xl text-[#166534] mb-1">
+📝 บันทึกขยะ
+</div>
+
+<div class="text-gray-500 mb-6">
+ระบบบันทึกขยะองค์กร
+</div>
+
+<!-- BRANCH -->
+<div class="mb-5">
+
+<div class="font-bold mb-3">
+เลือกสาขา
+</div>
+
+<select id="branch" class="w-full border-2 rounded-2xl p-4 text-lg">
+
+<option value="">เลือกสาขา</option>
+
+<option>สำนักงานใหญ่</option>
+<option>ช้างเผือก</option>
+<option>มหิดล</option>
+<option>ป่าแพง</option>
+<option>ทับเดื่อ</option>
+<option>ราติก้า</option>
+
 </select>
 
 </div>
 
-<canvas id="chart1"></canvas>
-
-</div>
-
-<div class="card p-6">
-
-<div class="font-bold text-xl mb-5">
-🏢 สรุปแต่ละสาขา
-</div>
-
-<div class="space-y-4">
-
-<div>
-<div class="flex justify-between text-sm mb-1">
-<span>สำนักงานใหญ่</span>
-<span>32kg</span>
-</div>
-<div class="w-full bg-gray-100 h-3 rounded-full">
-<div class="bg-green-700 h-3 rounded-full w-[82%]"></div>
-</div>
-</div>
-
-<div>
-<div class="flex justify-between text-sm mb-1">
-<span>ช้างเผือก</span>
-<span>28kg</span>
-</div>
-<div class="w-full bg-gray-100 h-3 rounded-full">
-<div class="bg-green-600 h-3 rounded-full w-[70%]"></div>
-</div>
-</div>
-
-<div>
-<div class="flex justify-between text-sm mb-1">
-<span>มหิดล</span>
-<span>21kg</span>
-</div>
-<div class="w-full bg-gray-100 h-3 rounded-full">
-<div class="bg-green-500 h-3 rounded-full w-[55%]"></div>
-</div>
-</div>
-
-<div>
-<div class="flex justify-between text-sm mb-1">
-<span>ราติก้า</span>
-<span>16kg</span>
-</div>
-<div class="w-full bg-gray-100 h-3 rounded-full">
-<div class="bg-green-400 h-3 rounded-full w-[38%]"></div>
-</div>
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-<div class="card p-6 mt-6">
-
-<div class="font-bold text-xl mb-5">
-🕒 รายการล่าสุด
-</div>
-
-<div class="space-y-4">
-
-<div class="flex items-center justify-between border-b pb-3">
-
-<div class="flex items-center gap-4">
-<div class="text-3xl">☕</div>
-<div>
-<div class="font-bold">
-สำนักงานใหญ่ · กากกาแฟ
-</div>
-<div class="text-sm text-gray-500">
-5 นาทีที่แล้ว
-</div>
-</div>
-</div>
-
-<div class="flex items-center gap-3">
-
-<div class="badge green">
-AI Verified
-</div>
-
-<div class="font-bold text-green-700">
-1.4kg
-</div>
-
-</div>
-
-</div>
-
-<div class="flex items-center justify-between border-b pb-3">
-
-<div class="flex items-center gap-4">
-<div class="text-3xl">🧴</div>
-<div>
-<div class="font-bold">
-ช้างเผือก · พลาสติก
-</div>
-<div class="text-sm text-gray-500">
-12 นาทีที่แล้ว
-</div>
-</div>
-</div>
-
-<div class="flex items-center gap-3">
-
-<div class="badge blue">
-Recycled
-</div>
-
-<div class="font-bold text-blue-700">
-3.8kg
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
 <!-- WASTE -->
-<div id="waste" class="page hidden fade">
+<div class="mb-5">
 
-<div class="card p-8 max-w-5xl mx-auto">
-
-<div class="text-3xl font-extrabold text-[#14532d] mb-2">
-📝 ระบบบันทึกขยะ
+<div class="font-bold mb-3">
+ประเภทขยะ
 </div>
 
-<div class="text-gray-500 mb-8">
-5 ขั้นตอน Zero Waste Logging
-</div>
+<select id="waste" class="w-full border-2 rounded-2xl p-4 text-lg">
 
-<div class="grid grid-cols-5 gap-4 mb-8">
+<option value="">เลือกประเภท</option>
 
-<div class="bg-green-700 text-white rounded-2xl p-4 text-center font-bold">
-1<br>สาขา
-</div>
+<option value="0.49">☕ กากกาแฟ</option>
+<option value="2.53">🧴 พลาสติก</option>
+<option value="0.91">🍃 เศษอาหาร</option>
+<option value="1.09">📄 กระดาษ</option>
+<option value="0.31">🔵 แก้ว</option>
+<option value="20">💻 อิเล็กทรอนิกส์</option>
 
-<div class="bg-green-100 rounded-2xl p-4 text-center font-bold">
-2<br>ประเภท
-</div>
-
-<div class="bg-green-100 rounded-2xl p-4 text-center font-bold">
-3<br>ปริมาณ
-</div>
-
-<div class="bg-green-100 rounded-2xl p-4 text-center font-bold">
-4<br>จัดการ
-</div>
-
-<div class="bg-green-100 rounded-2xl p-4 text-center font-bold">
-5<br>AI
-</div>
+</select>
 
 </div>
 
-<div class="mb-8">
+<!-- QTY -->
+<div class="mb-5">
 
-<div class="font-bold text-xl mb-4">
-เลือกสาขา
+<div class="font-bold mb-3">
+ปริมาณ
 </div>
 
-<div class="grid grid-cols-3 gap-4">
+<select id="qty" class="w-full border-2 rounded-2xl p-4 text-lg">
 
-<button class="border-2 border-green-700 bg-green-50 rounded-3xl p-6 text-center hover:scale-105 transition">
-<div class="text-4xl mb-3">🏢</div>
-<div class="font-bold">
-สำนักงานใหญ่
+<option value="">เลือกปริมาณ</option>
+
+<option value="0.5">น้อยมาก</option>
+<option value="3">น้อย</option>
+<option value="12.5">ปานกลาง</option>
+<option value="25">มาก</option>
+
+</select>
+
 </div>
+
+<!-- DISPOSAL -->
+<div class="mb-5">
+
+<div class="font-bold mb-3">
+วิธีจัดการ
+</div>
+
+<select id="method" class="w-full border-2 rounded-2xl p-4 text-lg">
+
+<option value="">เลือกวิธี</option>
+
+<option value="0.1">♻️ รีไซเคิล</option>
+<option value="0.05">🌱 หมักปุ๋ย</option>
+<option value="0.05">🔄 นำกลับมาใช้</option>
+<option value="1">⛏️ ฝังกลบ</option>
+<option value="1.5">🔥 เผา</option>
+
+</select>
+
+</div>
+
+<!-- IMAGE -->
+<div class="mb-6">
+
+<div class="font-bold mb-3">
+อัปโหลดรูป
+</div>
+
+<input type="file" class="w-full border-2 rounded-2xl p-4">
+
+</div>
+
+<!-- SAVE -->
+<button onclick="saveLog()" class="w-full bg-[#166534] text-white font-extrabold text-xl p-5 rounded-3xl">
+✅ บันทึกข้อมูล
 </button>
-
-<button class="border rounded-3xl p-6 text-center hover:scale-105 transition">
-<div class="text-4xl mb-3">🐘</div>
-<div class="font-bold">
-ช้างเผือก
-</div>
-</button>
-
-<button class="border rounded-3xl p-6 text-center hover:scale-105 transition">
-<div class="text-4xl mb-3">🎓</div>
-<div class="font-bold">
-มหิดล
-</div>
-</button>
-
-<button class="border rounded-3xl p-6 text-center hover:scale-105 transition">
-<div class="text-4xl mb-3">🌿</div>
-<div class="font-bold">
-ป่าแพง
-</div>
-</button>
-
-<button class="border rounded-3xl p-6 text-center hover:scale-105 transition">
-<div class="text-4xl mb-3">🌱</div>
-<div class="font-bold">
-ทับเดื่อ
-</div>
-</button>
-
-<button class="border rounded-3xl p-6 text-center hover:scale-105 transition">
-<div class="text-4xl mb-3">☕</div>
-<div class="font-bold">
-ราติก้า
-</div>
-</button>
-
-</div>
-
-</div>
-
-<div class="flex justify-end">
-<button class="bg-green-700 hover:bg-green-800 text-white px-8 py-4 rounded-2xl font-bold text-lg">
-ถัดไป →
-</button>
-</div>
 
 </div>
 
 </div>
 
 <!-- ANALYTICS -->
-<div id="analytics" class="page hidden fade">
+<div id="analytics" class="page">
 
-<div class="grid grid-cols-2 gap-6">
+<div class="card p-5">
 
-<div class="card p-6">
-<div class="font-bold text-2xl mb-4">
-📈 Analytics
-</div>
-<canvas id="chart2"></canvas>
+<div class="font-extrabold text-3xl text-[#166534] mb-5">
+📊 Analytics
 </div>
 
-<div class="card p-6">
-<div class="font-bold text-2xl mb-4">
-♻️ Recycling Rate
-</div>
-<canvas id="chart3"></canvas>
-</div>
+<canvas id="chart"></canvas>
 
 </div>
 
 </div>
 
-<!-- LEADERBOARD -->
-<div id="leaderboard" class="page hidden fade">
+<!-- RANK -->
+<div id="rank" class="page">
 
-<div class="card p-8">
+<div class="card p-5">
 
-<div class="text-3xl font-extrabold mb-6">
-🏆 Green Leaderboard
-</div>
-
-<div class="space-y-5">
-
-<div class="flex items-center justify-between bg-yellow-50 rounded-3xl p-6">
-<div class="flex items-center gap-5">
-<div class="text-5xl">🥇</div>
-<div>
-<div class="font-bold text-2xl">
-สำนักงานใหญ่
-</div>
-<div class="text-gray-500">
-ลด CO₂e ได้ดีที่สุด
-</div>
-</div>
-</div>
-<div class="text-right">
-<div class="text-3xl font-extrabold text-green-700">
-12kg
-</div>
-<div class="text-sm">
-CO₂e Saved
-</div>
-</div>
+<div class="font-extrabold text-3xl text-[#166534] mb-5">
+🏆 Ranking
 </div>
 
-<div class="flex items-center justify-between bg-gray-50 rounded-3xl p-6">
-<div class="flex items-center gap-5">
-<div class="text-5xl">🥈</div>
-<div>
-<div class="font-bold text-2xl">
-ช้างเผือก
-</div>
-<div class="text-gray-500">
-อันดับ 2
-</div>
-</div>
-</div>
-<div class="text-right">
-<div class="text-3xl font-extrabold text-green-700">
-9kg
-</div>
-</div>
-</div>
+<div id="rankingList" class="space-y-4">
 
 </div>
 
@@ -582,229 +386,38 @@ CO₂e Saved
 </div>
 
 <!-- REPORT -->
-<div id="report" class="page hidden fade">
+<div id="report" class="page">
 
-<div class="grid grid-cols-3 gap-6">
+<div class="space-y-5">
 
-<div class="card p-8">
+<div class="card p-6">
 
 <div class="text-5xl mb-4">
 📄
 </div>
 
-<div class="font-bold text-2xl mb-2">
+<div class="font-extrabold text-2xl mb-2">
 Export PDF
 </div>
 
-<div class="text-gray-500 mb-6">
-รายงานมาตรฐาน ISO 14064
-</div>
-
-<button class="w-full bg-green-700 hover:bg-green-800 text-white p-4 rounded-2xl font-bold">
+<button class="w-full bg-[#166534] text-white p-4 rounded-2xl font-bold">
 ดาวน์โหลด PDF
 </button>
 
 </div>
 
-<div class="card p-8">
-
-<div class="text-5xl mb-4">
-📊
-</div>
-
-<div class="font-bold text-2xl mb-2">
-Export Excel
-</div>
-
-<div class="text-gray-500 mb-6">
-สำหรับผู้บริหาร ESG
-</div>
-
-<button class="w-full bg-blue-700 hover:bg-blue-800 text-white p-4 rounded-2xl font-bold">
-Export CSV
-</button>
-
-</div>
-
-<div class="card p-8">
+<div class="card p-6">
 
 <div class="text-5xl mb-4">
 📧
 </div>
 
-<div class="font-bold text-2xl mb-2">
-Gmail Report
-</div>
-
-<div class="text-gray-500 mb-6">
-ส่งรายงานอัตโนมัติ
-</div>
-
-<button class="w-full bg-red-600 hover:bg-red-700 text-white p-4 rounded-2xl font-bold">
+<div class="font-extrabold text-2xl mb-2">
 ส่ง Email
-</button>
-
 </div>
 
-</div>
-
-</div>
-
-<!-- EXECUTIVE -->
-<div id="executive" class="page hidden fade">
-
-<div class="card p-8">
-
-<div class="text-3xl font-extrabold mb-6">
-🌍 Executive Dashboard
-</div>
-
-<div class="grid grid-cols-4 gap-6">
-
-<div class="bg-green-50 rounded-3xl p-6">
-<div class="text-sm text-gray-500">
-Carbon Reduction
-</div>
-<div class="text-4xl font-extrabold text-green-700 mt-3">
--18%
-</div>
-</div>
-
-<div class="bg-blue-50 rounded-3xl p-6">
-<div class="text-sm text-gray-500">
-Waste Recycled
-</div>
-<div class="text-4xl font-extrabold text-blue-700 mt-3">
-71%
-</div>
-</div>
-
-<div class="bg-orange-50 rounded-3xl p-6">
-<div class="text-sm text-gray-500">
-ESG Score
-</div>
-<div class="text-4xl font-extrabold text-orange-600 mt-3">
-92
-</div>
-</div>
-
-<div class="bg-purple-50 rounded-3xl p-6">
-<div class="text-sm text-gray-500">
-AI Accuracy
-</div>
-<div class="text-4xl font-extrabold text-purple-700 mt-3">
-94%
-</div>
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-<!-- AI -->
-<div id="ai" class="page hidden fade">
-
-<div class="card p-8">
-
-<div class="text-3xl font-extrabold mb-6">
-🤖 Gemini Vision AI
-</div>
-
-<div class="grid grid-cols-2 gap-8">
-
-<div>
-
-<div class="border-2 border-dashed rounded-3xl h-[320px] flex items-center justify-center text-gray-400 text-xl">
-📷 Upload Waste Image
-</div>
-
-<button class="w-full mt-5 bg-green-700 hover:bg-green-800 text-white p-4 rounded-2xl font-bold">
-วิเคราะห์ด้วย AI
-</button>
-
-</div>
-
-<div>
-
-<div class="bg-green-50 rounded-3xl p-6">
-
-<div class="font-bold text-2xl mb-5">
-ผลวิเคราะห์
-</div>
-
-<div class="space-y-4">
-
-<div class="flex justify-between">
-<span>ประเภท:</span>
-<b>กากกาแฟ</b>
-</div>
-
-<div class="flex justify-between">
-<span>AI Confidence:</span>
-<b>94%</b>
-</div>
-
-<div class="flex justify-between">
-<span>AI Result:</span>
-<span class="badge green">Verified</span>
-</div>
-
-<div class="flex justify-between">
-<span>Carbon:</span>
-<b>1.4kg CO₂e</b>
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-<!-- SETTING -->
-<div id="setting" class="page hidden fade">
-
-<div class="card p-8 max-w-4xl">
-
-<div class="text-3xl font-extrabold mb-6">
-⚙️ ตั้งค่าระบบ
-</div>
-
-<div class="space-y-6">
-
-<div>
-<div class="font-bold mb-2">
-Gemini API Key
-</div>
-<input class="w-full border rounded-2xl p-4" placeholder="ใส่ Gemini API Key">
-</div>
-
-<div>
-<div class="font-bold mb-2">
-Firebase URL
-</div>
-<input class="w-full border rounded-2xl p-4" placeholder="Firebase URL">
-</div>
-
-<div>
-<div class="font-bold mb-2">
-Database
-</div>
-<select class="w-full border rounded-2xl p-4">
-<option>Firebase</option>
-<option>Supabase</option>
-</select>
-</div>
-
-<button class="bg-green-700 hover:bg-green-800 text-white px-8 py-4 rounded-2xl font-bold">
-บันทึกการตั้งค่า
+<button class="w-full bg-red-600 text-white p-4 rounded-2xl font-bold">
+ส่งรายงาน
 </button>
 
 </div>
@@ -814,6 +427,34 @@ Database
 </div>
 
 </div>
+
+<!-- NAV -->
+<div class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white border-t flex justify-around py-3">
+
+<button onclick="openPage('home')" class="nav-btn nav-active flex flex-col items-center text-sm" id="nav-home">
+🏠
+<span>หน้าหลัก</span>
+</button>
+
+<button onclick="openPage('log')" class="nav-btn flex flex-col items-center text-sm" id="nav-log">
+📝
+<span>บันทึก</span>
+</button>
+
+<button onclick="openPage('analytics')" class="nav-btn flex flex-col items-center text-sm" id="nav-analytics">
+📊
+<span>Analytics</span>
+</button>
+
+<button onclick="openPage('rank')" class="nav-btn flex flex-col items-center text-sm" id="nav-rank">
+🏆
+<span>Ranking</span>
+</button>
+
+<button onclick="openPage('report')" class="nav-btn flex flex-col items-center text-sm" id="nav-report">
+📄
+<span>รายงาน</span>
+</button>
 
 </div>
 
@@ -821,70 +462,311 @@ Database
 
 <script>
 
-function showPage(page){
+let logs = JSON.parse(localStorage.getItem("logs")) || [];
+
+const branches = [
+"สำนักงานใหญ่",
+"ช้างเผือก",
+"มหิดล",
+"ป่าแพง",
+"ทับเดื่อ",
+"ราติก้า"
+];
+
+function openPage(page){
 
 document.querySelectorAll('.page').forEach(p=>{
-p.classList.add('hidden')
-})
+p.classList.remove('active-page');
+});
 
-document.getElementById(page).classList.remove('hidden')
+document.getElementById(page).classList.add('active-page');
 
-document.querySelectorAll('.sidebar-btn').forEach(btn=>{
-btn.classList.remove('sidebar-active')
-})
+document.querySelectorAll('.nav-btn').forEach(n=>{
+n.classList.remove('nav-active');
+});
 
-document.getElementById('btn-'+page).classList.add('sidebar-active')
+document.getElementById('nav-'+page).classList.add('nav-active');
 
 }
 
-new Chart(document.getElementById('chart1'),{
-type:'line',
-data:{
-labels:['ม.ค','ก.พ','มี.ค','เม.ย','พ.ค','มิ.ย'],
-datasets:[{
-label:'CO₂e',
-data:[12,19,9,15,7,11],
-borderColor:'#166534',
-backgroundColor:'rgba(22,101,52,.1)',
-fill:true,
-tension:.4
-}]
-}
-})
+function saveLog(){
 
-new Chart(document.getElementById('chart2'),{
+const branch = document.getElementById('branch').value;
+const waste = document.getElementById('waste');
+const qty = document.getElementById('qty').value;
+const method = document.getElementById('method').value;
+
+if(!branch || !qty || !method || !waste.value){
+alert("กรอกข้อมูลให้ครบ");
+return;
+}
+
+const co2 =
+(parseFloat(waste.value) *
+parseFloat(qty) *
+parseFloat(method)).toFixed(3);
+
+logs.unshift({
+branch,
+waste:waste.options[waste.selectedIndex].text,
+qty,
+co2,
+time:new Date().toLocaleString("th-TH")
+});
+
+localStorage.setItem("logs",JSON.stringify(logs));
+
+updateUI();
+
+alert("บันทึกสำเร็จ");
+
+openPage('home');
+
+}
+
+function updateUI(){
+
+let total = 0;
+
+logs.forEach(l=>{
+total += parseFloat(l.co2);
+});
+
+document.getElementById('totalCO2').innerText = total.toFixed(3);
+document.getElementById('heroCO2').innerText = total.toFixed(3);
+document.getElementById('todayCO2').innerText = total.toFixed(3);
+document.getElementById('monthCO2').innerText = total.toFixed(3);
+document.getElementById('totalLogs').innerText = logs.length;
+
+renderBranches();
+renderRecent();
+renderRanking();
+renderChart();
+
+}
+
+function renderBranches(){
+
+const grid = document.getElementById('branchGrid');
+
+grid.innerHTML = '';
+
+branches.forEach(branch=>{
+
+let total = 0;
+let count = 0;
+
+logs.forEach(log=>{
+if(log.branch === branch){
+total += parseFloat(log.co2);
+count++;
+}
+});
+
+grid.innerHTML += `
+<div class="branch-card card p-5 text-center">
+
+<div class="text-5xl mb-3">
+🏢
+</div>
+
+<div class="font-extrabold text-xl">
+${branch}
+</div>
+
+<div class="text-gray-400 mt-2">
+${count} รายการ
+</div>
+
+<div class="text-[#166534] font-extrabold text-3xl mt-3">
+${total.toFixed(3)}
+</div>
+
+<div class="text-gray-500">
+kg
+</div>
+
+</div>
+`;
+
+});
+
+}
+
+function renderRecent(){
+
+const box = document.getElementById('recentLogs');
+
+if(logs.length === 0){
+
+box.innerHTML = `
+<div class="card p-5 text-center text-gray-400">
+ยังไม่มีข้อมูล
+</div>
+`;
+
+return;
+}
+
+box.innerHTML = '';
+
+logs.slice(0,5).forEach(log=>{
+
+box.innerHTML += `
+<div class="card p-4 flex justify-between items-center">
+
+<div>
+
+<div class="font-bold">
+${log.branch}
+</div>
+
+<div class="text-sm text-gray-500">
+${log.waste}
+</div>
+
+<div class="text-xs text-gray-400 mt-1">
+${log.time}
+</div>
+
+</div>
+
+<div class="text-right">
+
+<div class="text-[#166534] font-extrabold text-2xl">
+${log.co2}
+</div>
+
+<div class="text-sm text-gray-500">
+kg CO₂e
+</div>
+
+</div>
+
+</div>
+`;
+
+});
+
+}
+
+function renderRanking(){
+
+const box = document.getElementById('rankingList');
+
+let data = [];
+
+branches.forEach(branch=>{
+
+let total = 0;
+
+logs.forEach(log=>{
+if(log.branch === branch){
+total += parseFloat(log.co2);
+}
+});
+
+data.push({
+branch,
+total
+});
+
+});
+
+data.sort((a,b)=>a.total-b.total);
+
+box.innerHTML = '';
+
+data.forEach((d,index)=>{
+
+box.innerHTML += `
+<div class="card p-5 flex justify-between items-center">
+
+<div class="flex items-center gap-4">
+
+<div class="text-4xl">
+${index==0?'🥇':index==1?'🥈':index==2?'🥉':'🏢'}
+</div>
+
+<div>
+
+<div class="font-extrabold text-xl">
+${d.branch}
+</div>
+
+<div class="text-gray-400">
+อันดับ ${index+1}
+</div>
+
+</div>
+
+</div>
+
+<div class="text-[#166534] font-extrabold text-3xl">
+${d.total.toFixed(3)}
+</div>
+
+</div>
+`;
+
+});
+
+}
+
+let chart;
+
+function renderChart(){
+
+const ctx = document.getElementById('chart');
+
+const values = [];
+
+branches.forEach(branch=>{
+
+let total = 0;
+
+logs.forEach(log=>{
+if(log.branch === branch){
+total += parseFloat(log.co2);
+}
+});
+
+values.push(total);
+
+});
+
+if(chart){
+chart.destroy();
+}
+
+chart = new Chart(ctx,{
 type:'bar',
 data:{
-labels:['HQ','CPK','MHD','RTC'],
+labels:branches,
 datasets:[{
-label:'Waste',
-data:[12,9,14,7],
+label:'CO₂e',
+data:values,
 backgroundColor:[
 '#166534',
 '#15803d',
+'#16a34a',
 '#22c55e',
-'#4ade80'
+'#4ade80',
+'#86efac'
 ]
 }]
 }
-})
+});
 
-new Chart(document.getElementById('chart3'),{
-type:'doughnut',
-data:{
-labels:['Recycle','Landfill','Compost'],
-datasets:[{
-data:[71,18,11],
-backgroundColor:[
-'#166534',
-'#dc2626',
-'#2563eb'
-]
-}]
 }
-})
+
+updateUI();
+
+setInterval(()=>{
+updateUI();
+},2000);
 
 </script>
 
 </body>
-  </html>
+</html>
