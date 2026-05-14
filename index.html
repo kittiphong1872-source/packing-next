@@ -2,220 +2,398 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Hillkoff Zero Waste</title>
+  <title>Hillkoff Zero Waste Platform Enterprise</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      background: linear-gradient(135deg,#ecfdf5,#f0fdf4,#dcfce7);
+      font-family: Arial, sans-serif;
+    }
+    .glass {
+      background: rgba(255,255,255,0.7);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.3);
+    }
+    .card-hover:hover {
+      transform: translateY(-4px);
+      transition: .3s;
+    }
+  </style>
 </head>
-<body class="bg-[#f3f8f4] min-h-screen font-sans"><div class="max-w-md mx-auto pb-24">  <!-- HEADER -->  <header class="sticky top-0 z-50 bg-[#145a32] text-white p-4 flex justify-between items-center shadow-lg">
-    <div>
-      <h1 class="text-2xl font-black">☕ Hillkoff</h1>
-      <p class="text-xs opacity-80">Zero Waste ESG Platform</p>
-    </div><div class="text-right">
-  <div class="text-xs opacity-70">CO₂e Total</div>
-  <div id="totalCO2" class="text-xl font-black">0.00 kg</div>
-</div>
+<body class="min-h-screen text-gray-800">  <!-- HEADER -->  <header class="sticky top-0 z-50 glass shadow-lg">
+    <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+      <div>
+        <h1 class="text-2xl font-black text-green-800">☕ Hillkoff Zero Waste</h1>
+        <p class="text-xs text-green-700">AI ESG Sustainability Platform</p>
+      </div>
+      <div class="flex gap-2">
+        <button class="bg-green-700 text-white px-4 py-2 rounded-xl">Login Gmail</button>
+        <button class="bg-black text-white px-4 py-2 rounded-xl">Admin</button>
+      </div>
+    </div>
+  </header>  <!-- HERO -->  <section class="max-w-7xl mx-auto p-4">
+    <div class="glass rounded-3xl p-8 shadow-xl bg-gradient-to-r from-green-800 to-green-600 text-white">
+      <div class="grid md:grid-cols-2 gap-6 items-center">
+        <div>
+          <h2 class="text-5xl font-black leading-tight">Enterprise ESG Dashboard</h2>
+          <p class="mt-4 text-green-100">
+            ระบบ AI วิเคราะห์ขยะ + Carbon Footprint + ESG Analytics สำหรับ Hillkoff ทุกสาขา
+          </p>
+          <div class="flex flex-wrap gap-2 mt-4">
+            <span class="bg-white/20 px-3 py-1 rounded-full text-sm">ISO 14064</span>
+            <span class="bg-white/20 px-3 py-1 rounded-full text-sm">GHG Protocol</span>
+            <span class="bg-white/20 px-3 py-1 rounded-full text-sm">SDG 12</span>
+            <span class="bg-white/20 px-3 py-1 rounded-full text-sm">Gemini Vision AI</span>
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div class="bg-white/10 rounded-2xl p-5">
+            <div class="text-sm">CO₂e Total</div>
+            <div class="text-4xl font-black">1,245</div>
+            <div class="text-xs">kg CO₂e</div>
+          </div>
+          <div class="bg-white/10 rounded-2xl p-5">
+            <div class="text-sm">Waste Logs</div>
+            <div class="text-4xl font-black">284</div>
+            <div class="text-xs">records</div>
+          </div>
+          <div class="bg-white/10 rounded-2xl p-5">
+            <div class="text-sm">Branches</div>
+            <div class="text-4xl font-black">6</div>
+            <div class="text-xs">Hillkoff</div>
+          </div>
+          <div class="bg-white/10 rounded-2xl p-5">
+            <div class="text-sm">AI Accuracy</div>
+            <div class="text-4xl font-black">94%</div>
+            <div class="text-xs">Gemini Vision</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>  <!-- DASHBOARD -->  <section class="max-w-7xl mx-auto p-4 grid lg:grid-cols-3 gap-6"><!-- LEFT -->
+<div class="lg:col-span-2 space-y-6">
 
-  </header>  <!-- HERO -->  <section class="p-4">
-    <div class="bg-gradient-to-br from-[#145a32] to-[#1e8449] rounded-3xl p-6 text-white shadow-xl">
-      <div class="text-sm opacity-80">🌍 ESG Dashboard</div>
-      <div class="text-5xl font-black mt-2" id="heroCO2">0.00</div>
-      <div class="mt-2 opacity-80">kg CO₂e</div><div class="grid grid-cols-2 gap-3 mt-6">
-    <div class="bg-white/10 rounded-2xl p-3">
-      <div class="text-xs opacity-70">Today</div>
-      <div class="text-2xl font-black" id="todayLogs">0</div>
+  <!-- BRANCHES -->
+  <div class="glass rounded-3xl p-6 shadow-xl">
+    <div class="flex justify-between items-center mb-4">
+      <h3 class="text-2xl font-bold text-green-800">🌿 Branch Statistics</h3>
+      <button class="bg-green-700 text-white px-4 py-2 rounded-xl">View All</button>
     </div>
 
-    <div class="bg-white/10 rounded-2xl p-3">
-      <div class="text-xs opacity-70">Logs</div>
-      <div class="text-2xl font-black" id="totalLogs">0</div>
+    <div class="grid md:grid-cols-3 gap-4">
+
+      <div class="bg-white rounded-2xl p-5 shadow card-hover border-t-4 border-green-800">
+        <div class="text-3xl">🏢</div>
+        <h4 class="font-bold mt-2">สำนักงานใหญ่</h4>
+        <p class="text-sm text-gray-500">CO₂e 240 kg</p>
+      </div>
+
+      <div class="bg-white rounded-2xl p-5 shadow card-hover border-t-4 border-green-700">
+        <div class="text-3xl">🐘</div>
+        <h4 class="font-bold mt-2">ช้างเผือก</h4>
+        <p class="text-sm text-gray-500">CO₂e 180 kg</p>
+      </div>
+
+      <div class="bg-white rounded-2xl p-5 shadow card-hover border-t-4 border-green-600">
+        <div class="text-3xl">🎓</div>
+        <h4 class="font-bold mt-2">มหิดล</h4>
+        <p class="text-sm text-gray-500">CO₂e 120 kg</p>
+      </div>
+
+      <div class="bg-white rounded-2xl p-5 shadow card-hover border-t-4 border-green-500">
+        <div class="text-3xl">🌿</div>
+        <h4 class="font-bold mt-2">ป่าแพง</h4>
+        <p class="text-sm text-gray-500">CO₂e 160 kg</p>
+      </div>
+
+      <div class="bg-white rounded-2xl p-5 shadow card-hover border-t-4 border-green-400">
+        <div class="text-3xl">🌱</div>
+        <h4 class="font-bold mt-2">ทับเดื่อ</h4>
+        <p class="text-sm text-gray-500">CO₂e 100 kg</p>
+      </div>
+
+      <div class="bg-white rounded-2xl p-5 shadow card-hover border-t-4 border-green-300">
+        <div class="text-3xl">☕</div>
+        <h4 class="font-bold mt-2">ราติก้า</h4>
+        <p class="text-sm text-gray-500">CO₂e 80 kg</p>
+      </div>
+
     </div>
   </div>
-</div>
 
-  </section>  <!-- FORM -->  <section class="px-4 space-y-4"><div class="bg-white rounded-3xl p-5 shadow-sm">
-  <h2 class="text-xl font-black text-[#145a32] mb-4">📝 บันทึกขยะ</h2>
-
-  <div class="space-y-4">
-
-    <select id="branch" class="w-full border rounded-2xl p-3">
-      <option value="">เลือกสาขา</option>
-      <option>สำนักงานใหญ่</option>
-      <option>ช้างเผือก</option>
-      <option>มหิดล</option>
-      <option>ป่าแพง</option>
-      <option>ทับเดื่อ</option>
-      <option>ราติก้า</option>
-    </select>
-
-    <select id="waste" class="w-full border rounded-2xl p-3">
-      <option value="coffee">☕ กากกาแฟ</option>
-      <option value="plastic">🧴 พลาสติก</option>
-      <option value="food">🍃 เศษอาหาร</option>
-      <option value="paper">📄 กระดาษ</option>
-      <option value="glass">🔵 แก้ว</option>
-      <option value="electronic">💻 อิเล็กทรอนิกส์</option>
-    </select>
-
-    <input
-      id="qty"
-      type="number"
-      value="1"
-      min="1"
-      class="w-full border rounded-2xl p-3"
-      placeholder="ปริมาณ (kg)"
-    />
-
-    <select id="method" class="w-full border rounded-2xl p-3">
-      <option value="0.1">♻️ รีไซเคิล</option>
-      <option value="0.05">🌱 หมักปุ๋ย</option>
-      <option value="0.05">🔄 ใช้ซ้ำ</option>
-      <option value="1">⛏️ ฝังกลบ</option>
-      <option value="1.5">🔥 เผา</option>
-    </select>
-
-    <input type="file" class="w-full border rounded-2xl p-3 bg-white" />
-
-    <div class="bg-[#145a32] text-white rounded-3xl p-5 text-center">
-      <div class="text-sm opacity-80">CO₂e Preview</div>
-      <div id="previewCO2" class="text-5xl font-black mt-2">0.49</div>
-      <div class="opacity-70">kg CO₂e</div>
+  <!-- CHART -->
+  <div class="glass rounded-3xl p-6 shadow-xl">
+    <div class="flex justify-between items-center mb-4">
+      <h3 class="text-2xl font-bold text-green-800">📊 Analytics</h3>
+      <div class="flex gap-2">
+        <button class="bg-green-100 px-3 py-1 rounded-lg">Daily</button>
+        <button class="bg-green-700 text-white px-3 py-1 rounded-lg">Monthly</button>
+        <button class="bg-green-100 px-3 py-1 rounded-lg">Yearly</button>
+      </div>
     </div>
 
-    <button
-      onclick="saveLog()"
-      class="w-full bg-gradient-to-r from-[#145a32] to-[#1e8449] text-white rounded-2xl p-4 font-black text-lg shadow-lg"
-    >
-      ✅ Save Waste Log
+    <canvas id="chart1" height="120"></canvas>
+  </div>
+
+  <!-- WASTE LOG -->
+  <div class="glass rounded-3xl p-6 shadow-xl">
+    <h3 class="text-2xl font-bold text-green-800 mb-6">📝 Waste Logging System</h3>
+
+    <div class="grid md:grid-cols-2 gap-6">
+
+      <div>
+        <label class="font-bold">1. เลือกสาขา</label>
+        <select class="w-full mt-2 p-3 rounded-xl border">
+          <option>สำนักงานใหญ่</option>
+          <option>ช้างเผือก</option>
+          <option>มหิดล</option>
+          <option>ป่าแพง</option>
+          <option>ทับเดื่อ</option>
+          <option>ราติก้า</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="font-bold">2. ประเภทขยะ</label>
+        <select class="w-full mt-2 p-3 rounded-xl border">
+          <option>กากกาแฟ</option>
+          <option>พลาสติก</option>
+          <option>เศษอาหาร</option>
+          <option>กระดาษ</option>
+          <option>แก้ว</option>
+          <option>อิเล็กทรอนิกส์</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="font-bold">3. ปริมาณ</label>
+        <select class="w-full mt-2 p-3 rounded-xl border">
+          <option>น้อยมาก</option>
+          <option>น้อย</option>
+          <option>ปานกลาง</option>
+          <option>มาก</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="font-bold">4. วิธีจัดการ</label>
+        <select class="w-full mt-2 p-3 rounded-xl border">
+          <option>รีไซเคิล</option>
+          <option>หมักปุ๋ย</option>
+          <option>นำกลับมาใช้ซ้ำ</option>
+          <option>ฝังกลบ</option>
+          <option>เผา</option>
+        </select>
+      </div>
+
+      <div class="md:col-span-2">
+        <label class="font-bold">5. อัปโหลดรูป</label>
+        <input type="file" class="w-full mt-2 p-3 rounded-xl border bg-white" />
+      </div>
+
+    </div>
+
+    <div class="grid md:grid-cols-3 gap-4 mt-6">
+      <div class="bg-green-50 rounded-2xl p-5">
+        <div class="text-sm text-gray-500">AI Verification</div>
+        <div class="text-3xl font-black text-green-700">92%</div>
+      </div>
+
+      <div class="bg-blue-50 rounded-2xl p-5">
+        <div class="text-sm text-gray-500">CO₂e Estimate</div>
+        <div class="text-3xl font-black text-blue-700">24 kg</div>
+      </div>
+
+      <div class="bg-yellow-50 rounded-2xl p-5">
+        <div class="text-sm text-gray-500">ESG Score</div>
+        <div class="text-3xl font-black text-yellow-700">A+</div>
+      </div>
+    </div>
+
+    <button class="mt-6 bg-green-700 hover:bg-green-800 text-white px-6 py-4 rounded-2xl w-full text-lg font-bold shadow-xl">
+      ✅ Save Waste Record
     </button>
-
   </div>
+
+  <!-- REPORTS -->
+  <div class="glass rounded-3xl p-6 shadow-xl">
+    <h3 class="text-2xl font-bold text-green-800 mb-4">📄 ESG Reports</h3>
+
+    <div class="grid md:grid-cols-3 gap-4">
+      <button class="bg-green-700 text-white p-5 rounded-2xl text-lg font-bold shadow-xl">Export PDF</button>
+      <button class="bg-blue-700 text-white p-5 rounded-2xl text-lg font-bold shadow-xl">Export CSV</button>
+      <button class="bg-red-700 text-white p-5 rounded-2xl text-lg font-bold shadow-xl">Send Gmail</button>
+    </div>
+
+    <div class="mt-6 overflow-auto">
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="bg-green-100 text-left">
+            <th class="p-3">Branch</th>
+            <th class="p-3">Waste</th>
+            <th class="p-3">CO₂e</th>
+            <th class="p-3">AI</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="border-b">
+            <td class="p-3">สำนักงานใหญ่</td>
+            <td class="p-3">กากกาแฟ</td>
+            <td class="p-3">22kg</td>
+            <td class="p-3">✅</td>
+          </tr>
+          <tr class="border-b">
+            <td class="p-3">ช้างเผือก</td>
+            <td class="p-3">พลาสติก</td>
+            <td class="p-3">18kg</td>
+            <td class="p-3">✅</td>
+          </tr>
+          <tr class="border-b">
+            <td class="p-3">มหิดล</td>
+            <td class="p-3">เศษอาหาร</td>
+            <td class="p-3">10kg</td>
+            <td class="p-3">⚠️</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
 </div>
 
-  </section>  <!-- LEADERBOARD -->  <section class="p-4 space-y-4"><div class="bg-gradient-to-r from-[#145a32] to-[#1e8449] rounded-3xl p-5 text-white text-center shadow-lg">
-  <div class="text-5xl">🏆</div>
-  <div class="text-2xl font-black mt-2">Green Ranking</div>
-</div>
+<!-- RIGHT -->
+<div class="space-y-6">
 
-<div id="leaderboard"></div>
+  <!-- LEADERBOARD -->
+  <div class="glass rounded-3xl p-6 shadow-xl">
+    <h3 class="text-2xl font-bold text-green-800 mb-4">🏆 Leaderboard</h3>
 
-  </section>  <!-- RECENT -->  <section class="p-4 space-y-4">
-    <h2 class="text-lg font-black text-[#145a32]">📊 Recent Activity</h2><div id="logs" class="space-y-3"></div>
+    <div class="space-y-4">
 
-  </section></div><script>
-
-const FACTORS = {
-  coffee:0.49,
-  plastic:2.53,
-  food:0.91,
-  paper:1.09,
-  glass:0.31,
-  electronic:20
-}
-
-const logs = JSON.parse(localStorage.getItem('hillkoff_logs') || '[]')
-
-function calculate(){
-
-  const waste = document.getElementById('waste').value
-  const qty = Number(document.getElementById('qty').value)
-  const method = Number(document.getElementById('method').value)
-
-  const co2 = (FACTORS[waste] * qty * method).toFixed(2)
-
-  document.getElementById('previewCO2').innerText = co2
-}
-
-function saveLog(){
-
-  const branch = document.getElementById('branch').value
-  const waste = document.getElementById('waste').value
-  const qty = Number(document.getElementById('qty').value)
-  const method = Number(document.getElementById('method').value)
-
-  if(!branch){
-    alert('กรุณาเลือกสาขา')
-    return
-  }
-
-  const co2 = +(FACTORS[waste] * qty * method).toFixed(2)
-
-  logs.unshift({
-    branch,
-    waste,
-    qty,
-    co2,
-    date:new Date().toLocaleString('th-TH')
-  })
-
-  localStorage.setItem('hillkoff_logs', JSON.stringify(logs))
-
-  render()
-
-  alert('✅ บันทึกสำเร็จ')
-}
-
-function render(){
-
-  const total = logs.reduce((s,l)=>s+l.co2,0).toFixed(2)
-
-  document.getElementById('totalCO2').innerText = total + ' kg'
-  document.getElementById('heroCO2').innerText = total
-  document.getElementById('totalLogs').innerText = logs.length
-  document.getElementById('todayLogs').innerText = logs.length
-
-  const logHTML = logs.map(l=>`
-
-    <div class="bg-white rounded-2xl p-4 shadow-sm flex justify-between items-center">
-
-      <div>
-        <div class="font-black text-[#145a32]">${l.branch}</div>
-        <div class="text-sm text-gray-500">${l.waste}</div>
-        <div class="text-xs text-gray-400">${l.date}</div>
+      <div class="bg-yellow-50 rounded-2xl p-4 flex items-center justify-between">
+        <div>
+          <div class="font-bold">🥇 ช้างเผือก</div>
+          <div class="text-sm text-gray-500">Lowest CO₂e</div>
+        </div>
+        <div class="text-2xl font-black text-yellow-700">98</div>
       </div>
 
-      <div class="text-right">
-        <div class="text-lg font-black text-[#145a32]">${l.co2}</div>
-        <div class="text-xs text-gray-500">kg CO₂e</div>
+      <div class="bg-gray-50 rounded-2xl p-4 flex items-center justify-between">
+        <div>
+          <div class="font-bold">🥈 ราติก้า</div>
+          <div class="text-sm text-gray-500">Recycling Rate</div>
+        </div>
+        <div class="text-2xl font-black text-gray-700">92%</div>
+      </div>
+
+      <div class="bg-orange-50 rounded-2xl p-4 flex items-center justify-between">
+        <div>
+          <div class="font-bold">🥉 ทับเดื่อ</div>
+          <div class="text-sm text-gray-500">Waste Reduction</div>
+        </div>
+        <div class="text-2xl font-black text-orange-700">84%</div>
       </div>
 
     </div>
+  </div>
 
-  `).join('')
+  <!-- AI ALERT -->
+  <div class="glass rounded-3xl p-6 shadow-xl">
+    <h3 class="text-2xl font-bold text-red-700 mb-4">🚨 Smart Alerts</h3>
 
-  document.getElementById('logs').innerHTML = logHTML
-
-  const branchScores = {}
-
-  logs.forEach(l=>{
-    if(!branchScores[l.branch]) branchScores[l.branch] = 0
-    branchScores[l.branch] += l.co2
-  })
-
-  const sorted = Object.entries(branchScores)
-    .sort((a,b)=>a[1]-b[1])
-
-  const rankHTML = sorted.map((b,index)=>`
-
-    <div class="bg-white rounded-2xl p-4 flex justify-between items-center shadow-sm mb-3">
-      <div>
-        <div class="font-black text-[#145a32]">#${index+1} ${b[0]}</div>
+    <div class="space-y-4">
+      <div class="bg-red-50 border border-red-200 rounded-2xl p-4">
+        <div class="font-bold text-red-700">CO₂e Spike</div>
+        <div class="text-sm">สำนักงานใหญ่มีปริมาณ CO₂e สูงขึ้น 22%</div>
       </div>
 
-      <div class="text-xl font-black text-[#145a32]">
-        ${b[1].toFixed(2)}
+      <div class="bg-yellow-50 border border-yellow-200 rounded-2xl p-4">
+        <div class="font-bold text-yellow-700">AI Mismatch</div>
+        <div class="text-sm">Gemini พบประเภทขยะไม่ตรงกับข้อมูล</div>
+      </div>
+
+      <div class="bg-blue-50 border border-blue-200 rounded-2xl p-4">
+        <div class="font-bold text-blue-700">Forecast</div>
+        <div class="text-sm">คาดการณ์ขยะเพิ่มขึ้น 8% เดือนหน้า</div>
       </div>
     </div>
+  </div>
 
-  `).join('')
+  <!-- EXECUTIVE KPI -->
+  <div class="glass rounded-3xl p-6 shadow-xl">
+    <h3 class="text-2xl font-bold text-green-800 mb-4">📈 Executive KPI</h3>
 
-  document.getElementById('leaderboard').innerHTML = rankHTML
-}
+    <div class="space-y-4">
+      <div>
+        <div class="flex justify-between text-sm mb-1">
+          <span>Carbon Reduction</span>
+          <span>78%</span>
+        </div>
+        <div class="w-full bg-gray-200 rounded-full h-4">
+          <div class="bg-green-700 h-4 rounded-full" style="width:78%"></div>
+        </div>
+      </div>
 
-document.getElementById('waste').addEventListener('change', calculate)
-document.getElementById('qty').addEventListener('input', calculate)
-document.getElementById('method').addEventListener('change', calculate)
+      <div>
+        <div class="flex justify-between text-sm mb-1">
+          <span>Recycling Rate</span>
+          <span>91%</span>
+        </div>
+        <div class="w-full bg-gray-200 rounded-full h-4">
+          <div class="bg-blue-700 h-4 rounded-full" style="width:91%"></div>
+        </div>
+      </div>
 
-calculate()
-render()
+      <div>
+        <div class="flex justify-between text-sm mb-1">
+          <span>ESG Performance</span>
+          <span>96%</span>
+        </div>
+        <div class="w-full bg-gray-200 rounded-full h-4">
+          <div class="bg-yellow-500 h-4 rounded-full" style="width:96%"></div>
+        </div>
+      </div>
+    </div>
+  </div>
 
-</script></body>
-</html>
+</div>
+
+  </section>  <!-- FOOTER -->  <footer class="mt-10 bg-green-900 text-white p-8 text-center">
+    <h3 class="text-2xl font-black">🌍 Hillkoff Sustainability Platform</h3>
+    <p class="mt-2 text-green-200">
+      AI-powered ESG + Sustainability Platform ระดับองค์กรจริง
+    </p>
+    <div class="flex justify-center gap-4 mt-4 flex-wrap">
+      <span>ISO 14064</span>
+      <span>GHG Protocol</span>
+      <span>WEEE</span>
+      <span>SDG 12</span>
+      <span>Gemini Vision AI</span>
+    </div>
+  </footer>  <script>
+    const ctx = document.getElementById('chart1');
+
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: ['HQ','CPK','MHD','PPG','TDE','RTC'],
+        datasets: [{
+          label: 'CO₂e',
+          data: [240,180,120,160,100,80],
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            display: true
+          }
+        }
+      }
+    });
+
+    console.log('Hillkoff Zero Waste Platform Loaded');
+  </script></body>
+        </html>
