@@ -1,70 +1,317 @@
-<!-- MOBILE-FIRST VERSION -->
-<!-- HILLKOFF ZERO WASTE PLATFORM -->
-<!-- REALTIME READY -->
-
 <!DOCTYPE html>
 <html lang="th">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
-<title>Hillkoff Zero Waste</title>
+<title>Hillkoff Zero Waste Platform</title>
 
-<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700;800&display=swap" rel="stylesheet">
 
 <style>
 
 *{
-font-family:'Sarabun',sans-serif;
--webkit-tap-highlight-color:transparent;
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Noto Sans Thai',sans-serif;
 }
 
 body{
-background:#eef6f0;
-margin:0;
-padding:0;
-overflow:hidden;
+background:#dff0e7;
+max-width:430px;
+margin:auto;
+min-height:100vh;
+padding-bottom:100px;
+}
+
+.header{
+background:#166534;
+color:white;
+padding:18px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+}
+
+.logo-wrap{
+display:flex;
+align-items:center;
+gap:12px;
+}
+
+.logo{
+font-size:42px;
+}
+
+.header-title{
+font-size:18px;
+font-weight:800;
+}
+
+.header-sub{
+font-size:12px;
+opacity:.8;
+}
+
+.co2-box{
+text-align:right;
+}
+
+.co2-box h1{
+font-size:18px;
+}
+
+.co2-box p{
+font-size:12px;
 }
 
 .page{
 display:none;
-padding-bottom:110px;
+padding:16px;
 }
 
-.active-page{
+.page.active{
 display:block;
+}
+
+.hero{
+background:linear-gradient(135deg,#166534,#16a34a);
+padding:25px;
+border-radius:28px;
+color:white;
+margin-bottom:18px;
+box-shadow:0 10px 25px rgba(0,0,0,.12);
+}
+
+.hero h1{
+font-size:54px;
+font-weight:900;
+}
+
+.hero small{
+font-size:22px;
+}
+
+.badges{
+display:flex;
+flex-wrap:wrap;
+gap:8px;
+margin-top:15px;
+}
+
+.badge{
+background:rgba(255,255,255,.18);
+padding:8px 12px;
+border-radius:999px;
+font-size:12px;
+}
+
+.stats{
+display:grid;
+grid-template-columns:repeat(3,1fr);
+margin-top:18px;
+overflow:hidden;
+border-radius:18px;
+}
+
+.stat{
+background:rgba(255,255,255,.12);
+padding:18px;
+text-align:center;
+backdrop-filter:blur(4px);
+}
+
+.stat h3{
+font-size:28px;
+}
+
+.stat p{
+font-size:12px;
+opacity:.9;
+}
+
+.section-title{
+font-size:26px;
+font-weight:800;
+margin-bottom:14px;
+color:#14532d;
+}
+
+.grid{
+display:grid;
+grid-template-columns:repeat(2,1fr);
+gap:14px;
+}
+
+.branch-card{
+background:white;
+padding:18px;
+border-radius:24px;
+box-shadow:0 5px 18px rgba(0,0,0,.06);
+border-top:5px solid #16a34a;
+}
+
+.branch-card h3{
+font-size:18px;
+margin-top:10px;
+}
+
+.branch-card .kg{
+margin-top:10px;
+font-size:30px;
+font-weight:800;
+color:#166534;
+}
+
+.icon{
+font-size:38px;
+}
+
+.btn{
+width:100%;
+border:none;
+padding:18px;
+border-radius:20px;
+font-size:18px;
+font-weight:700;
+cursor:pointer;
+margin-top:14px;
+}
+
+.green{
+background:#166534;
+color:white;
+}
+
+.blue{
+background:#2563eb;
+color:white;
+}
+
+.red{
+background:#dc2626;
+color:white;
 }
 
 .card{
 background:white;
-border-radius:26px;
-box-shadow:0 4px 18px rgba(0,0,0,.06);
+padding:20px;
+border-radius:24px;
+margin-bottom:18px;
+box-shadow:0 5px 18px rgba(0,0,0,.06);
 }
 
-.green-card{
-background:linear-gradient(135deg,#0f6a33,#1f9d4b);
-color:white;
-border-radius:30px;
+input,select{
+width:100%;
+padding:16px;
+border-radius:18px;
+border:2px solid #ddd;
+margin-top:10px;
+font-size:16px;
+background:white;
+}
+
+.bottom-nav{
+position:fixed;
+bottom:0;
+left:50%;
+transform:translateX(-50%);
+width:100%;
+max-width:430px;
+background:white;
+display:flex;
+justify-content:space-around;
+padding:12px 0;
+border-top:3px solid #166534;
 }
 
 .nav-btn{
-transition:.2s;
+background:none;
+border:none;
+font-size:13px;
+color:#777;
+display:flex;
+flex-direction:column;
+align-items:center;
+gap:4px;
+cursor:pointer;
 }
 
-.nav-active{
+.nav-btn.active{
 color:#166534;
 font-weight:800;
 }
 
-.branch-card{
-transition:.2s;
+.rank{
+display:flex;
+align-items:center;
+justify-content:space-between;
+background:white;
+padding:18px;
+border-radius:22px;
+margin-bottom:14px;
 }
 
-.branch-card:active{
-transform:scale(.96);
+.bar{
+height:18px;
+background:#d1fae5;
+border-radius:999px;
+overflow:hidden;
+margin-top:8px;
+}
+
+.fill{
+height:100%;
+background:linear-gradient(90deg,#16a34a,#22c55e);
+}
+
+.kpi-grid{
+display:grid;
+grid-template-columns:repeat(2,1fr);
+gap:14px;
+}
+
+.kpi{
+background:white;
+padding:18px;
+border-radius:22px;
+box-shadow:0 5px 18px rgba(0,0,0,.06);
+}
+
+.kpi h2{
+font-size:32px;
+color:#166534;
+}
+
+.kpi p{
+color:#666;
+margin-top:5px;
+font-size:13px;
+}
+
+.prediction{
+background:linear-gradient(135deg,#0f766e,#14b8a6);
+color:white;
+padding:20px;
+border-radius:24px;
+margin-top:18px;
+}
+
+.prediction h1{
+font-size:42px;
+margin-top:8px;
+}
+
+.tree{
+font-size:15px;
+margin-top:8px;
+}
+
+canvas{
+margin-top:15px;
 }
 
 </style>
@@ -72,474 +319,411 @@ transform:scale(.96);
 
 <body>
 
-<!-- APP -->
-<div class="max-w-md mx-auto bg-[#eef6f0] h-screen overflow-auto">
+<div class="header">
 
-<!-- TOP -->
-<div class="bg-[#166534] text-white px-5 pt-5 pb-6 rounded-b-[35px]">
-
-<div class="flex justify-between items-center">
-
-<div class="flex items-center gap-3">
-
-<div class="text-4xl">
-☕
-</div>
+<div class="logo-wrap">
+<div class="logo">☕</div>
 
 <div>
-
-<div class="font-extrabold text-3xl">
-Hillkoff
+<div class="header-title">Hillkoff</div>
+<div class="header-sub">Zero Waste · ESG Platform</div>
+</div>
 </div>
 
-<div class="opacity-80 text-sm">
-Zero Waste · ESG Platform
-</div>
-
-</div>
-
-</div>
-
-<div class="text-right">
-
-<div class="text-xs opacity-80">
-CO₂e รวม
-</div>
-
-<div class="font-extrabold text-3xl" id="totalCO2">
-0
+<div class="co2-box">
+<p>CO₂e รวม</p>
+<h1 id="totalCO2">0 kg</h1>
 </div>
 
 </div>
-
-</div>
-
-</div>
-
-<!-- CONTENT -->
-<div class="px-4 pt-4">
 
 <!-- HOME -->
-<div id="home" class="page active-page">
 
-<!-- HERO -->
-<div class="green-card p-6 text-center">
+<div class="page active" id="homePage">
 
-<div class="text-lg opacity-90 mb-3">
-🌍 Carbon Footprint — องค์กร
+<div class="hero">
+
+<div>🌍 Carbon Footprint — องค์กร</div>
+
+<h1 id="heroCO2">0 <small>kg CO₂e</small></h1>
+
+<div class="badges">
+<div class="badge">ISO 14064</div>
+<div class="badge">GHG Protocol</div>
+<div class="badge">WEEE</div>
+<div class="badge">SDG 12</div>
 </div>
 
-<div class="text-6xl font-extrabold" id="heroCO2">
-0
+<div class="stats">
+
+<div class="stat">
+<h3 id="todayValue">0</h3>
+<p>kg วันนี้</p>
 </div>
 
-<div class="text-2xl mb-4">
-kg CO₂e
+<div class="stat">
+<h3 id="monthValue">0</h3>
+<p>kg เดือนนี้</p>
 </div>
 
-<div class="flex justify-center gap-2 flex-wrap mb-5">
-
-<div class="bg-white/20 px-3 py-1 rounded-full text-sm">
-ISO 14064
-</div>
-
-<div class="bg-white/20 px-3 py-1 rounded-full text-sm">
-GHG Protocol
-</div>
-
-<div class="bg-white/20 px-3 py-1 rounded-full text-sm">
-WEEE
-</div>
-
-<div class="bg-white/20 px-3 py-1 rounded-full text-sm">
-SDG 12
-</div>
-
-</div>
-
-<div class="bg-white/10 rounded-3xl grid grid-cols-3 overflow-hidden mb-6">
-
-<div class="p-4 border-r border-white/10">
-
-<div class="font-extrabold text-3xl" id="todayCO2">
-0
-</div>
-
-<div class="text-sm opacity-80">
-kg วันนี้
+<div class="stat">
+<h3 id="recordCount">0</h3>
+<p>รายการ</p>
 </div>
 
 </div>
 
-<div class="p-4 border-r border-white/10">
-
-<div class="font-extrabold text-3xl" id="monthCO2">
-0
-</div>
-
-<div class="text-sm opacity-80">
-kg เดือนนี้
-</div>
-
-</div>
-
-<div class="p-4">
-
-<div class="font-extrabold text-3xl" id="totalLogs">
-0
-</div>
-
-<div class="text-sm opacity-80">
-รายการ
-</div>
-
-</div>
-
-</div>
-
-<button onclick="openPage('log')" class="bg-white text-[#166534] font-extrabold text-xl px-8 py-4 rounded-3xl shadow-lg">
+<button class="btn green" onclick="showPage('recordPage')">
 📝 บันทึกขยะใหม่
 </button>
 
 </div>
 
-<!-- BRANCH -->
-<div class="mt-7">
-
-<div class="font-extrabold text-2xl text-[#166534] mb-4">
+<div class="section-title">
 สรุปแต่ละสาขา
 </div>
 
-<div class="grid grid-cols-2 gap-4" id="branchGrid">
+<div class="grid" id="branchGrid"></div>
 
 </div>
 
-</div>
+<!-- RECORD -->
 
-<!-- RECENT -->
-<div class="mt-7">
+<div class="page" id="recordPage">
 
-<div class="font-extrabold text-2xl text-[#166534] mb-4">
-รายการล่าสุด
-</div>
+<div class="card">
 
-<div id="recentLogs" class="space-y-3">
+<h2>บันทึกข้อมูลขยะ</h2>
 
-<div class="card p-5 text-center text-gray-400">
-ยังไม่มีข้อมูล
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-<!-- LOG -->
-<div id="log" class="page">
-
-<div class="card p-5">
-
-<div class="font-extrabold text-3xl text-[#166534] mb-1">
-📝 บันทึกขยะ
-</div>
-
-<div class="text-gray-500 mb-6">
-ระบบบันทึกขยะองค์กร
-</div>
-
-<!-- BRANCH -->
-<div class="mb-5">
-
-<div class="font-bold mb-3">
-เลือกสาขา
-</div>
-
-<select id="branch" class="w-full border-2 rounded-2xl p-4 text-lg">
-
-<option value="">เลือกสาขา</option>
-
-<option>สำนักงานใหญ่</option>
-<option>ช้างเผือก</option>
-<option>มหิดล</option>
-<option>ป่าแพง</option>
-<option>ทับเดื่อ</option>
-<option>ราติก้า</option>
-
+<select id="branch">
+<option value="สำนักงานใหญ่">สำนักงานใหญ่</option>
+<option value="ช้างเผือก">ช้างเผือก</option>
+<option value="มหิดล">มหิดล</option>
+<option value="ป่าแพง">ป่าแพง</option>
+<option value="ทับเดื่อ">ทับเดื่อ</option>
+<option value="ราติก้า">ราติก้า</option>
 </select>
 
-</div>
-
-<!-- WASTE -->
-<div class="mb-5">
-
-<div class="font-bold mb-3">
-ประเภทขยะ
-</div>
-
-<select id="waste" class="w-full border-2 rounded-2xl p-4 text-lg">
-
-<option value="">เลือกประเภท</option>
-
-<option value="0.49">☕ กากกาแฟ</option>
-<option value="2.53">🧴 พลาสติก</option>
-<option value="0.91">🍃 เศษอาหาร</option>
-<option value="1.09">📄 กระดาษ</option>
-<option value="0.31">🔵 แก้ว</option>
-<option value="20">💻 อิเล็กทรอนิกส์</option>
-
+<select id="wasteType">
+<option value="พลาสติก">พลาสติก</option>
+<option value="เศษอาหาร">เศษอาหาร</option>
+<option value="กระดาษ">กระดาษ</option>
+<option value="กากกาแฟ">กากกาแฟ</option>
+<option value="แก้ว">แก้ว</option>
+<option value="อลูมิเนียม">อลูมิเนียม</option>
 </select>
 
-</div>
+<input type="number" id="weight" placeholder="น้ำหนัก (kg)" />
 
-<!-- QTY -->
-<div class="mb-5">
-
-<div class="font-bold mb-3">
-ปริมาณ
-</div>
-
-<select id="qty" class="w-full border-2 rounded-2xl p-4 text-lg">
-
-<option value="">เลือกปริมาณ</option>
-
-<option value="0.5">น้อยมาก</option>
-<option value="3">น้อย</option>
-<option value="12.5">ปานกลาง</option>
-<option value="25">มาก</option>
-
-</select>
-
-</div>
-
-<!-- DISPOSAL -->
-<div class="mb-5">
-
-<div class="font-bold mb-3">
-วิธีจัดการ
-</div>
-
-<select id="method" class="w-full border-2 rounded-2xl p-4 text-lg">
-
-<option value="">เลือกวิธี</option>
-
-<option value="0.1">♻️ รีไซเคิล</option>
-<option value="0.05">🌱 หมักปุ๋ย</option>
-<option value="0.05">🔄 นำกลับมาใช้</option>
-<option value="1">⛏️ ฝังกลบ</option>
-<option value="1.5">🔥 เผา</option>
-
-</select>
-
-</div>
-
-<!-- IMAGE -->
-<div class="mb-6">
-
-<div class="font-bold mb-3">
-อัปโหลดรูป
-</div>
-
-<input type="file" class="w-full border-2 rounded-2xl p-4">
-
-</div>
-
-<!-- SAVE -->
-<button onclick="saveLog()" class="w-full bg-[#166534] text-white font-extrabold text-xl p-5 rounded-3xl">
-✅ บันทึกข้อมูล
+<button class="btn green" onclick="saveData()">
+💾 บันทึกข้อมูล
 </button>
+
+</div>
+
+<div class="card">
+
+<h2>Carbon Factor</h2>
+
+<p>พลาสติก = 2.53</p>
+<p>เศษอาหาร = 1.90</p>
+<p>กระดาษ = 1.10</p>
+<p>กากกาแฟ = 0.30</p>
+<p>แก้ว = 1.40</p>
+<p>อลูมิเนียม = 8.20</p>
 
 </div>
 
 </div>
 
 <!-- ANALYTICS -->
-<div id="analytics" class="page">
 
-<div class="card p-5">
+<div class="page" id="analyticsPage">
 
-<div class="font-extrabold text-3xl text-[#166534] mb-5">
-📊 Analytics
+<div class="kpi-grid">
+
+<div class="kpi">
+<h2 id="kpiTotal">0</h2>
+<p>CO₂e รวม</p>
 </div>
 
-<canvas id="chart"></canvas>
+<div class="kpi">
+<h2 id="kpiTrees">0</h2>
+<p>เทียบเท่าปลูกต้นไม้</p>
+</div>
 
+<div class="kpi">
+<h2 id="kpiReduction">0%</h2>
+<p>อัตราลดคาร์บอน</p>
+</div>
+
+<div class="kpi">
+<h2 id="kpiAvg">0</h2>
+<p>ค่าเฉลี่ยต่อรายการ</p>
 </div>
 
 </div>
 
-<!-- RANK -->
-<div id="rank" class="page">
+<div class="card">
 
-<div class="card p-5">
+<h2>แนวโน้ม CO₂e</h2>
 
-<div class="font-extrabold text-3xl text-[#166534] mb-5">
-🏆 Ranking
-</div>
-
-<div id="rankingList" class="space-y-4">
+<canvas id="lineChart"></canvas>
 
 </div>
 
+<div class="prediction">
+
+<div>📈 AI Prediction</div>
+
+<h1 id="predictValue">0 kg</h1>
+
+<p>
+คาดการณ์คาร์บอนสิ้นเดือน
+จากพฤติกรรมการทิ้งขยะปัจจุบัน
+</p>
+
+<div class="tree" id="predictTree">
+🌳 เทียบเท่าปลูกต้นไม้ 0 ต้น
 </div>
+
+</div>
+
+</div>
+
+<!-- RANKING -->
+
+<div class="page" id="rankingPage">
+
+<div class="section-title">
+🏆 Ranking ลดคาร์บอน
+</div>
+
+<div id="rankingList"></div>
 
 </div>
 
 <!-- REPORT -->
-<div id="report" class="page">
 
-<div class="space-y-5">
+<div class="page" id="reportPage">
 
-<div class="card p-6">
+<div class="hero">
 
-<div class="text-5xl mb-4">
-📄
+<div>📋 ESG Report Center</div>
+
+<h1 style="font-size:48px">
+รายงาน ISO 14064
+</h1>
+
+<div style="margin-top:10px">
+GHG Protocol · WEEE · SDG 12
 </div>
 
-<div class="font-extrabold text-2xl mb-2">
-Export PDF
 </div>
 
-<button class="w-full bg-[#166534] text-white p-4 rounded-2xl font-bold">
-ดาวน์โหลด PDF
+<div class="card">
+
+<h2>สรุปรายงาน</h2>
+
+<div style="margin-top:15px">
+
+<p>CO₂e รวม :
+<b id="reportTotal">0 kg</b></p>
+
+<br>
+
+<p>เทียบต้นไม้ :
+<b id="reportTrees">0 ต้น</b></p>
+
+<br>
+
+<p>รายการทั้งหมด :
+<b id="reportRecords">0</b></p>
+
+</div>
+
+</div>
+
+<button class="btn green" onclick="exportCSV()">
+📊 Export CSV
 </button>
 
-</div>
-
-<div class="card p-6">
-
-<div class="text-5xl mb-4">
-📧
-</div>
-
-<div class="font-extrabold text-2xl mb-2">
-ส่ง Email
-</div>
-
-<button class="w-full bg-red-600 text-white p-4 rounded-2xl font-bold">
-ส่งรายงาน
+<button class="btn blue" onclick="window.print()">
+📄 Export PDF
 </button>
 
-</div>
+<div class="card">
 
-</div>
+<h2>📧 ส่ง ESG Report</h2>
+
+<input type="email" placeholder="อีเมลผู้บริหาร">
+
+<button class="btn red">
+📨 ส่งรายงาน
+</button>
 
 </div>
 
 </div>
 
 <!-- NAV -->
-<div class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white border-t flex justify-around py-3">
 
-<button onclick="openPage('home')" class="nav-btn nav-active flex flex-col items-center text-sm" id="nav-home">
+<div class="bottom-nav">
+
+<button class="nav-btn active" onclick="showPage('homePage',this)">
 🏠
 <span>หน้าหลัก</span>
 </button>
 
-<button onclick="openPage('log')" class="nav-btn flex flex-col items-center text-sm" id="nav-log">
+<button class="nav-btn" onclick="showPage('recordPage',this)">
 📝
 <span>บันทึก</span>
 </button>
 
-<button onclick="openPage('analytics')" class="nav-btn flex flex-col items-center text-sm" id="nav-analytics">
+<button class="nav-btn" onclick="showPage('analyticsPage',this)">
 📊
 <span>Analytics</span>
 </button>
 
-<button onclick="openPage('rank')" class="nav-btn flex flex-col items-center text-sm" id="nav-rank">
+<button class="nav-btn" onclick="showPage('rankingPage',this)">
 🏆
 <span>Ranking</span>
 </button>
 
-<button onclick="openPage('report')" class="nav-btn flex flex-col items-center text-sm" id="nav-report">
-📄
+<button class="nav-btn" onclick="showPage('reportPage',this)">
+📋
 <span>รายงาน</span>
 </button>
 
 </div>
 
-</div>
-
 <script>
 
-let logs = JSON.parse(localStorage.getItem("logs")) || [];
+const factors = {
+"พลาสติก":2.53,
+"เศษอาหาร":1.90,
+"กระดาษ":1.10,
+"กากกาแฟ":0.30,
+"แก้ว":1.40,
+"อลูมิเนียม":8.20
+};
 
 const branches = [
-"สำนักงานใหญ่",
-"ช้างเผือก",
-"มหิดล",
-"ป่าแพง",
-"ทับเดื่อ",
-"ราติก้า"
+{ name:"สำนักงานใหญ่", icon:"🏢" },
+{ name:"ช้างเผือก", icon:"🐘" },
+{ name:"มหิดล", icon:"🎓" },
+{ name:"ป่าแพง", icon:"🌿" },
+{ name:"ทับเดื่อ", icon:"🌱" },
+{ name:"ราติก้า", icon:"☕" }
 ];
 
-function openPage(page){
+let records = JSON.parse(localStorage.getItem("records")) || [];
 
-document.querySelectorAll('.page').forEach(p=>{
-p.classList.remove('active-page');
+function showPage(id,btn){
+
+document.querySelectorAll(".page").forEach(p=>{
+p.classList.remove("active");
 });
 
-document.getElementById(page).classList.add('active-page');
+document.getElementById(id).classList.add("active");
 
-document.querySelectorAll('.nav-btn').forEach(n=>{
-n.classList.remove('nav-active');
+document.querySelectorAll(".nav-btn").forEach(b=>{
+b.classList.remove("active");
 });
 
-document.getElementById('nav-'+page).classList.add('nav-active');
+if(btn){
+btn.classList.add("active");
+}
 
 }
 
-function saveLog(){
+function saveData(){
 
-const branch = document.getElementById('branch').value;
-const waste = document.getElementById('waste');
-const qty = document.getElementById('qty').value;
-const method = document.getElementById('method').value;
+const branch = document.getElementById("branch").value;
+const waste = document.getElementById("wasteType").value;
+const weight = parseFloat(document.getElementById("weight").value);
 
-if(!branch || !qty || !method || !waste.value){
-alert("กรอกข้อมูลให้ครบ");
+if(!weight){
+alert("กรุณากรอกน้ำหนัก");
 return;
 }
 
-const co2 =
-(parseFloat(waste.value) *
-parseFloat(qty) *
-parseFloat(method)).toFixed(3);
+const co2 = weight * factors[waste];
 
-logs.unshift({
+records.push({
 branch,
-waste:waste.options[waste.selectedIndex].text,
-qty,
+waste,
+weight,
 co2,
-time:new Date().toLocaleString("th-TH")
+date:new Date().toISOString()
 });
 
-localStorage.setItem("logs",JSON.stringify(logs));
+localStorage.setItem("records",JSON.stringify(records));
 
-updateUI();
+document.getElementById("weight").value="";
 
-alert("บันทึกสำเร็จ");
+updateAll();
 
-openPage('home');
+alert("บันทึกข้อมูลสำเร็จ");
 
 }
 
-function updateUI(){
+function updateAll(){
 
-let total = 0;
+const total = records.reduce((a,b)=>a+b.co2,0);
 
-logs.forEach(l=>{
-total += parseFloat(l.co2);
-});
+document.getElementById("totalCO2").innerText =
+total.toFixed(2)+" kg";
 
-document.getElementById('totalCO2').innerText = total.toFixed(3);
-document.getElementById('heroCO2').innerText = total.toFixed(3);
-document.getElementById('todayCO2').innerText = total.toFixed(3);
-document.getElementById('monthCO2').innerText = total.toFixed(3);
-document.getElementById('totalLogs').innerText = logs.length;
+document.getElementById("heroCO2").innerHTML =
+total.toFixed(2)+' <small>kg CO₂e</small>';
+
+document.getElementById("todayValue").innerText =
+total.toFixed(2);
+
+document.getElementById("monthValue").innerText =
+total.toFixed(2);
+
+document.getElementById("recordCount").innerText =
+records.length;
+
+document.getElementById("kpiTotal").innerText =
+total.toFixed(2)+" kg";
+
+const trees = Math.floor(total/21);
+
+document.getElementById("kpiTrees").innerText =
+trees+" ต้น";
+
+document.getElementById("reportTrees").innerText =
+trees+" ต้น";
+
+document.getElementById("reportTotal").innerText =
+total.toFixed(2)+" kg";
+
+document.getElementById("reportRecords").innerText =
+records.length;
+
+const avg = records.length ?
+(total / records.length) : 0;
+
+document.getElementById("kpiAvg").innerText =
+avg.toFixed(2)+" kg";
+
+const reduction = Math.max(0,100-(total*2));
+
+document.getElementById("kpiReduction").innerText =
+reduction.toFixed(0)+"%";
+
+const predict = total * 1.8;
+
+document.getElementById("predictValue").innerText =
+predict.toFixed(2)+" kg";
+
+document.getElementById("predictTree").innerText =
+"🌳 เทียบเท่าปลูกต้นไม้ "+Math.floor(predict/21)+" ต้น";
 
 renderBranches();
-renderRecent();
 renderRanking();
 renderChart();
 
@@ -547,104 +731,33 @@ renderChart();
 
 function renderBranches(){
 
-const grid = document.getElementById('branchGrid');
+const grid = document.getElementById("branchGrid");
 
-grid.innerHTML = '';
+grid.innerHTML="";
 
 branches.forEach(branch=>{
 
-let total = 0;
-let count = 0;
+const branchData = records.filter(r=>r.branch===branch.name);
 
-logs.forEach(log=>{
-if(log.branch === branch){
-total += parseFloat(log.co2);
-count++;
-}
-});
+const total = branchData.reduce((a,b)=>a+b.co2,0);
 
-grid.innerHTML += `
-<div class="branch-card card p-5 text-center">
+const div = document.createElement("div");
 
-<div class="text-5xl mb-3">
-🏢
-</div>
+div.className="branch-card";
 
-<div class="font-extrabold text-xl">
-${branch}
-</div>
+div.innerHTML=`
+<div class="icon">${branch.icon}</div>
 
-<div class="text-gray-400 mt-2">
-${count} รายการ
-</div>
+<h3>${branch.name}</h3>
 
-<div class="text-[#166534] font-extrabold text-3xl mt-3">
-${total.toFixed(3)}
-</div>
+<p>${branchData.length} รายการ</p>
 
-<div class="text-gray-500">
-kg
-</div>
-
+<div class="kg">
+${total.toFixed(2)} kg
 </div>
 `;
 
-});
-
-}
-
-function renderRecent(){
-
-const box = document.getElementById('recentLogs');
-
-if(logs.length === 0){
-
-box.innerHTML = `
-<div class="card p-5 text-center text-gray-400">
-ยังไม่มีข้อมูล
-</div>
-`;
-
-return;
-}
-
-box.innerHTML = '';
-
-logs.slice(0,5).forEach(log=>{
-
-box.innerHTML += `
-<div class="card p-4 flex justify-between items-center">
-
-<div>
-
-<div class="font-bold">
-${log.branch}
-</div>
-
-<div class="text-sm text-gray-500">
-${log.waste}
-</div>
-
-<div class="text-xs text-gray-400 mt-1">
-${log.time}
-</div>
-
-</div>
-
-<div class="text-right">
-
-<div class="text-[#166534] font-extrabold text-2xl">
-${log.co2}
-</div>
-
-<div class="text-sm text-gray-500">
-kg CO₂e
-</div>
-
-</div>
-
-</div>
-`;
+grid.appendChild(div);
 
 });
 
@@ -652,62 +765,69 @@ kg CO₂e
 
 function renderRanking(){
 
-const box = document.getElementById('rankingList');
+const list = document.getElementById("rankingList");
 
-let data = [];
+list.innerHTML="";
 
-branches.forEach(branch=>{
+const data = branches.map(branch=>{
 
-let total = 0;
+const total = records
+.filter(r=>r.branch===branch.name)
+.reduce((a,b)=>a+b.co2,0);
 
-logs.forEach(log=>{
-if(log.branch === branch){
-total += parseFloat(log.co2);
-}
-});
-
-data.push({
-branch,
+return {
+name:branch.name,
 total
-});
+};
 
 });
 
 data.sort((a,b)=>a.total-b.total);
 
-box.innerHTML = '';
+const max = Math.max(...data.map(d=>d.total),1);
 
-data.forEach((d,index)=>{
+data.forEach((item,index)=>{
 
-box.innerHTML += `
-<div class="card p-5 flex justify-between items-center">
+const trees = Math.floor(item.total/21);
 
-<div class="flex items-center gap-4">
+const div = document.createElement("div");
 
-<div class="text-4xl">
-${index==0?'🥇':index==1?'🥈':index==2?'🥉':'🏢'}
-</div>
+div.className="rank";
+
+div.innerHTML=`
+
+<div style="width:100%">
+
+<div style="display:flex;justify-content:space-between">
 
 <div>
+<h3>
+#${index+1} ${item.name}
+</h3>
 
-<div class="font-extrabold text-xl">
-${d.branch}
-</div>
-
-<div class="text-gray-400">
-อันดับ ${index+1}
-</div>
-
-</div>
+<p>
+🌳 เทียบ ${trees} ต้นไม้
+</p>
 
 </div>
 
-<div class="text-[#166534] font-extrabold text-3xl">
-${d.total.toFixed(3)}
+<h2 style="color:#166534">
+${item.total.toFixed(2)} kg
+</h2>
+
+</div>
+
+<div class="bar">
+<div class="fill"
+style="width:${(item.total/max)*100}%">
+</div>
 </div>
 
 </div>
+
 `;
+
+list.appendChild(div);
 
 });
 
@@ -717,56 +837,70 @@ let chart;
 
 function renderChart(){
 
-const ctx = document.getElementById('chart');
+const ctx = document.getElementById("lineChart");
 
-const values = [];
+const labels = records.map((r,i)=>i+1);
 
-branches.forEach(branch=>{
-
-let total = 0;
-
-logs.forEach(log=>{
-if(log.branch === branch){
-total += parseFloat(log.co2);
-}
-});
-
-values.push(total);
-
-});
+const data = records.map(r=>r.co2);
 
 if(chart){
 chart.destroy();
 }
 
 chart = new Chart(ctx,{
-type:'bar',
+type:'line',
 data:{
-labels:branches,
+labels,
 datasets:[{
 label:'CO₂e',
-data:values,
-backgroundColor:[
-'#166534',
-'#15803d',
-'#16a34a',
-'#22c55e',
-'#4ade80',
-'#86efac'
-]
+data,
+fill:true,
+tension:.4
 }]
+},
+options:{
+responsive:true,
+plugins:{
+legend:{
+display:false
+}
+}
 }
 });
 
 }
 
-updateUI();
+function exportCSV(){
 
-setInterval(()=>{
-updateUI();
-},2000);
+let csv =
+"สาขา,ประเภท,น้ำหนัก,CO2e\n";
+
+records.forEach(r=>{
+
+csv +=
+`${r.branch},${r.waste},${r.weight},${r.co2}\n`;
+
+});
+
+const blob = new Blob([csv],{
+type:'text/csv'
+});
+
+const a = document.createElement("a");
+
+a.href = URL.createObjectURL(blob);
+
+a.download = "hillkoff-report.csv";
+
+a.click();
+
+}
+
+updateAll();
+
+setInterval(updateAll,3000);
 
 </script>
 
 </body>
-</html>
+  </html>
