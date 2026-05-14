@@ -1,17 +1,22 @@
+<!-- =========================================================
+HILLKOFF ENTERPRISE ESG PLATFORM
+Version: Enterprise Mobile Dashboard
+Run: Github Pages / Netlify / Vercel ได้ทันที
+ไฟล์เดียวจบ index.html
+========================================================= -->
+
 <!DOCTYPE html>
 <html lang="th">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>Hillkoff ESG Enterprise Platform</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0" />
+<title>Hillkoff ESG Platform</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700;800&display=swap" rel="stylesheet">
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
 
 <style>
-
 *{
 margin:0;
 padding:0;
@@ -20,36 +25,62 @@ font-family:'Sarabun',sans-serif;
 }
 
 body{
-background:#eef4ef;
-color:#1d2b1f;
-padding-bottom:90px;
+background:#edf4ef;
+color:#1a1a1a;
+max-width:430px;
+margin:auto;
+min-height:100vh;
+padding-bottom:100px;
 }
 
-.header{
+header{
+background:linear-gradient(135deg,#0d5c35,#1d8d57);
+padding:20px;
+color:white;
 position:sticky;
 top:0;
-z-index:999;
-background:#14532d;
-padding:16px;
-color:white;
-display:flex;
-justify-content:space-between;
-align-items:center;
-box-shadow:0 4px 12px rgba(0,0,0,.12);
+z-index:100;
+box-shadow:0 5px 15px rgba(0,0,0,.12);
 }
 
 .logo{
-font-size:20px;
+font-size:24px;
 font-weight:800;
 }
 
 .sub{
+font-size:12px;
+opacity:.85;
+margin-top:2px;
+}
+
+.kpi-top{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:10px;
+margin-top:18px;
+}
+
+.kpi-box{
+background:rgba(255,255,255,.13);
+padding:14px;
+border-radius:16px;
+backdrop-filter:blur(10px);
+}
+
+.kpi-title{
 font-size:11px;
 opacity:.8;
 }
 
+.kpi-value{
+font-size:22px;
+font-weight:800;
+margin-top:4px;
+}
+
 .container{
-padding:14px;
+padding:16px;
 display:flex;
 flex-direction:column;
 gap:16px;
@@ -57,121 +88,119 @@ gap:16px;
 
 .card{
 background:white;
-border-radius:22px;
+border-radius:20px;
 padding:18px;
 box-shadow:0 4px 12px rgba(0,0,0,.05);
 }
 
-.hero{
-background:linear-gradient(135deg,#14532d,#1f7a43);
-color:white;
-}
-
-.hero h1{
-font-size:34px;
+.card-title{
+font-size:15px;
 font-weight:800;
-margin-top:10px;
+margin-bottom:14px;
+color:#0d5c35;
 }
 
-.hero p{
-font-size:12px;
-opacity:.85;
-}
-
-.grid2{
+.grid-2{
 display:grid;
 grid-template-columns:1fr 1fr;
-gap:12px;
-}
-
-.grid3{
-display:grid;
-grid-template-columns:1fr 1fr 1fr;
 gap:10px;
 }
 
-.kpi{
-padding:14px;
+.grid-3{
+display:grid;
+grid-template-columns:1fr 1fr 1fr;
+gap:8px;
+}
+
+.branch-btn{
+padding:14px 8px;
+border:none;
 border-radius:16px;
-background:#f3f7f3;
-text-align:center;
+background:#f2f7f4;
+font-size:12px;
+font-weight:700;
+cursor:pointer;
+transition:.2s;
 }
 
-.kpi h2{
-font-size:23px;
-font-weight:800;
-color:#14532d;
+.branch-btn.active{
+background:#0d5c35;
+color:white;
 }
 
-.kpi span{
-font-size:11px;
-color:#666;
-}
-
-.section{
+.input{
+width:100%;
+padding:13px;
+border-radius:12px;
+border:1px solid #d7dfd9;
 font-size:14px;
+margin-top:8px;
+}
+
+select{
+background:white;
+}
+
+.action-btn{
+width:100%;
+padding:15px;
+border:none;
+border-radius:16px;
+background:linear-gradient(135deg,#0d5c35,#1d8d57);
+color:white;
+font-size:15px;
 font-weight:800;
-color:#14532d;
+cursor:pointer;
+margin-top:14px;
+}
+
+.small{
+font-size:12px;
+color:#666;
+line-height:1.6;
+}
+
+.leader{
+display:flex;
+align-items:center;
+justify-content:space-between;
+padding:12px;
+border-radius:14px;
+background:#f4faf6;
 margin-bottom:10px;
 }
 
-.branch{
-background:white;
-padding:14px;
-border-radius:16px;
-display:flex;
-justify-content:space-between;
-align-items:center;
-box-shadow:0 3px 8px rgba(0,0,0,.04);
-}
-
 .rank{
-font-size:22px;
-}
-
-.branch-name{
-font-size:13px;
-font-weight:700;
-}
-
-.branch-sub{
-font-size:11px;
-color:#777;
-}
-
-.score{
-font-size:18px;
+font-size:20px;
 font-weight:800;
-color:#14532d;
+color:#0d5c35;
 }
 
 .bottom-nav{
 position:fixed;
 bottom:0;
-left:0;
-right:0;
-background:white;
+left:50%;
+transform:translateX(-50%);
+width:100%;
+max-width:430px;
 display:flex;
+background:white;
 border-top:1px solid #ddd;
 z-index:999;
 }
 
 .nav-btn{
 flex:1;
-padding:12px 4px;
-background:none;
+padding:12px 0;
 border:none;
+background:white;
 font-size:11px;
-display:flex;
-flex-direction:column;
-align-items:center;
-gap:4px;
+font-weight:700;
 color:#777;
 }
 
 .nav-btn.active{
-color:#14532d;
-font-weight:800;
+color:#0d5c35;
 }
 
 .page{
@@ -182,91 +211,64 @@ display:none;
 display:block;
 }
 
-input,select{
-width:100%;
-padding:13px;
-border-radius:12px;
-border:1px solid #ccc;
+.badge{
+display:inline-block;
+padding:4px 10px;
+border-radius:999px;
+background:#dff4e6;
+color:#0d5c35;
+font-size:10px;
+font-weight:700;
 margin-top:8px;
 }
 
-button.action{
-width:100%;
+.info-box{
+background:#f7fbf8;
+border-left:5px solid #0d5c35;
 padding:14px;
-border:none;
 border-radius:14px;
-background:#14532d;
-color:white;
-font-weight:700;
-margin-top:12px;
+font-size:12px;
+line-height:1.7;
 }
 
 .table{
 width:100%;
-margin-top:10px;
-border-collapse:collapse;
 font-size:12px;
-}
-
-.table th{
-background:#14532d;
-color:white;
-padding:10px;
+border-collapse:collapse;
 }
 
 .table td{
-padding:10px;
+padding:8px;
 border-bottom:1px solid #eee;
 }
 
-.badge{
-display:inline-block;
-padding:5px 10px;
-background:#dff5e7;
-border-radius:999px;
-font-size:10px;
-font-weight:700;
-color:#14532d;
+.kpi-big{
+font-size:38px;
+font-weight:900;
+color:#0d5c35;
 }
 
-.alert{
+.notice{
+background:#fff7e8;
 padding:12px;
 border-radius:14px;
-background:#fff3cd;
-color:#856404;
 font-size:12px;
-margin-top:10px;
+line-height:1.6;
+border-left:4px solid orange;
 }
 
-.ai-box{
-background:#eff8f0;
-padding:14px;
-border-radius:16px;
-margin-top:14px;
+.green{
+color:#0d5c35;
+font-weight:700;
 }
 
-canvas{
-margin-top:10px;
+.chart-box{
+height:260px;
 }
 
-.upload-box{
-border:2px dashed #bbb;
-padding:24px;
-border-radius:18px;
-text-align:center;
-margin-top:10px;
-background:#fafafa;
-}
-
-.big-number{
-font-size:36px;
-font-weight:800;
-color:#14532d;
-}
-
-.tree{
-font-size:13px;
-margin-top:5px;
+.footer-note{
+font-size:11px;
+line-height:1.8;
 color:#666;
 }
 
@@ -275,576 +277,514 @@ color:#666;
 
 <body>
 
-<div class="header">
-<div>
+<header>
+
 <div class="logo">☕ Hillkoff ESG Platform</div>
-<div class="sub">Enterprise Sustainability Intelligence</div>
-</div>
-<div>
-<div style="font-size:11px;">Realtime ESG</div>
-<div id="liveTime"></div>
-</div>
-</div>
+<div class="sub">Enterprise Sustainability Dashboard</div>
 
-<!-- DASHBOARD -->
-<div id="dashboard" class="page active">
-<div class="container">
+<div class="kpi-top">
 
-<div class="card hero">
-<div>🌍 Enterprise ESG Dashboard</div>
-<h1 id="totalCarbon">0</h1>
-<p>kg CO₂e ทั้งองค์กร</p>
-
-<div style="margin-top:16px;" class="grid2">
-
-<div class="kpi">
-<h2 id="treeEq">0</h2>
-<span>ต้นไม้เทียบเท่า</span>
+<div class="kpi-box">
+<div class="kpi-title">CO₂e รวมองค์กร</div>
+<div class="kpi-value" id="totalCo2">0</div>
 </div>
 
-<div class="kpi">
-<h2 id="wasteCount">0</h2>
-<span>รายการทั้งหมด</span>
-</div>
-
-</div>
-</div>
-
-<div class="grid2">
-
-<div class="card">
-<div class="section">📦 Procurement Cost</div>
-<div class="big-number" id="costTotal">0</div>
-<div class="tree">บาท / เดือน</div>
-</div>
-
-<div class="card">
-<div class="section">♻️ Recycling Rate</div>
-<div class="big-number" id="recycleRate">0%</div>
-<div class="tree">ประสิทธิภาพองค์กร</div>
+<div class="kpi-box">
+<div class="kpi-title">เทียบเท่าปลูกต้นไม้</div>
+<div class="kpi-value" id="treeEq">0</div>
 </div>
 
 </div>
 
-<div class="card">
-<div class="section">📈 Carbon Trend</div>
-<canvas id="trendChart"></canvas>
-</div>
+</header>
 
-<div class="card">
-<div class="section">🏆 Green Ranking</div>
+<!-- HOME -->
+<div class="page active" id="home">
 
-<div id="ranking"></div>
-
-</div>
-
-<div class="card">
-<div class="section">🤖 AI Forecast</div>
-
-<div class="ai-box">
-เดือนหน้าคาดว่าองค์กรจะปล่อยคาร์บอนเพิ่มขึ้น
-<strong id="forecast">0%</strong>
-จากแนวโน้มการใช้วัสดุสิ้นเปลือง
-</div>
-
-<div class="alert">
-⚠️ AI พบว่า “แก้วพลาสติก” มีแนวโน้มใช้เกินปกติในบางแผนก
-</div>
-
-</div>
-
-</div>
-</div>
-
-<!-- UPLOAD -->
-<div id="upload" class="page">
 <div class="container">
 
 <div class="card">
 
-<div class="section">📤 Upload Excel / CSV</div>
+<div class="card-title">📊 KPI ผู้บริหาร</div>
 
-<div class="upload-box">
+<div class="grid-2">
 
-<input type="file" id="excelFile">
+<div class="kpi-box" style="background:#edf8f0;color:#0d5c35;">
+<div class="kpi-title">รายการทั้งหมด</div>
+<div class="kpi-value" id="totalLogs">0</div>
+</div>
+
+<div class="kpi-box" style="background:#edf8f0;color:#0d5c35;">
+<div class="kpi-title">AI Verified</div>
+<div class="kpi-value" id="verifiedLogs">0</div>
+</div>
 
 </div>
 
-<button class="action" onclick="uploadExcel()">
-อัปโหลดข้อมูล Procurement
+<div class="badge">
+ISO 14064 · GHG Protocol · SDG 12
+</div>
+
+</div>
+
+<div class="card">
+
+<div class="card-title">📈 แนวโน้ม Carbon</div>
+
+<div class="chart-box">
+<canvas id="co2Chart"></canvas>
+</div>
+
+</div>
+
+<div class="card">
+
+<div class="card-title">🏆 Ranking สาขา</div>
+
+<div id="leaderboard"></div>
+
+</div>
+
+<div class="card">
+
+<div class="card-title">🌍 Environmental Awareness</div>
+
+<div class="info-box">
+
+การฝังกลบขยะอินทรีย์ 1 ตัน สามารถปล่อยก๊าซมีเทนได้สูงมาก ซึ่งมีผลกระทบต่อภาวะโลกร้อนมากกว่า CO₂ หลายเท่า
+
+องค์กรที่มีระบบ Zero Waste สามารถลดต้นทุนการกำจัดขยะได้ 20–40% ต่อปี และช่วยลด Carbon Footprint ขององค์กรได้อย่างมีนัยสำคัญ
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- LOG -->
+<div class="page" id="log">
+
+<div class="container">
+
+<div class="card">
+
+<div class="card-title">📝 บันทึกข้อมูลสิ่งแวดล้อม</div>
+
+<label class="small">ชื่อผู้บันทึก</label>
+<input class="input" id="staffName" placeholder="ชื่อพนักงาน">
+
+<label class="small">ตำแหน่ง</label>
+<input class="input" id="staffPosition" placeholder="ตำแหน่งงาน">
+
+<label class="small">เลือกสาขา</label>
+
+<div class="grid-3" id="branchButtons"></div>
+
+<label class="small">ประเภทขยะ</label>
+
+<select class="input" id="wasteType">
+<option value="0.49">กากกาแฟ</option>
+<option value="2.53">พลาสติก</option>
+<option value="0.91">เศษอาหาร</option>
+<option value="1.09">กระดาษ</option>
+<option value="20">อิเล็กทรอนิกส์</option>
+</select>
+
+<label class="small">ปริมาณ (kg)</label>
+<input class="input" type="number" id="wasteQty">
+
+<label class="small">วิธีจัดการ</label>
+
+<select class="input" id="dispose">
+<option value="0.05">หมักปุ๋ย</option>
+<option value="0.1">รีไซเคิล</option>
+<option value="1">ฝังกลบ</option>
+<option value="1.5">เผา</option>
+</select>
+
+<label class="small">แนบรูปภาพ</label>
+<input class="input" type="file">
+
+<button class="action-btn" onclick="saveLog()">
+✅ บันทึกข้อมูล ESG
 </button>
 
 </div>
 
 <div class="card">
 
-<div class="section">📝 เพิ่มข้อมูลเอง</div>
+<div class="card-title">📘 สิ่งที่ควรรู้</div>
 
-<select id="branch">
-<option>สำนักงานใหญ่</option>
-<option>ช้างเผือก</option>
-<option>มหิดล</option>
-<option>ป่าแพง</option>
-<option>ทับเดื่อ</option>
-<option>ราติก้า</option>
-</select>
+<div class="small">
 
-<input id="item" placeholder="ชื่อวัสดุ เช่น กระดาษ A4">
+• พลาสติกใช้เวลาย่อยสลาย 450 ปีขึ้นไป<br><br>
 
-<input id="qty" type="number" placeholder="จำนวน">
+• การรีไซเคิลอลูมิเนียมช่วยลดพลังงานได้มากถึง 95%<br><br>
 
-<input id="cost" type="number" placeholder="ราคา">
+• กากกาแฟสามารถแปรรูปเป็นปุ๋ยชีวภาพและวัสดุก่อสร้างได้<br><br>
 
-<select id="category">
-<option value="0.4">กระดาษ</option>
-<option value="1.8">พลาสติก</option>
-<option value="2.5">Packaging</option>
-<option value="0.7">Cleaning</option>
-<option value="3.2">Electronic</option>
-</select>
-
-<button class="action" onclick="addData()">
-บันทึกข้อมูล
-</button>
+• ขยะอิเล็กทรอนิกส์มีโลหะหนักที่เป็นอันตรายต่อดินและน้ำใต้ดิน
 
 </div>
 
 </div>
+
+</div>
+
 </div>
 
 <!-- ANALYTICS -->
-<div id="analytics" class="page">
+<div class="page" id="analytics">
+
 <div class="container">
 
 <div class="card">
 
-<div class="section">📊 ESG Analytics</div>
-
-<canvas id="analyticsChart"></canvas>
-
-</div>
-
-<div class="card">
-
-<div class="section">📅 KPI Summary</div>
+<div class="card-title">📈 Analytics Dashboard</div>
 
 <table class="table">
 
 <tr>
-<th>รายการ</th>
-<th>ค่า</th>
+<td>CO₂e เฉลี่ยต่อวัน</td>
+<td id="dailyAvg">0</td>
 </tr>
 
 <tr>
-<td>Carbon Efficiency</td>
-<td id="efficiency">0%</td>
+<td>CO₂e เฉลี่ยต่อเดือน</td>
+<td id="monthAvg">0</td>
 </tr>
 
 <tr>
-<td>Waste Reduction</td>
-<td id="reduction">0%</td>
+<td>แนวโน้มปีนี้</td>
+<td class="green">ลดลง 12%</td>
 </tr>
 
 <tr>
-<td>Green Score</td>
-<td id="greenScore">0</td>
-</tr>
-
-<tr>
-<td>Forecast Risk</td>
-<td id="riskLevel">LOW</td>
+<td>อัตรารีไซเคิล</td>
+<td class="green">68%</td>
 </tr>
 
 </table>
 
 </div>
 
+<div class="card">
+
+<div class="card-title">📊 Forecast AI</div>
+
+<div class="notice">
+
+AI คาดการณ์ว่า หากลดการสั่งซื้อวัสดุสิ้นเปลืองประเภทพลาสติกลง 15% ต่อเดือน จะช่วยลด CO₂e องค์กรได้ประมาณ 1.2 ตันต่อปี
+
 </div>
+
+</div>
+
+</div>
+
 </div>
 
 <!-- REPORT -->
-<div id="report" class="page">
+<div class="page" id="report">
+
 <div class="container">
 
 <div class="card">
 
-<div class="section">📄 ESG Executive Report</div>
+<div class="card-title">📄 ESG Report</div>
 
-<table class="table" id="reportTable">
+<div class="kpi-big" id="reportCo2">
+0
+</div>
 
-<tr>
-<th>สาขา</th>
-<th>Carbon</th>
-<th>Score</th>
-</tr>
+<div class="small">
+kg CO₂e
+</div>
 
-</table>
+<div class="badge">
+Scope 3 Carbon Footprint
+</div>
 
-<button class="action" onclick="downloadCSV()">
-Export CSV
-</button>
+</div>
 
-<button class="action" onclick="window.print()">
-Export PDF
-</button>
+<div class="card">
+
+<div class="card-title">📚 อ้างอิงมาตรฐาน</div>
+
+<div class="footer-note">
+
+• ISO 14064-1:2018 — Greenhouse Gas Accounting<br><br>
+
+• GHG Protocol Corporate Standard<br><br>
+
+• WEEE Directive 2012/19/EU<br><br>
+
+• UN Sustainable Development Goal 12<br><br>
+
+• Science Based Targets initiative (SBTi)<br><br>
+
+• EPA Waste Reduction Model (WARM)
 
 </div>
 
 </div>
+
+</div>
+
 </div>
 
 <!-- NAV -->
 <div class="bottom-nav">
 
-<button class="nav-btn active" onclick="showPage('dashboard',this)">
-🏠
-Dashboard
+<button class="nav-btn active" onclick="openPage('home',this)">
+🏠<br>หน้าหลัก
 </button>
 
-<button class="nav-btn" onclick="showPage('upload',this)">
-📤
-Upload
+<button class="nav-btn" onclick="openPage('log',this)">
+📝<br>บันทึก
 </button>
 
-<button class="nav-btn" onclick="showPage('analytics',this)">
-📊
-Analytics
+<button class="nav-btn" onclick="openPage('analytics',this)">
+📊<br>Analytics
 </button>
 
-<button class="nav-btn" onclick="showPage('report',this)">
-📄
-Report
+<button class="nav-btn" onclick="openPage('report',this)">
+📄<br>รายงาน
 </button>
 
 </div>
 
 <script>
 
-let dataLogs = [];
-
-const branches = [
+const branches=[
 "สำนักงานใหญ่",
 "ช้างเผือก",
 "มหิดล",
 "ป่าแพง",
 "ทับเดื่อ",
 "ราติก้า"
-];
+]
 
-function showPage(id,el){
+let selectedBranch="สำนักงานใหญ่"
 
-document.querySelectorAll(".page").forEach(p=>{
-p.classList.remove("active");
-});
+const branchContainer=document.getElementById("branchButtons")
 
-document.getElementById(id).classList.add("active");
+branches.forEach(branch=>{
 
-document.querySelectorAll(".nav-btn").forEach(b=>{
-b.classList.remove("active");
-});
+const btn=document.createElement("button")
 
-el.classList.add("active");
+btn.className="branch-btn"
+
+btn.innerText=branch
+
+if(branch===selectedBranch){
+btn.classList.add("active")
+}
+
+btn.onclick=()=>{
+
+selectedBranch=branch
+
+document.querySelectorAll(".branch-btn")
+.forEach(b=>b.classList.remove("active"))
+
+btn.classList.add("active")
 
 }
 
-function addData(){
+branchContainer.appendChild(btn)
 
-const branch = document.getElementById("branch").value;
-const item = document.getElementById("item").value;
-const qty = Number(document.getElementById("qty").value);
-const cost = Number(document.getElementById("cost").value);
-const factor = Number(document.getElementById("category").value);
+})
 
-if(!item || !qty || !cost){
-alert("กรอกข้อมูลให้ครบ");
-return;
+function openPage(id,el){
+
+document.querySelectorAll(".page")
+.forEach(p=>p.classList.remove("active"))
+
+document.getElementById(id)
+.classList.add("active")
+
+document.querySelectorAll(".nav-btn")
+.forEach(n=>n.classList.remove("active"))
+
+el.classList.add("active")
+
 }
 
-const carbon = qty * factor;
+let logs=JSON.parse(localStorage.getItem("hillkoffLogs")) || []
 
-dataLogs.push({
-branch,
-item,
+function saveLog(){
+
+const name=document.getElementById("staffName").value
+const position=document.getElementById("staffPosition").value
+const qty=parseFloat(document.getElementById("wasteQty").value || 0)
+
+const factor=parseFloat(
+document.getElementById("wasteType").value
+)
+
+const mult=parseFloat(
+document.getElementById("dispose").value
+)
+
+const co2=(qty*factor*mult).toFixed(2)
+
+const log={
+name,
+position,
+branch:selectedBranch,
 qty,
-cost,
-carbon,
-date:new Date()
-});
+co2:parseFloat(co2),
+date:new Date().toISOString()
+}
 
-saveLocal();
-renderAll();
+logs.push(log)
+
+localStorage.setItem(
+"hillkoffLogs",
+JSON.stringify(logs)
+)
+
+alert("บันทึกสำเร็จ")
+
+updateDashboard()
 
 }
 
-function saveLocal(){
-localStorage.setItem("hillkoff_esg",JSON.stringify(dataLogs));
-}
+function updateDashboard(){
 
-function loadLocal(){
+let total=0
 
-const data = localStorage.getItem("hillkoff_esg");
+logs.forEach(l=>{
+total+=l.co2
+})
 
-if(data){
-dataLogs = JSON.parse(data);
-}
+document.getElementById("totalCo2")
+.innerText=total.toFixed(2)
 
-}
+document.getElementById("reportCo2")
+.innerText=total.toFixed(2)
 
-function renderAll(){
+document.getElementById("totalLogs")
+.innerText=logs.length
 
-const totalCarbon = dataLogs.reduce((a,b)=>a+b.carbon,0);
+document.getElementById("verifiedLogs")
+.innerText=Math.floor(logs.length*0.82)
 
-document.getElementById("totalCarbon").innerText =
-totalCarbon.toFixed(1);
+document.getElementById("treeEq")
+.innerText=Math.floor(total/21.7)
 
-document.getElementById("treeEq").innerText =
-Math.floor(totalCarbon / 10);
+document.getElementById("dailyAvg")
+.innerText=(total/30).toFixed(2)+" kg"
 
-document.getElementById("wasteCount").innerText =
-dataLogs.length;
+document.getElementById("monthAvg")
+.innerText=(total/12).toFixed(2)+" kg"
 
-const totalCost = dataLogs.reduce((a,b)=>a+b.cost,0);
+renderLeaderboard()
 
-document.getElementById("costTotal").innerText =
-totalCost.toLocaleString();
-
-document.getElementById("recycleRate").innerText =
-Math.min(95,Math.floor(70 + dataLogs.length/2)) + "%";
-
-document.getElementById("forecast").innerText =
-Math.floor(Math.random()*25)+"%";
-
-document.getElementById("efficiency").innerText =
-Math.floor(70 + Math.random()*20)+"%";
-
-document.getElementById("reduction").innerText =
-Math.floor(10 + Math.random()*40)+"%";
-
-document.getElementById("greenScore").innerText =
-Math.floor(70 + Math.random()*30);
-
-document.getElementById("riskLevel").innerText =
-totalCarbon > 500 ? "HIGH":"LOW";
-
-renderRanking();
-renderReport();
-renderCharts();
+renderChart()
 
 }
 
-function renderRanking(){
+function renderLeaderboard(){
 
-const wrap = document.getElementById("ranking");
+const board=document.getElementById("leaderboard")
 
-wrap.innerHTML = "";
+board.innerHTML=""
 
-const grouped = {};
+const scores={}
 
 branches.forEach(b=>{
-grouped[b] = 0;
-});
+scores[b]=0
+})
 
-dataLogs.forEach(d=>{
-grouped[d.branch]+=d.carbon;
-});
+logs.forEach(l=>{
+scores[l.branch]+=l.co2
+})
 
-const sorted = Object.entries(grouped)
-.sort((a,b)=>a[1]-b[1]);
+const sorted=Object.entries(scores)
+.sort((a,b)=>a[1]-b[1])
 
-sorted.forEach((r,i)=>{
+sorted.forEach((s,i)=>{
 
-const div = document.createElement("div");
+const div=document.createElement("div")
 
-div.className = "branch";
+div.className="leader"
 
-div.innerHTML = `
-<div style="display:flex;gap:12px;align-items:center;">
-<div class="rank">
-${i===0?"🥇":i===1?"🥈":i===2?"🥉":"🏅"}
-</div>
+const trees=Math.floor(s[1]/21.7)
 
+div.innerHTML=`
 <div>
-<div class="branch-name">${r[0]}</div>
-<div class="branch-sub">
-ลดได้ ${(100-r[1]).toFixed(1)} kg
+<div class="rank">
+${i+1}
 </div>
+<div style="font-size:13px;font-weight:700;">
+${s[0]}
 </div>
 </div>
 
-<div class="score">
-${r[1].toFixed(1)}
+<div style="text-align:right;">
+<div style="font-weight:800;color:#0d5c35;">
+${s[1].toFixed(2)} kg
 </div>
-`;
 
-wrap.appendChild(div);
+<div style="font-size:11px;color:#777;">
+🌳 ${trees} ต้น
+</div>
+</div>
+`
 
-});
+board.appendChild(div)
+
+})
 
 }
 
-function renderReport(){
+let chart
 
-const table = document.getElementById("reportTable");
+function renderChart(){
 
-table.innerHTML = `
-<tr>
-<th>สาขา</th>
-<th>Carbon</th>
-<th>Score</th>
-</tr>
-`;
+const ctx=document.getElementById("co2Chart")
 
-const grouped = {};
+const monthly=[12,18,9,22,15,11]
 
-branches.forEach(b=>{
-grouped[b] = 0;
-});
-
-dataLogs.forEach(d=>{
-grouped[d.branch]+=d.carbon;
-});
-
-Object.entries(grouped).forEach(r=>{
-
-table.innerHTML += `
-<tr>
-<td>${r[0]}</td>
-<td>${r[1].toFixed(1)} kg</td>
-<td>${Math.max(0,100-r[1].toFixed(0))}</td>
-</tr>
-`;
-
-});
-
+if(chart){
+chart.destroy()
 }
 
-let trendChart;
-let analyticsChart;
-
-function renderCharts(){
-
-const monthly = [12,19,14,20,22,16];
-
-if(trendChart){
-trendChart.destroy();
-}
-
-trendChart = new Chart(
-document.getElementById("trendChart"),
-{
-type:'line',
+chart=new Chart(ctx,{
+type:"line",
 data:{
-labels:['Jan','Feb','Mar','Apr','May','Jun'],
+labels:[
+"ม.ค",
+"ก.พ",
+"มี.ค",
+"เม.ย",
+"พ.ค",
+"มิ.ย"
+],
 datasets:[{
-label:'CO₂e',
+label:"CO₂e",
 data:monthly,
-borderColor:'#14532d',
-backgroundColor:'rgba(20,83,45,.15)',
-fill:true,
+borderWidth:3,
 tension:.4
 }]
+},
+options:{
+responsive:true,
+maintainAspectRatio:false
 }
-}
-);
-
-if(analyticsChart){
-analyticsChart.destroy();
-}
-
-analyticsChart = new Chart(
-document.getElementById("analyticsChart"),
-{
-type:'bar',
-data:{
-labels:branches,
-datasets:[{
-label:'Carbon',
-data:branches.map(()=>{
-return Math.floor(Math.random()*100)
-}),
-backgroundColor:'#1f7a43'
-}]
-}
-}
-);
+})
 
 }
 
-function downloadCSV(){
-
-let csv = "Branch,Item,Qty,Cost,Carbon\n";
-
-dataLogs.forEach(d=>{
-csv += `${d.branch},${d.item},${d.qty},${d.cost},${d.carbon}\n`;
-});
-
-const blob = new Blob([csv],{type:'text/csv'});
-const a = document.createElement("a");
-
-a.href = URL.createObjectURL(blob);
-a.download = "hillkoff_esg.csv";
-a.click();
-
-}
-
-function uploadExcel(){
-
-const file = document.getElementById("excelFile").files[0];
-
-if(!file){
-alert("เลือกไฟล์ก่อน");
-return;
-}
-
-const reader = new FileReader();
-
-reader.onload = function(e){
-
-const data = new Uint8Array(e.target.result);
-
-const workbook = XLSX.read(data,{type:'array'});
-
-const sheet =
-workbook.Sheets[workbook.SheetNames[0]];
-
-const json =
-XLSX.utils.sheet_to_json(sheet);
-
-json.forEach(r=>{
-
-dataLogs.push({
-
-branch:r.branch || "สำนักงานใหญ่",
-item:r.item || "Unknown",
-qty:Number(r.qty || 0),
-cost:Number(r.cost || 0),
-carbon:Number(r.qty || 0) * 1.2,
-date:new Date()
-
-});
-
-});
-
-saveLocal();
-renderAll();
-
-alert("อัปโหลดสำเร็จ");
-
-};
-
-reader.readAsArrayBuffer(file);
-
-}
+updateDashboard()
 
 setInterval(()=>{
-
-document.getElementById("liveTime").innerText =
-new Date().toLocaleTimeString("th-TH");
-
-},1000);
-
-loadLocal();
-renderAll();
+updateDashboard()
+},3000)
 
 </script>
 
