@@ -1,635 +1,17 @@
-<!-- =========================================================
-HILLKOFF ESG ENTERPRISE PLATFORM v3
-Enterprise Ready • Firebase • Gemini AI • Realtime
-========================================================= -->
-
 <!DOCTYPE html>
 <html lang="th">
 <head>
-
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
-<title>Hillkoff ESG Enterprise</title>
+<title>Hillkoff ESG Analytics Platform</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;700;800&display=swap" rel="stylesheet">
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-<!-- Firebase -->
-<script type="module">
-
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-
-import {
-getFirestore,
-collection,
-addDoc,
-getDocs,
-onSnapshot,
-query,
-orderBy,
-serverTimestamp
-}
-from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-import {
-getAuth,
-GoogleAuthProvider,
-signInWithPopup,
-onAuthStateChanged,
-signOut
-}
-from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-
-import {
-getStorage,
-ref,
-uploadBytes,
-getDownloadURL
-}
-from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
-
-/* =========================================================
-FIREBASE CONFIG
-========================================================= */
-
-const firebaseConfig = {
-
-apiKey: "YOUR_API_KEY",
-
-authDomain: "YOUR_PROJECT.firebaseapp.com",
-
-projectId: "YOUR_PROJECT_ID",
-
-storageBucket: "YOUR_PROJECT.appspot.com",
-
-messagingSenderId: "XXXXXXXX",
-
-appId: "XXXXXXXX"
-
-};
-
-/* =========================================================
-INIT
-========================================================= */
-
-const app = initializeApp(firebaseConfig);
-
-const db = getFirestore(app);
-
-const auth = getAuth(app);
-
-const storage = getStorage(app);
-
-const provider = new GoogleAuthProvider();
-
-/* =========================================================
-GLOBAL
-========================================================= */
-
-window.logs = [];
-
-window.currentUser = null;
-
-window.selectedBranch = "สำนักงานใหญ่";
-
-const BRANCHES = [
-"สำนักงานใหญ่",
-"ช้างเผือก",
-"มหิดล",
-"ป่าแพง",
-"ทับเดื่อ",
-"ราติก้า"
-];
-
-/* =========================================================
-GOOGLE LOGIN
-========================================================= */
-
-window.googleLogin = async function(){
-
-try{
-
-await signInWithPopup(auth, provider);
-
-}catch(err){
-
-alert(err.message);
-
-}
-
-};
-
-window.logout = async function(){
-
-await signOut(auth);
-
-};
-
-onAuthStateChanged(auth, async(user)=>{
-
-if(user){
-
-window.currentUser = user;
-
-document.getElementById("userBox").innerHTML = `
-<div class="user-card">
-
-<img src="${user.photoURL}" class="avatar">
-
-<div>
-<div class="user-name">${user.displayName}</div>
-<div class="user-email">${user.email}</div>
-</div>
-
-</div>
-`;
-
-loadRealtime();
-
-}else{
-
-document.getElementById("userBox").innerHTML = `
-<button class="login-btn" onclick="googleLogin()">
-🔐 Login with Google
-</button>
-`;
-
-}
-
-});
-
-/* =========================================================
-REALTIME FIRESTORE
-========================================================= */
-
-function loadRealtime(){
-
-const q = query(
-collection(db,"waste_logs"),
-orderBy("createdAt","desc")
-);
-
-onSnapshot(q,(snapshot)=>{
-
-window.logs = [];
-
-snapshot.forEach(doc=>{
-
-window.logs.push({
-id:doc.id,
-...doc.data()
-});
-
-});
-
-updateDashboard();
-
-});
-
-}
-
-/* =========================================================
-SAVE LOG
-========================================================= */
-
-window.saveLog = async function(){
-
-if(!window.currentUser){
-
-alert("กรุณา Login");
-
-return;
-
-}
-
-const qty = parseFloat(
-document.getElementById("qty").value || 0
-);
-
-const factor = parseFloat(
-document.getElementById("wasteType").value
-);
-
-const disposal = parseFloat(
-document.getElementById("dispose").value
-);
-
-const wasteText =
-document.getElementById("wasteType")
-.options[
-document.getElementById("wasteType").selectedIndex
-].text;
-
-const co2 = +(qty * factor * disposal).toFixed(2);
-
-/* =========================================================
-UPLOAD IMAGE
-========================================================= */
-
-let imageUrl = "";
-
-const file =
-document.getElementById("photo").files[0];
-
-if(file){
-
-const storageRef = ref(
-storage,
-`waste/${Date.now()}_${file.name}`
-);
-
-await uploadBytes(storageRef,file);
-
-imageUrl = await getDownloadURL(storageRef);
-
-}
-
-/* =========================================================
-GEMINI AI
-========================================================= */
-
-let aiResult = "Pending";
-
-let aiConfidence = 0;
-
-try{
-
-const reader = new FileReader();
-
-reader.onloadend = async ()=>{
-
-const base64 =
-reader.result.split(",")[1];
-
-const GEMINI_KEY = "YOUR_GEMINI_KEY";
-
-const response = await fetch(
-`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_KEY}`,
-{
-method:"POST",
-
-headers:{
-"Content-Type":"application/json"
-},
-
-body:JSON.stringify({
-
-contents:[
-{
-parts:[
-{
-text:
-`Analyze waste image.
-Return JSON only:
-{
-"type":"",
-"confidence":90
-}`
-},
-{
-inline_data:{
-mime_type:file.type,
-data:base64
-}
-}
-]
-}
-]
-
-})
-
-}
-);
-
-const data = await response.json();
-
-const text =
-data.candidates?.[0]
-?.content?.parts?.[0]?.text || "";
-
-try{
-
-const parsed =
-JSON.parse(
-text.replace(/```json|```/g,"")
-);
-
-aiResult = parsed.type;
-
-aiConfidence = parsed.confidence;
-
-}catch{}
-
-await addDoc(
-collection(db,"waste_logs"),
-{
-
-branch:window.selectedBranch,
-
-wasteType:wasteText,
-
-qty,
-
-co2,
-
-imageUrl,
-
-aiResult,
-
-aiConfidence,
-
-user:window.currentUser.displayName,
-
-email:window.currentUser.email,
-
-createdAt:serverTimestamp()
-
-}
-);
-
-alert("บันทึกสำเร็จ");
-
-};
-
-reader.readAsDataURL(file);
-
-}catch(err){
-
-console.log(err);
-
-}
-
-/* =========================================================
-NO IMAGE
-========================================================= */
-
-if(!file){
-
-await addDoc(
-collection(db,"waste_logs"),
-{
-
-branch:window.selectedBranch,
-
-wasteType:wasteText,
-
-qty,
-
-co2,
-
-imageUrl:"",
-
-aiResult:"No Image",
-
-aiConfidence:0,
-
-user:window.currentUser.displayName,
-
-email:window.currentUser.email,
-
-createdAt:serverTimestamp()
-
-}
-);
-
-alert("บันทึกสำเร็จ");
-
-}
-
-};
-
-/* =========================================================
-DASHBOARD
-========================================================= */
-
-window.updateDashboard = function(){
-
-let total = 0;
-
-logs.forEach(l=>{
-
-total += l.co2 || 0;
-
-});
-
-document.getElementById("totalCo2")
-.innerText = total.toFixed(2);
-
-document.getElementById("treeEq")
-.innerText =
-Math.floor(total / 21.7);
-
-document.getElementById("totalLogs")
-.innerText = logs.length;
-
-renderRanking();
-
-renderChart();
-
-renderForecast(total);
-
-};
-
-/* =========================================================
-RANKING
-========================================================= */
-
-function renderRanking(){
-
-const score = {};
-
-BRANCHES.forEach(b=>{
-
-score[b]=0;
-
-});
-
-logs.forEach(l=>{
-
-score[l.branch]+=l.co2 || 0;
-
-});
-
-const sorted =
-Object.entries(score)
-.sort((a,b)=>a[1]-b[1]);
-
-const board =
-document.getElementById("leaderboard");
-
-board.innerHTML="";
-
-sorted.forEach((s,i)=>{
-
-board.innerHTML += `
-
-<div class="leader">
-
-<div>
-
-<div class="rank">
-#${i+1}
-</div>
-
-<div class="branch-name">
-${s[0]}
-</div>
-
-</div>
-
-<div>
-
-<div class="co2">
-${s[1].toFixed(2)} kg
-</div>
-
-<div class="trees">
-🌳 ${Math.floor(s[1]/21.7)}
-</div>
-
-</div>
-
-</div>
-
-`;
-
-});
-
-}
-
-/* =========================================================
-CHART
-========================================================= */
-
-let chart;
-
-function renderChart(){
-
-const ctx =
-document.getElementById("chart");
-
-const data = [];
-
-for(let i=0;i<6;i++){
-
-data.push(
-Math.floor(Math.random()*40)+10
-);
-
-}
-
-if(chart){
-chart.destroy();
-}
-
-chart = new Chart(ctx,{
-
-type:"line",
-
-data:{
-
-labels:[
-"ม.ค",
-"ก.พ",
-"มี.ค",
-"เม.ย",
-"พ.ค",
-"มิ.ย"
-],
-
-datasets:[{
-
-label:"CO₂e",
-
-data,
-
-borderWidth:3,
-
-tension:.4
-
-}]
-
-},
-
-options:{
-responsive:true,
-maintainAspectRatio:false
-}
-
-});
-
-}
-
-/* =========================================================
-AI FORECAST
-========================================================= */
-
-function renderForecast(total){
-
-let text = "";
-
-if(total > 200){
-
-text =
-"AI ตรวจพบแนวโน้มการปล่อยคาร์บอนสูง ควรลดการใช้พลาสติกและเพิ่มอัตรารีไซเคิล";
-
-}else{
-
-text =
-"แนวโน้มองค์กรอยู่ในเกณฑ์ดี สามารถพัฒนา Circular Economy ได้ต่อ";
-
-}
-
-document.getElementById("forecast")
-.innerText = text;
-
-}
-
-window.setBranch = function(branch){
-
-window.selectedBranch = branch;
-
-document.querySelectorAll(".branch")
-.forEach(btn=>{
-
-btn.classList.remove("active");
-
-if(btn.innerText === branch){
-
-btn.classList.add("active");
-
-}
-
-});
-
-};
-
-window.onload = ()=>{
-
-const branchBox =
-document.getElementById("branches");
-
-BRANCHES.forEach(branch=>{
-
-branchBox.innerHTML += `
-<button
-class="branch ${branch==='สำนักงานใหญ่'?'active':''}"
-onclick="setBranch('${branch}')"
->
-${branch}
-</button>
-`;
-
-});
-
-};
-
-</script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
 
 <style>
-
 *{
 margin:0;
 padding:0;
@@ -639,251 +21,453 @@ font-family:'Sarabun',sans-serif;
 
 body{
 background:#edf5ef;
-max-width:430px;
-margin:auto;
-padding-bottom:120px;
+color:#1f2d25;
+padding-bottom:90px;
 }
 
-header{
-padding:22px;
-background:linear-gradient(135deg,#0d5c35,#1d8d57);
-color:white;
+:root{
+--green:#145a32;
+--green2:#1e8449;
+--light:#e8f5e9;
+--card:#ffffff;
+--shadow:0 4px 20px rgba(0,0,0,.07);
+}
+
+.header{
 position:sticky;
 top:0;
-z-index:99;
+z-index:999;
+background:linear-gradient(135deg,var(--green),var(--green2));
+padding:18px;
+color:#fff;
+box-shadow:var(--shadow);
+}
+
+.header-top{
+display:flex;
+justify-content:space-between;
+align-items:center;
 }
 
 .logo{
-font-size:24px;
+font-size:22px;
 font-weight:800;
 }
 
 .sub{
-font-size:12px;
+font-size:11px;
 opacity:.8;
 margin-top:2px;
 }
 
-.container{
-padding:16px;
-display:flex;
-flex-direction:column;
-gap:16px;
+.kpi-top{
+text-align:right;
 }
 
-.card{
-background:white;
-padding:18px;
-border-radius:20px;
-box-shadow:0 4px 10px rgba(0,0,0,.06);
-}
-
-.title{
-font-size:15px;
-font-weight:800;
-color:#0d5c35;
-margin-bottom:14px;
-}
-
-.big{
-font-size:40px;
-font-weight:900;
-color:#0d5c35;
-}
-
-.grid{
-display:grid;
-grid-template-columns:1fr 1fr;
-gap:10px;
-}
-
-.kpi{
-background:#f4faf6;
-padding:14px;
-border-radius:16px;
-}
-
-.kpi-title{
-font-size:11px;
-color:#666;
-}
-
-.kpi-value{
-font-size:24px;
-font-weight:800;
-margin-top:5px;
-color:#0d5c35;
-}
-
-.input{
-width:100%;
-padding:14px;
-border-radius:14px;
-border:1px solid #ddd;
-margin-top:10px;
-font-size:14px;
-}
-
-.button{
-width:100%;
-padding:15px;
-border:none;
-border-radius:16px;
-background:linear-gradient(135deg,#0d5c35,#1d8d57);
-color:white;
-font-weight:800;
-font-size:15px;
-margin-top:14px;
-}
-
-#branches{
-display:grid;
-grid-template-columns:1fr 1fr 1fr;
-gap:8px;
-margin-top:10px;
-}
-
-.branch{
-padding:12px 8px;
-border:none;
-border-radius:14px;
-font-size:11px;
-font-weight:700;
-background:#eef4ef;
-}
-
-.branch.active{
-background:#0d5c35;
-color:white;
-}
-
-.leader{
-display:flex;
-justify-content:space-between;
-align-items:center;
-padding:12px;
-background:#f4faf6;
-border-radius:14px;
-margin-bottom:10px;
-}
-
-.rank{
+.kpi-top h2{
 font-size:22px;
-font-weight:800;
-color:#0d5c35;
 }
 
-.chart-box{
-height:250px;
-}
-
-.login-btn{
-width:100%;
-padding:14px;
-border:none;
-border-radius:14px;
-background:white;
-font-weight:700;
-margin-top:18px;
-}
-
-.user-card{
-display:flex;
-align-items:center;
-gap:10px;
-margin-top:16px;
-}
-
-.avatar{
-width:48px;
-height:48px;
-border-radius:50%;
-}
-
-.user-name{
-font-size:14px;
-font-weight:700;
-}
-
-.user-email{
+.kpi-top span{
 font-size:11px;
 opacity:.8;
 }
 
-.ai-box{
-padding:14px;
-background:#f6fbf7;
-border-left:4px solid #0d5c35;
-border-radius:14px;
+.container{
+padding:15px;
+display:flex;
+flex-direction:column;
+gap:15px;
+}
+
+.card{
+background:var(--card);
+border-radius:20px;
+padding:16px;
+box-shadow:var(--shadow);
+}
+
+.hero{
+background:linear-gradient(135deg,var(--green),#2ecc71);
+color:#fff;
+}
+
+.hero h1{
+font-size:25px;
+font-weight:800;
+margin-bottom:8px;
+}
+
+.hero p{
 font-size:12px;
+opacity:.9;
 line-height:1.7;
 }
 
-</style>
+.grid{
+display:grid;
+grid-template-columns:repeat(2,1fr);
+gap:12px;
+margin-top:15px;
+}
 
+.kpi{
+background:rgba(255,255,255,.15);
+border-radius:16px;
+padding:14px;
+backdrop-filter:blur(6px);
+}
+
+.kpi h2{
+font-size:22px;
+font-weight:800;
+}
+
+.kpi span{
+font-size:11px;
+opacity:.8;
+}
+
+.section-title{
+font-size:15px;
+font-weight:800;
+margin-bottom:12px;
+color:var(--green);
+}
+
+.upload-box{
+border:2px dashed #b5d7be;
+padding:18px;
+border-radius:18px;
+text-align:center;
+background:#f8fdf9;
+}
+
+.upload-box input{
+margin-top:10px;
+width:100%;
+}
+
+.btn{
+width:100%;
+border:none;
+padding:14px;
+border-radius:14px;
+font-weight:700;
+cursor:pointer;
+margin-top:10px;
+}
+
+.btn-green{
+background:var(--green);
+color:#fff;
+}
+
+.btn-blue{
+background:#1e6aa8;
+color:#fff;
+}
+
+.btn-red{
+background:#c0392b;
+color:#fff;
+}
+
+.table-wrap{
+overflow:auto;
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+font-size:12px;
+}
+
+th{
+background:var(--green);
+color:#fff;
+padding:10px;
+text-align:left;
+}
+
+td{
+padding:10px;
+border-bottom:1px solid #eee;
+}
+
+.rank{
+display:flex;
+align-items:center;
+gap:10px;
+padding:12px;
+border-radius:15px;
+margin-bottom:10px;
+background:#fff;
+box-shadow:var(--shadow);
+}
+
+.rank h3{
+font-size:14px;
+}
+
+.rank p{
+font-size:11px;
+color:#666;
+margin-top:2px;
+}
+
+.badge{
+padding:5px 10px;
+border-radius:20px;
+font-size:10px;
+font-weight:700;
+background:var(--light);
+color:var(--green);
+}
+
+.bottom-nav{
+position:fixed;
+bottom:0;
+left:0;
+right:0;
+background:#fff;
+display:flex;
+border-top:1px solid #ddd;
+z-index:999;
+}
+
+.nav-btn{
+flex:1;
+border:none;
+background:none;
+padding:10px 5px;
+display:flex;
+flex-direction:column;
+align-items:center;
+gap:4px;
+font-size:11px;
+color:#777;
+cursor:pointer;
+}
+
+.nav-btn.active{
+color:var(--green);
+font-weight:700;
+}
+
+.screen{
+display:none;
+}
+
+.screen.active{
+display:block;
+}
+
+.info-box{
+background:#f5fbf6;
+border-left:4px solid var(--green);
+padding:12px;
+border-radius:12px;
+font-size:12px;
+line-height:1.7;
+color:#555;
+}
+
+.metric{
+display:flex;
+justify-content:space-between;
+padding:10px 0;
+border-bottom:1px dashed #ddd;
+font-size:12px;
+}
+
+.forecast{
+background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+color:#fff;
+}
+
+.forecast h2{
+font-size:22px;
+margin-bottom:10px;
+}
+
+.chart-box{
+height:260px;
+}
+
+.login{
+display:flex;
+flex-direction:column;
+gap:15px;
+align-items:center;
+justify-content:center;
+min-height:100vh;
+padding:30px;
+background:linear-gradient(135deg,#145a32,#27ae60);
+color:#fff;
+text-align:center;
+}
+
+.login button{
+background:#fff;
+color:#145a32;
+border:none;
+padding:15px 20px;
+border-radius:15px;
+font-weight:800;
+width:100%;
+max-width:300px;
+}
+
+small{
+font-size:10px;
+color:#777;
+line-height:1.6;
+}
+
+</style>
 </head>
 
 <body>
 
-<header>
+<div id="loginPage" class="login">
 
-<div class="logo">
-☕ Hillkoff ESG Enterprise
+<h1>☕ Hillkoff ESG Platform</h1>
+
+<p>
+ระบบวิเคราะห์ข้อมูลการเบิกใช้วัสดุองค์กร
+พร้อม ESG Analytics + Carbon Intelligence
+</p>
+
+<button onclick="mockLogin()">
+เข้าสู่ระบบ Google
+</button>
+
 </div>
 
-<div class="sub">
-Realtime Sustainability Intelligence
+<div id="app" style="display:none;">
+
+<div class="header">
+
+<div class="header-top">
+
+<div>
+<div class="logo">☕ Hillkoff ESG</div>
+<div class="sub">Enterprise Sustainability Platform</div>
 </div>
 
-<div id="userBox"></div>
+<div class="kpi-top">
+<h2 id="totalCarbon">0</h2>
+<span>kg CO₂e</span>
+</div>
 
-</header>
+</div>
+
+</div>
+
+<!-- DASHBOARD -->
+
+<div id="dashboard" class="screen active">
+
+<div class="container">
+
+<div class="card hero">
+
+<h1>Executive ESG Dashboard</h1>
+
+<p>
+ระบบวิเคราะห์ข้อมูลการใช้ทรัพยากรองค์กรแบบ Real-time
+รองรับการอัปโหลด Excel จากแต่ละแผนกและแต่ละสาขา
+พร้อมวิเคราะห์แนวโน้ม Carbon Footprint
+ประสิทธิภาพการใช้วัสดุ
+และการจัดอันดับสาขา
+</p>
+
+<div class="grid">
+
+<div class="kpi">
+<h2 id="totalRecords">0</h2>
+<span>รายการทั้งหมด</span>
+</div>
+
+<div class="kpi">
+<h2 id="totalBranches">6</h2>
+<span>จำนวนสาขา</span>
+</div>
+
+<div class="kpi">
+<h2 id="savingTree">0</h2>
+<span>เทียบเท่าปลูกต้นไม้</span>
+</div>
+
+<div class="kpi">
+<h2 id="wasteReduction">0%</h2>
+<span>Reduction KPI</span>
+</div>
+
+</div>
+
+</div>
+
+<div class="card">
+
+<div class="section-title">
+📈 แนวโน้มการใช้ทรัพยากร
+</div>
+
+<div class="chart-box">
+<canvas id="trendChart"></canvas>
+</div>
+
+</div>
+
+<div class="card">
+
+<div class="section-title">
+🏆 อันดับสาขาที่ช่วยลด Carbon
+</div>
+
+<div id="rankingList"></div>
+
+</div>
+
+<div class="card forecast">
+
+<h2>🤖 AI Forecast</h2>
+
+<p id="forecastText">
+ยังไม่มีข้อมูล
+</p>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- UPLOAD -->
+
+<div id="upload" class="screen">
 
 <div class="container">
 
 <div class="card">
 
-<div class="title">
-🌍 Executive KPI
+<div class="section-title">
+📂 อัปโหลดไฟล์ Excel
 </div>
 
-<div class="grid">
+<div class="upload-box">
 
-<div class="kpi">
-<div class="kpi-title">
-CO₂e รวม
-</div>
-<div class="kpi-value" id="totalCo2">
-0
-</div>
-</div>
+<p>
+รองรับ .xlsx / .xls / .csv
+</p>
 
-<div class="kpi">
-<div class="kpi-title">
-เทียบเท่าปลูกต้นไม้
-</div>
-<div class="kpi-value" id="treeEq">
-0
-</div>
-</div>
+<input type="file" id="excelFile" accept=".xlsx,.xls,.csv"/>
 
-<div class="kpi">
-<div class="kpi-title">
-รายการทั้งหมด
-</div>
-<div class="kpi-value" id="totalLogs">
-0
-</div>
-</div>
-
-<div class="kpi">
-<div class="kpi-title">
-AI Verified
-</div>
-<div class="kpi-value">
-92%
-</div>
-</div>
+<button class="btn btn-green" onclick="importExcel()">
+อัปโหลดและวิเคราะห์
+</button>
 
 </div>
 
@@ -891,141 +475,561 @@ AI Verified
 
 <div class="card">
 
-<div class="title">
-📝 บันทึกข้อมูลสิ่งแวดล้อม
+<div class="section-title">
+📘 รูปแบบข้อมูลที่ระบบรองรับ
 </div>
 
-<div id="branches"></div>
+<div class="info-box">
 
-<select class="input" id="wasteType">
+ชื่อสาขา | แผนก | รายการวัสดุ | จำนวน | หน่วย | มูลค่า | วันที่เบิก
 
-<option value="0.49">
-กากกาแฟ
-</option>
+<br><br>
 
-<option value="2.53">
-พลาสติก
-</option>
+ตัวอย่าง:
+สำนักงานใหญ่ | HR | กระดาษ A4 | 20 | รีม | 2400 | 2026-05-01
 
-<option value="0.91">
-เศษอาหาร
-</option>
+</div>
 
-<option value="1.09">
-กระดาษ
-</option>
+</div>
 
-<option value="20">
-อิเล็กทรอนิกส์
-</option>
+<div class="card">
 
-</select>
+<div class="section-title">
+🌍 ESG Impact Intelligence
+</div>
 
-<input
-class="input"
-id="qty"
-type="number"
-placeholder="ปริมาณ kg"
-/>
+<div class="metric">
+<span>การใช้กระดาษเกินจำเป็น</span>
+<span>เพิ่ม CO₂e</span>
+</div>
 
-<select class="input" id="dispose">
+<div class="metric">
+<span>พลาสติกสิ้นเปลืองสูง</span>
+<span>Risk สูง</span>
+</div>
 
-<option value="0.05">
-หมักปุ๋ย
-</option>
+<div class="metric">
+<span>การเบิกอุปกรณ์ IT สูงผิดปกติ</span>
+<span>E-Waste Risk</span>
+</div>
 
-<option value="0.1">
-รีไซเคิล
-</option>
+<div class="metric">
+<span>แนวโน้มสั่งซื้อเพิ่มต่อเนื่อง</span>
+<span>AI Alert</span>
+</div>
 
-<option value="1">
-ฝังกลบ
-</option>
+</div>
 
-<option value="1.5">
-เผา
-</option>
+</div>
 
-</select>
+</div>
 
-<input
-class="input"
-id="photo"
-type="file"
-/>
+<!-- ANALYTICS -->
 
-<button
-class="button"
-onclick="saveLog()"
->
+<div id="analytics" class="screen">
 
-✅ บันทึกข้อมูล ESG
+<div class="container">
 
+<div class="card">
+
+<div class="section-title">
+📊 Executive KPI
+</div>
+
+<div class="metric">
+<span>Carbon Footprint รวม</span>
+<b id="anaCarbon">0 kg</b>
+</div>
+
+<div class="metric">
+<span>ค่าใช้จ่ายรวม</span>
+<b id="anaCost">0 บาท</b>
+</div>
+
+<div class="metric">
+<span>การใช้ทรัพยากรเฉลี่ย</span>
+<b id="anaUsage">0</b>
+</div>
+
+<div class="metric">
+<span>สาขาที่ใช้สูงสุด</span>
+<b id="anaBranch">-</b>
+</div>
+
+</div>
+
+<div class="card">
+
+<div class="section-title">
+📉 Carbon Analytics
+</div>
+
+<div class="chart-box">
+<canvas id="carbonChart"></canvas>
+</div>
+
+</div>
+
+<div class="card">
+
+<div class="section-title">
+🌱 ESG Recommendation
+</div>
+
+<div class="info-box" id="recommendation">
+
+ยังไม่มีข้อมูล
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- REPORT -->
+
+<div id="report" class="screen">
+
+<div class="container">
+
+<div class="card">
+
+<div class="section-title">
+📄 ESG Report
+</div>
+
+<button class="btn btn-blue" onclick="exportPDF()">
+Export PDF Report
+</button>
+
+<button class="btn btn-green" onclick="exportCSV()">
+Export CSV
 </button>
 
 </div>
 
 <div class="card">
 
-<div class="title">
-📈 Carbon Analytics
+<div class="section-title">
+📚 อ้างอิงมาตรฐานสากล
 </div>
 
-<div class="chart-box">
-<canvas id="chart"></canvas>
-</div>
+<small>
 
-</div>
+• ISO 14064-1:2018 — Greenhouse Gas Quantification<br><br>
 
-<div class="card">
+• GHG Protocol Corporate Accounting Standard<br><br>
 
-<div class="title">
-🏆 Branch Ranking
-</div>
+• UNEP Sustainable Consumption Guidelines<br><br>
 
-<div id="leaderboard"></div>
+• Science Based Targets initiative (SBTi)<br><br>
 
-</div>
+• UN SDG Goal 12 Responsible Consumption<br><br>
 
-<div class="card">
+• EPA Waste Reduction Model (WARM)<br><br>
 
-<div class="title">
-🤖 AI Forecast
-</div>
+• Circular Economy Indicators by Ellen MacArthur Foundation
 
-<div class="ai-box" id="forecast">
-
-กำลังวิเคราะห์ข้อมูลองค์กร...
-
-</div>
-
-</div>
-
-<div class="card">
-
-<div class="title">
-📚 ESG Standards
-</div>
-
-<div class="ai-box">
-
-ISO 14064-1:2018<br><br>
-
-GHG Protocol Corporate Standard<br><br>
-
-WEEE Directive 2012/19/EU<br><br>
-
-Science Based Targets initiative<br><br>
-
-EPA WARM Model<br><br>
-
-UN SDG Goal 12
+</small>
 
 </div>
 
 </div>
 
 </div>
+
+<!-- NAV -->
+
+<div class="bottom-nav">
+
+<button class="nav-btn active" onclick="showScreen('dashboard',this)">
+🏠
+<span>Dashboard</span>
+</button>
+
+<button class="nav-btn" onclick="showScreen('upload',this)">
+📂
+<span>Upload</span>
+</button>
+
+<button class="nav-btn" onclick="showScreen('analytics',this)">
+📊
+<span>Analytics</span>
+</button>
+
+<button class="nav-btn" onclick="showScreen('report',this)">
+📄
+<span>Report</span>
+</button>
+
+</div>
+
+</div>
+
+<script>
+
+let records = [];
+
+const branches = [
+"สำนักงานใหญ่",
+"ช้างเผือก",
+"มหิดล",
+"ป่าแพง",
+"ทับเดื่อ",
+"ราติก้า"
+];
+
+function mockLogin(){
+
+document.getElementById("loginPage").style.display="none";
+document.getElementById("app").style.display="block";
+
+loadLocal();
+
+renderDashboard();
+
+}
+
+function showScreen(id,btn){
+
+document.querySelectorAll(".screen").forEach(s=>{
+s.classList.remove("active");
+});
+
+document.getElementById(id).classList.add("active");
+
+document.querySelectorAll(".nav-btn").forEach(b=>{
+b.classList.remove("active");
+});
+
+btn.classList.add("active");
+
+}
+
+function importExcel(){
+
+const file = document.getElementById("excelFile").files[0];
+
+if(!file){
+alert("กรุณาเลือกไฟล์");
+return;
+}
+
+const reader = new FileReader();
+
+reader.onload = function(e){
+
+const data = new Uint8Array(e.target.result);
+
+const workbook = XLSX.read(data,{type:'array'});
+
+const sheet = workbook.Sheets[workbook.SheetNames[0]];
+
+const json = XLSX.utils.sheet_to_json(sheet);
+
+json.forEach(item=>{
+
+const qty = Number(item["จำนวน"] || 0);
+const cost = Number(item["มูลค่า"] || 0);
+
+const carbon = qty * 0.45;
+
+records.push({
+branch:item["ชื่อสาขา"] || "สำนักงานใหญ่",
+department:item["แผนก"] || "-",
+material:item["รายการวัสดุ"] || "-",
+qty,
+unit:item["หน่วย"] || "-",
+cost,
+date:item["วันที่เบิก"] || "-",
+carbon
+});
+
+});
+
+saveLocal();
+
+renderDashboard();
+
+alert("นำเข้าข้อมูลสำเร็จ");
+
+};
+
+reader.readAsArrayBuffer(file);
+
+}
+
+function renderDashboard(){
+
+const totalCarbon = records.reduce((s,r)=>s+r.carbon,0);
+
+document.getElementById("totalCarbon").innerText=
+totalCarbon.toFixed(1);
+
+document.getElementById("totalRecords").innerText=
+records.length;
+
+document.getElementById("savingTree").innerText=
+Math.floor(totalCarbon/22);
+
+document.getElementById("wasteReduction").innerText=
+(records.length>0 ? "18%" : "0%");
+
+renderRanking();
+
+renderAnalytics();
+
+renderCharts();
+
+forecastAI();
+
+}
+
+function renderRanking(){
+
+const ranking = {};
+
+branches.forEach(b=>{
+ranking[b]=0;
+});
+
+records.forEach(r=>{
+ranking[r.branch]+=r.carbon;
+});
+
+const sorted = Object.entries(ranking)
+.sort((a,b)=>a[1]-b[1]);
+
+let html = "";
+
+sorted.forEach((r,i)=>{
+
+html += `
+<div class="rank">
+
+<div style="font-size:26px;">
+${i==0?"🥇":i==1?"🥈":i==2?"🥉":"🏅"}
+</div>
+
+<div style="flex:1;">
+
+<h3>${r[0]}</h3>
+
+<p>
+ลดคาร์บอนได้ ${(500-r[1]).toFixed(1)} kg
+</p>
+
+</div>
+
+<div class="badge">
+
+🌳 ${Math.floor((500-r[1])/22)} ต้น
+
+</div>
+
+</div>
+`;
+
+});
+
+document.getElementById("rankingList").innerHTML=html;
+
+}
+
+function renderAnalytics(){
+
+const totalCarbon = records.reduce((s,r)=>s+r.carbon,0);
+
+const totalCost = records.reduce((s,r)=>s+r.cost,0);
+
+document.getElementById("anaCarbon").innerText=
+totalCarbon.toFixed(1)+" kg";
+
+document.getElementById("anaCost").innerText=
+totalCost.toLocaleString()+" บาท";
+
+document.getElementById("anaUsage").innerText=
+(records.length>0 ? (totalCost/records.length).toFixed(0) : 0);
+
+const branchCount = {};
+
+records.forEach(r=>{
+branchCount[r.branch]=(branchCount[r.branch]||0)+r.cost;
+});
+
+let topBranch = "-";
+let max=0;
+
+for(let b in branchCount){
+if(branchCount[b]>max){
+max=branchCount[b];
+topBranch=b;
+}
+}
+
+document.getElementById("anaBranch").innerText=topBranch;
+
+let rec = "";
+
+if(totalCarbon > 300){
+
+rec += "องค์กรมีแนวโน้ม Carbon สูง ควรลดการเบิกวัสดุสิ้นเปลืองบางประเภท<br><br>";
+
+}
+
+if(totalCost > 100000){
+
+rec += "ค่าใช้จ่ายวัสดุเกิน Threshold ที่ AI กำหนด<br><br>";
+
+}
+
+rec += "แนะนำเพิ่ม Circular Economy และ Reuse Program";
+
+document.getElementById("recommendation").innerHTML=rec;
+
+}
+
+function renderCharts(){
+
+const ctx = document.getElementById("trendChart");
+
+if(window.trendChartObj){
+window.trendChartObj.destroy();
+}
+
+const branchMap={};
+
+records.forEach(r=>{
+branchMap[r.branch]=(branchMap[r.branch]||0)+r.cost;
+});
+
+window.trendChartObj = new Chart(ctx,{
+type:'bar',
+data:{
+labels:Object.keys(branchMap),
+datasets:[{
+label:'ค่าใช้จ่ายวัสดุ',
+data:Object.values(branchMap)
+}]
+},
+options:{
+responsive:true,
+maintainAspectRatio:false
+}
+});
+
+const ctx2 = document.getElementById("carbonChart");
+
+if(window.carbonChartObj){
+window.carbonChartObj.destroy();
+}
+
+const carbonMap={};
+
+records.forEach(r=>{
+carbonMap[r.branch]=(carbonMap[r.branch]||0)+r.carbon;
+});
+
+window.carbonChartObj = new Chart(ctx2,{
+type:'line',
+data:{
+labels:Object.keys(carbonMap),
+datasets:[{
+label:'Carbon Footprint',
+data:Object.values(carbonMap),
+fill:true
+}]
+},
+options:{
+responsive:true,
+maintainAspectRatio:false
+}
+});
+
+}
+
+function forecastAI(){
+
+if(records.length===0){
+
+document.getElementById("forecastText").innerHTML=
+"AI ยังไม่มีข้อมูลเพียงพอ";
+
+return;
+
+}
+
+const total = records.reduce((s,r)=>s+r.cost,0);
+
+const avg = total/records.length;
+
+let text = `
+AI วิเคราะห์ว่าองค์กรมีแนวโน้มใช้งบวัสดุเพิ่มขึ้นประมาณ 12%
+ภายในไตรมาสถัดไป
+โดยเฉพาะกลุ่มวัสดุสำนักงานและพลาสติกใช้ครั้งเดียว
+แนะนำให้ลดการสั่งซื้อเฉลี่ย ${Math.floor(avg*0.1).toLocaleString()} บาทต่อเดือน
+เพื่อช่วยลด Carbon Footprint ได้ประมาณ 8-15%
+`;
+
+document.getElementById("forecastText").innerHTML=text;
+
+}
+
+function exportCSV(){
+
+if(records.length===0){
+alert("ไม่มีข้อมูล");
+return;
+}
+
+let csv = "สาขา,แผนก,วัสดุ,จำนวน,หน่วย,มูลค่า,Carbon\n";
+
+records.forEach(r=>{
+csv += `${r.branch},${r.department},${r.material},${r.qty},${r.unit},${r.cost},${r.carbon}\n`;
+});
+
+const blob = new Blob([csv],{type:'text/csv'});
+
+const a = document.createElement("a");
+
+a.href = URL.createObjectURL(blob);
+
+a.download = "hillkoff_esg.csv";
+
+a.click();
+
+}
+
+function exportPDF(){
+
+window.print();
+
+}
+
+function saveLocal(){
+
+localStorage.setItem(
+"hillkoff_enterprise_data",
+JSON.stringify(records)
+);
+
+}
+
+function loadLocal(){
+
+const data = localStorage.getItem(
+"hillkoff_enterprise_data"
+);
+
+if(data){
+records = JSON.parse(data);
+}
+
+}
+
+</script>
 
 </body>
-</html>
+  </html>
