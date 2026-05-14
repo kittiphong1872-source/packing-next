@@ -2,145 +2,189 @@
 <html lang="th">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+<title>Hillkoff Enterprise ESG Platform</title>
 
-<title>Hillkoff Zero Waste Platform</title>
-
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
+
+:root{
+--green:#156c35;
+--green2:#1f8a46;
+--light:#eef8f1;
+--card:#ffffff;
+--text:#163320;
+--gray:#7b8a82;
+--danger:#d53d3d;
+--gold:#d4a514;
+--blue:#2563eb;
+--shadow:0 10px 30px rgba(0,0,0,.08);
+}
 
 *{
 margin:0;
 padding:0;
 box-sizing:border-box;
 font-family:'Noto Sans Thai',sans-serif;
+-webkit-tap-highlight-color:transparent;
 }
 
 body{
-background:#dff0e7;
-max-width:430px;
+background:linear-gradient(to bottom,#edf7f0,#dff2e7);
+color:var(--text);
+max-width:520px;
 margin:auto;
 min-height:100vh;
-padding-bottom:100px;
+padding-bottom:110px;
 }
 
-.header{
-background:#166534;
-color:white;
+.topbar{
+background:linear-gradient(135deg,var(--green),var(--green2));
 padding:18px;
+color:white;
+position:sticky;
+top:0;
+z-index:999;
+box-shadow:var(--shadow);
+}
+
+.brand{
 display:flex;
 justify-content:space-between;
 align-items:center;
 }
 
-.logo-wrap{
+.brand-left{
 display:flex;
-align-items:center;
 gap:12px;
+align-items:center;
 }
 
 .logo{
 font-size:42px;
 }
 
-.header-title{
-font-size:18px;
+.brand h1{
+font-size:20px;
 font-weight:800;
 }
 
-.header-sub{
+.brand p{
+font-size:13px;
+opacity:.9;
+}
+
+.totalbox{
+text-align:right;
+}
+
+.totalbox span{
 font-size:12px;
 opacity:.8;
 }
 
-.co2-box{
-text-align:right;
-}
-
-.co2-box h1{
+.totalbox h2{
 font-size:18px;
-}
-
-.co2-box p{
-font-size:12px;
+font-weight:800;
 }
 
 .page{
 display:none;
 padding:16px;
+animation:fade .25s;
 }
 
 .page.active{
 display:block;
 }
 
+@keyframes fade{
+from{opacity:0;transform:translateY(10px);}
+to{opacity:1;transform:none;}
+}
+
+.card{
+background:var(--card);
+border-radius:24px;
+padding:18px;
+margin-bottom:16px;
+box-shadow:var(--shadow);
+}
+
 .hero{
-background:linear-gradient(135deg,#166534,#16a34a);
-padding:25px;
-border-radius:28px;
+background:linear-gradient(135deg,#126030,#1d9b4a);
 color:white;
-margin-bottom:18px;
-box-shadow:0 10px 25px rgba(0,0,0,.12);
+padding:28px 22px;
+border-radius:30px;
 }
 
-.hero h1{
-font-size:54px;
-font-weight:900;
+.hero h2{
+font-size:20px;
+margin-bottom:12px;
 }
 
-.hero small{
-font-size:22px;
+.big-number{
+font-size:52px;
+font-weight:800;
+line-height:1;
+margin-bottom:8px;
 }
 
-.badges{
-display:flex;
-flex-wrap:wrap;
-gap:8px;
-margin-top:15px;
-}
-
-.badge{
-background:rgba(255,255,255,.18);
-padding:8px 12px;
-border-radius:999px;
-font-size:12px;
-}
-
-.stats{
+.grid3{
 display:grid;
 grid-template-columns:repeat(3,1fr);
-margin-top:18px;
-overflow:hidden;
+gap:10px;
+margin-top:20px;
+}
+
+.mini{
+background:rgba(255,255,255,.15);
+padding:14px;
 border-radius:18px;
-}
-
-.stat{
-background:rgba(255,255,255,.12);
-padding:18px;
 text-align:center;
-backdrop-filter:blur(4px);
 }
 
-.stat h3{
-font-size:28px;
+.mini h3{
+font-size:20px;
 }
 
-.stat p{
-font-size:12px;
-opacity:.9;
+.btn{
+width:100%;
+border:none;
+border-radius:18px;
+padding:16px;
+font-size:18px;
+font-weight:700;
+margin-top:16px;
+cursor:pointer;
+}
+
+.btn-green{
+background:var(--green);
+color:white;
+}
+
+.btn-blue{
+background:var(--blue);
+color:white;
+}
+
+.btn-red{
+background:var(--danger);
+color:white;
 }
 
 .section-title{
-font-size:26px;
+font-size:22px;
 font-weight:800;
-margin-bottom:14px;
-color:#14532d;
+margin:10px 0 18px;
 }
 
-.grid{
+.branch-grid{
 display:grid;
 grid-template-columns:repeat(2,1fr);
 gap:14px;
@@ -148,170 +192,155 @@ gap:14px;
 
 .branch-card{
 background:white;
-padding:18px;
 border-radius:24px;
-box-shadow:0 5px 18px rgba(0,0,0,.06);
-border-top:5px solid #16a34a;
+padding:20px;
+box-shadow:var(--shadow);
 }
 
 .branch-card h3{
-font-size:18px;
-margin-top:10px;
+font-size:17px;
+margin:10px 0;
 }
 
-.branch-card .kg{
-margin-top:10px;
-font-size:30px;
-font-weight:800;
-color:#166534;
+.branch-card p{
+color:var(--gray);
 }
 
-.icon{
-font-size:38px;
+.branch-card h2{
+margin-top:12px;
+color:var(--green);
 }
 
-.btn{
-width:100%;
-border:none;
-padding:18px;
-border-radius:20px;
-font-size:18px;
-font-weight:700;
-cursor:pointer;
-margin-top:14px;
-}
-
-.green{
-background:#166534;
-color:white;
-}
-
-.blue{
-background:#2563eb;
-color:white;
-}
-
-.red{
-background:#dc2626;
-color:white;
-}
-
-.card{
-background:white;
-padding:20px;
-border-radius:24px;
-margin-bottom:18px;
-box-shadow:0 5px 18px rgba(0,0,0,.06);
-}
-
-input,select{
+.input{
 width:100%;
 padding:16px;
 border-radius:18px;
-border:2px solid #ddd;
-margin-top:10px;
+border:2px solid #dce9df;
+margin-top:12px;
 font-size:16px;
 background:white;
 }
 
-.bottom-nav{
+select.input{
+appearance:none;
+}
+
+.navbar{
 position:fixed;
 bottom:0;
-left:50%;
-transform:translateX(-50%);
 width:100%;
-max-width:430px;
+max-width:520px;
 background:white;
 display:flex;
 justify-content:space-around;
-padding:12px 0;
-border-top:3px solid #166534;
+padding:10px 0;
+box-shadow:0 -8px 25px rgba(0,0,0,.08);
+border-top:4px solid var(--green);
+z-index:999;
 }
 
-.nav-btn{
-background:none;
-border:none;
-font-size:13px;
-color:#777;
+.navbtn{
 display:flex;
 flex-direction:column;
 align-items:center;
-gap:4px;
+font-size:12px;
+color:#777;
 cursor:pointer;
+font-weight:600;
 }
 
-.nav-btn.active{
-color:#166534;
-font-weight:800;
+.navbtn.active{
+color:var(--green);
 }
 
 .rank{
 display:flex;
-align-items:center;
 justify-content:space-between;
+align-items:center;
+padding:14px;
+background:white;
+border-radius:18px;
+margin-bottom:12px;
+box-shadow:var(--shadow);
+}
+
+.rank-left{
+display:flex;
+align-items:center;
+gap:14px;
+}
+
+.badge{
+width:38px;
+height:38px;
+border-radius:50%;
+display:flex;
+align-items:center;
+justify-content:center;
+font-weight:800;
+background:#f2f2f2;
+}
+
+.gold{background:#ffe08a;}
+.silver{background:#dfe7ef;}
+.bronze{background:#f4c09a;}
+
+.kpi{
+display:grid;
+grid-template-columns:repeat(2,1fr);
+gap:12px;
+}
+
+.kpi-card{
 background:white;
 padding:18px;
 border-radius:22px;
-margin-bottom:14px;
+box-shadow:var(--shadow);
 }
 
-.bar{
-height:18px;
-background:#d1fae5;
+.kpi-card h4{
+font-size:13px;
+color:#6b7280;
+margin-bottom:8px;
+}
+
+.kpi-card h2{
+font-size:26px;
+color:var(--green);
+}
+
+.progress{
+height:14px;
+background:#e5efe7;
 border-radius:999px;
 overflow:hidden;
 margin-top:8px;
 }
 
-.fill{
+.progress div{
 height:100%;
-background:linear-gradient(90deg,#16a34a,#22c55e);
+background:linear-gradient(to right,#1e9c4b,#6ad58c);
 }
 
-.kpi-grid{
-display:grid;
-grid-template-columns:repeat(2,1fr);
-gap:14px;
-}
-
-.kpi{
-background:white;
-padding:18px;
-border-radius:22px;
-box-shadow:0 5px 18px rgba(0,0,0,.06);
-}
-
-.kpi h2{
-font-size:32px;
-color:#166534;
-}
-
-.kpi p{
-color:#666;
-margin-top:5px;
-font-size:13px;
-}
-
-.prediction{
-background:linear-gradient(135deg,#0f766e,#14b8a6);
+.ai-box{
+background:linear-gradient(135deg,#0d5d2d,#1f8a46);
 color:white;
-padding:20px;
 border-radius:24px;
-margin-top:18px;
+padding:18px;
+line-height:1.7;
 }
 
-.prediction h1{
-font-size:42px;
-margin-top:8px;
+.footer-space{
+height:100px;
 }
 
-.tree{
-font-size:15px;
-margin-top:8px;
+.small{
+font-size:13px;
+color:var(--gray);
 }
 
 canvas{
-margin-top:15px;
+margin-top:20px;
 }
 
 </style>
@@ -319,103 +348,134 @@ margin-top:15px;
 
 <body>
 
-<div class="header">
+<div class="topbar">
 
-<div class="logo-wrap">
+<div class="brand">
+
+<div class="brand-left">
 <div class="logo">☕</div>
 
 <div>
-<div class="header-title">Hillkoff</div>
-<div class="header-sub">Zero Waste · ESG Platform</div>
+<h1>Hillkoff</h1>
+<p>Enterprise ESG Platform</p>
 </div>
 </div>
 
-<div class="co2-box">
-<p>CO₂e รวม</p>
-<h1 id="totalCO2">0 kg</h1>
+<div class="totalbox">
+<span>CO₂e รวม</span>
+<h2 id="totalCarbon">0 kg</h2>
+</div>
+
 </div>
 
 </div>
 
 <!-- HOME -->
 
-<div class="page active" id="homePage">
+<section id="home" class="page active">
 
 <div class="hero">
 
-<div>🌍 Carbon Footprint — องค์กร</div>
+<h2>🌍 Carbon Footprint องค์กร</h2>
 
-<h1 id="heroCO2">0 <small>kg CO₂e</small></h1>
+<div class="big-number" id="heroCarbon">0</div>
 
-<div class="badges">
-<div class="badge">ISO 14064</div>
-<div class="badge">GHG Protocol</div>
-<div class="badge">WEEE</div>
-<div class="badge">SDG 12</div>
+<div style="font-size:24px;font-weight:700;">kg CO₂e</div>
+
+<div class="grid3">
+
+<div class="mini">
+<h3 id="todayCarbon">0</h3>
+<p>วันนี้</p>
 </div>
 
-<div class="stats">
-
-<div class="stat">
-<h3 id="todayValue">0</h3>
-<p>kg วันนี้</p>
+<div class="mini">
+<h3 id="monthCarbon">0</h3>
+<p>เดือนนี้</p>
 </div>
 
-<div class="stat">
-<h3 id="monthValue">0</h3>
-<p>kg เดือนนี้</p>
-</div>
-
-<div class="stat">
-<h3 id="recordCount">0</h3>
-<p>รายการ</p>
+<div class="mini">
+<h3 id="treeEquivalent">0</h3>
+<p>ต้นไม้</p>
 </div>
 
 </div>
 
-<button class="btn green" onclick="showPage('recordPage')">
-📝 บันทึกขยะใหม่
+<button class="btn" style="background:white;color:#126030;" onclick="openPage('record')">
+📝 บันทึกข้อมูล
 </button>
 
 </div>
 
-<div class="section-title">
-สรุปแต่ละสาขา
+<h2 class="section-title">📊 KPI องค์กร</h2>
+
+<div class="kpi">
+
+<div class="kpi-card">
+<h4>ลดคาร์บอนเทียบปีที่แล้ว</h4>
+<h2 id="reducePercent">0%</h2>
+<div class="progress"><div id="reduceBar" style="width:0%"></div></div>
 </div>
 
-<div class="grid" id="branchGrid"></div>
+<div class="kpi-card">
+<h4>ประสิทธิภาพ Zero Waste</h4>
+<h2 id="wasteScore">0%</h2>
+<div class="progress"><div id="wasteBar" style="width:0%"></div></div>
+</div>
+
+<div class="kpi-card">
+<h4>ESG Score</h4>
+<h2 id="esgScore">0</h2>
+<div class="progress"><div id="esgBar" style="width:0%"></div></div>
+</div>
+
+<div class="kpi-card">
+<h4>ต้นไม้เทียบเท่า</h4>
+<h2 id="treeCount">0</h2>
+<p class="small">ต้น</p>
+</div>
 
 </div>
+
+<h2 class="section-title">🏢 สรุปแต่ละสาขา</h2>
+
+<div class="branch-grid" id="branchContainer"></div>
+
+<div class="footer-space"></div>
+
+</section>
 
 <!-- RECORD -->
 
-<div class="page" id="recordPage">
+<section id="record" class="page">
 
 <div class="card">
 
-<h2>บันทึกข้อมูลขยะ</h2>
+<h2 class="section-title">📝 บันทึกข้อมูล ESG</h2>
 
-<select id="branch">
-<option value="สำนักงานใหญ่">สำนักงานใหญ่</option>
-<option value="ช้างเผือก">ช้างเผือก</option>
-<option value="มหิดล">มหิดล</option>
-<option value="ป่าแพง">ป่าแพง</option>
-<option value="ทับเดื่อ">ทับเดื่อ</option>
-<option value="ราติก้า">ราติก้า</option>
+<select class="input" id="branch">
+<option>สำนักงานใหญ่</option>
+<option>ช้างเผือก</option>
+<option>มหิดล</option>
+<option>ป่าแพง</option>
+<option>ทับเดื่อ</option>
+<option>ราติก้า</option>
 </select>
 
-<select id="wasteType">
-<option value="พลาสติก">พลาสติก</option>
-<option value="เศษอาหาร">เศษอาหาร</option>
-<option value="กระดาษ">กระดาษ</option>
-<option value="กากกาแฟ">กากกาแฟ</option>
-<option value="แก้ว">แก้ว</option>
-<option value="อลูมิเนียม">อลูมิเนียม</option>
+<select class="input" id="wasteType">
+<option value="2.5">พลาสติก</option>
+<option value="1.8">เศษอาหาร</option>
+<option value="0.7">กากกาแฟ</option>
+<option value="3.1">กระดาษ</option>
+<option value="2.8">โลหะ</option>
+<option value="4.0">ขยะอิเล็กทรอนิกส์</option>
 </select>
 
-<input type="number" id="weight" placeholder="น้ำหนัก (kg)" />
+<input class="input" id="weight" type="number" placeholder="น้ำหนัก (kg)" />
 
-<button class="btn green" onclick="saveData()">
+<input class="input" id="staff" placeholder="ผู้บันทึกข้อมูล" />
+
+<button class="btn btn-green" onclick="saveRecord()">
 💾 บันทึกข้อมูล
 </button>
 
@@ -423,203 +483,163 @@ margin-top:15px;
 
 <div class="card">
 
-<h2>Carbon Factor</h2>
+<h2 class="section-title">🤖 AI Sustainability Insight</h2>
 
-<p>พลาสติก = 2.53</p>
-<p>เศษอาหาร = 1.90</p>
-<p>กระดาษ = 1.10</p>
-<p>กากกาแฟ = 0.30</p>
-<p>แก้ว = 1.40</p>
-<p>อลูมิเนียม = 8.20</p>
+<div class="ai-box" id="aiInsight">
+
+ยังไม่มีข้อมูลสำหรับวิเคราะห์
 
 </div>
 
 </div>
+
+<div class="footer-space"></div>
+
+</section>
 
 <!-- ANALYTICS -->
 
-<div class="page" id="analyticsPage">
+<section id="analytics" class="page">
 
-<div class="kpi-grid">
+<div class="card">
 
-<div class="kpi">
-<h2 id="kpiTotal">0</h2>
-<p>CO₂e รวม</p>
-</div>
+<h2 class="section-title">📈 แนวโน้ม Carbon</h2>
 
-<div class="kpi">
-<h2 id="kpiTrees">0</h2>
-<p>เทียบเท่าปลูกต้นไม้</p>
-</div>
-
-<div class="kpi">
-<h2 id="kpiReduction">0%</h2>
-<p>อัตราลดคาร์บอน</p>
-</div>
-
-<div class="kpi">
-<h2 id="kpiAvg">0</h2>
-<p>ค่าเฉลี่ยต่อรายการ</p>
-</div>
+<canvas id="chart1"></canvas>
 
 </div>
 
 <div class="card">
 
-<h2>แนวโน้ม CO₂e</h2>
+<h2 class="section-title">🔮 AI Forecast</h2>
 
-<canvas id="lineChart"></canvas>
+<div class="ai-box" id="forecastBox">
 
-</div>
-
-<div class="prediction">
-
-<div>📈 AI Prediction</div>
-
-<h1 id="predictValue">0 kg</h1>
-
-<p>
-คาดการณ์คาร์บอนสิ้นเดือน
-จากพฤติกรรมการทิ้งขยะปัจจุบัน
-</p>
-
-<div class="tree" id="predictTree">
-🌳 เทียบเท่าปลูกต้นไม้ 0 ต้น
-</div>
+ระบบกำลังรอข้อมูลเพื่อคาดการณ์
 
 </div>
 
 </div>
 
-<!-- RANKING -->
+<div class="footer-space"></div>
 
-<div class="page" id="rankingPage">
+</section>
 
-<div class="section-title">
-🏆 Ranking ลดคาร์บอน
-</div>
+<!-- RANK -->
+
+<section id="ranking" class="page">
+
+<div class="card">
+
+<h2 class="section-title">🏆 Ranking สาขา</h2>
 
 <div id="rankingList"></div>
 
 </div>
 
+<div class="footer-space"></div>
+
+</section>
+
 <!-- REPORT -->
 
-<div class="page" id="reportPage">
-
-<div class="hero">
-
-<div>📋 ESG Report Center</div>
-
-<h1 style="font-size:48px">
-รายงาน ISO 14064
-</h1>
-
-<div style="margin-top:10px">
-GHG Protocol · WEEE · SDG 12
-</div>
-
-</div>
+<section id="report" class="page">
 
 <div class="card">
 
-<h2>สรุปรายงาน</h2>
+<h2 class="section-title">📄 ESG Executive Summary</h2>
 
-<div style="margin-top:15px">
+<div class="kpi">
 
-<p>CO₂e รวม :
-<b id="reportTotal">0 kg</b></p>
+<div class="kpi-card">
+<h4>CO₂e รวม</h4>
+<h2 id="reportCarbon">0</h2>
+</div>
 
-<br>
+<div class="kpi-card">
+<h4>จำนวนรายการ</h4>
+<h2 id="reportItems">0</h2>
+</div>
 
-<p>เทียบต้นไม้ :
-<b id="reportTrees">0 ต้น</b></p>
+<div class="kpi-card">
+<h4>ต้นไม้เทียบเท่า</h4>
+<h2 id="reportTrees">0</h2>
+</div>
 
-<br>
-
-<p>รายการทั้งหมด :
-<b id="reportRecords">0</b></p>
-
+<div class="kpi-card">
+<h4>ESG Score</h4>
+<h2 id="reportScore">0</h2>
 </div>
 
 </div>
 
-<button class="btn green" onclick="exportCSV()">
+<button class="btn btn-green" onclick="exportCSV()">
 📊 Export CSV
 </button>
 
-<button class="btn blue" onclick="window.print()">
+<button class="btn btn-blue" onclick="window.print()">
 📄 Export PDF
 </button>
 
-<div class="card">
-
-<h2>📧 ส่ง ESG Report</h2>
-
-<input type="email" placeholder="อีเมลผู้บริหาร">
-
-<button class="btn red">
-📨 ส่งรายงาน
+<button class="btn btn-red" onclick="resetSystem()">
+♻ รีเซ็ตข้อมูลทั้งหมด
 </button>
 
 </div>
 
-</div>
+<div class="footer-space"></div>
+
+</section>
 
 <!-- NAV -->
 
-<div class="bottom-nav">
+<div class="navbar">
 
-<button class="nav-btn active" onclick="showPage('homePage',this)">
+<div class="navbtn active" onclick="openPage('home',this)">
 🏠
 <span>หน้าหลัก</span>
-</button>
+</div>
 
-<button class="nav-btn" onclick="showPage('recordPage',this)">
+<div class="navbtn" onclick="openPage('record',this)">
 📝
 <span>บันทึก</span>
-</button>
+</div>
 
-<button class="nav-btn" onclick="showPage('analyticsPage',this)">
+<div class="navbtn" onclick="openPage('analytics',this)">
 📊
 <span>Analytics</span>
-</button>
+</div>
 
-<button class="nav-btn" onclick="showPage('rankingPage',this)">
+<div class="navbtn" onclick="openPage('ranking',this)">
 🏆
 <span>Ranking</span>
-</button>
+</div>
 
-<button class="nav-btn" onclick="showPage('reportPage',this)">
-📋
+<div class="navbtn" onclick="openPage('report',this)">
+📄
 <span>รายงาน</span>
-</button>
+</div>
 
 </div>
 
 <script>
 
-const factors = {
-"พลาสติก":2.53,
-"เศษอาหาร":1.90,
-"กระดาษ":1.10,
-"กากกาแฟ":0.30,
-"แก้ว":1.40,
-"อลูมิเนียม":8.20
-};
+let records = JSON.parse(localStorage.getItem("hillkoff_enterprise")) || [];
 
 const branches = [
-{ name:"สำนักงานใหญ่", icon:"🏢" },
-{ name:"ช้างเผือก", icon:"🐘" },
-{ name:"มหิดล", icon:"🎓" },
-{ name:"ป่าแพง", icon:"🌿" },
-{ name:"ทับเดื่อ", icon:"🌱" },
-{ name:"ราติก้า", icon:"☕" }
+"สำนักงานใหญ่",
+"ช้างเผือก",
+"มหิดล",
+"ป่าแพง",
+"ทับเดื่อ",
+"ราติก้า"
 ];
 
-let records = JSON.parse(localStorage.getItem("records")) || [];
+function saveLocal(){
+localStorage.setItem("hillkoff_enterprise",JSON.stringify(records));
+}
 
-function showPage(id,btn){
+function openPage(id,el){
 
 document.querySelectorAll(".page").forEach(p=>{
 p.classList.remove("active");
@@ -627,137 +647,113 @@ p.classList.remove("active");
 
 document.getElementById(id).classList.add("active");
 
-document.querySelectorAll(".nav-btn").forEach(b=>{
-b.classList.remove("active");
+document.querySelectorAll(".navbtn").forEach(n=>{
+n.classList.remove("active");
 });
 
-if(btn){
-btn.classList.add("active");
+if(el){
+el.classList.add("active");
 }
 
 }
 
-function saveData(){
+function saveRecord(){
 
 const branch = document.getElementById("branch").value;
-const waste = document.getElementById("wasteType").value;
+const factor = parseFloat(document.getElementById("wasteType").value);
 const weight = parseFloat(document.getElementById("weight").value);
+const staff = document.getElementById("staff").value;
 
-if(!weight){
-alert("กรุณากรอกน้ำหนัก");
+if(!weight || !staff){
+alert("กรอกข้อมูลให้ครบ");
 return;
 }
 
-const co2 = weight * factors[waste];
+const carbon = weight * factor * 0.1;
 
 records.push({
 branch,
-waste,
+factor,
 weight,
-co2,
-date:new Date().toISOString()
+carbon,
+staff,
+time:new Date().toISOString()
 });
 
-localStorage.setItem("records",JSON.stringify(records));
+saveLocal();
 
 document.getElementById("weight").value="";
+document.getElementById("staff").value="";
 
-updateAll();
+renderAll();
 
 alert("บันทึกข้อมูลสำเร็จ");
 
 }
 
-function updateAll(){
+function renderAll(){
 
-const total = records.reduce((a,b)=>a+b.co2,0);
+const total = records.reduce((a,b)=>a+b.carbon,0);
 
-document.getElementById("totalCO2").innerText =
-total.toFixed(2)+" kg";
+document.getElementById("totalCarbon").innerText = total.toFixed(2)+" kg";
+document.getElementById("heroCarbon").innerText = total.toFixed(2);
 
-document.getElementById("heroCO2").innerHTML =
-total.toFixed(2)+' <small>kg CO₂e</small>';
+document.getElementById("todayCarbon").innerText = total.toFixed(2);
 
-document.getElementById("todayValue").innerText =
-total.toFixed(2);
+document.getElementById("monthCarbon").innerText = total.toFixed(2);
 
-document.getElementById("monthValue").innerText =
-total.toFixed(2);
+const trees = Math.floor(total/20);
 
-document.getElementById("recordCount").innerText =
-records.length;
+document.getElementById("treeEquivalent").innerText = trees;
 
-document.getElementById("kpiTotal").innerText =
-total.toFixed(2)+" kg";
+document.getElementById("treeCount").innerText = trees;
 
-const trees = Math.floor(total/21);
+const reduce = Math.min(100,Math.floor(total*2));
 
-document.getElementById("kpiTrees").innerText =
-trees+" ต้น";
+document.getElementById("reducePercent").innerText = reduce+"%";
+document.getElementById("reduceBar").style.width = reduce+"%";
 
-document.getElementById("reportTrees").innerText =
-trees+" ต้น";
+const waste = Math.min(100,Math.floor(total*4));
 
-document.getElementById("reportTotal").innerText =
-total.toFixed(2)+" kg";
+document.getElementById("wasteScore").innerText = waste+"%";
+document.getElementById("wasteBar").style.width = waste+"%";
 
-document.getElementById("reportRecords").innerText =
-records.length;
+const esg = Math.min(100,Math.floor((reduce+waste)/2));
 
-const avg = records.length ?
-(total / records.length) : 0;
-
-document.getElementById("kpiAvg").innerText =
-avg.toFixed(2)+" kg";
-
-const reduction = Math.max(0,100-(total*2));
-
-document.getElementById("kpiReduction").innerText =
-reduction.toFixed(0)+"%";
-
-const predict = total * 1.8;
-
-document.getElementById("predictValue").innerText =
-predict.toFixed(2)+" kg";
-
-document.getElementById("predictTree").innerText =
-"🌳 เทียบเท่าปลูกต้นไม้ "+Math.floor(predict/21)+" ต้น";
+document.getElementById("esgScore").innerText = esg;
+document.getElementById("esgBar").style.width = esg+"%";
 
 renderBranches();
 renderRanking();
+renderReport();
+renderAI();
+renderForecast();
 renderChart();
 
 }
 
 function renderBranches(){
 
-const grid = document.getElementById("branchGrid");
+const container = document.getElementById("branchContainer");
 
-grid.innerHTML="";
+container.innerHTML="";
 
 branches.forEach(branch=>{
 
-const branchData = records.filter(r=>r.branch===branch.name);
+const branchData = records.filter(r=>r.branch===branch);
 
-const total = branchData.reduce((a,b)=>a+b.co2,0);
+const carbon = branchData.reduce((a,b)=>a+b.carbon,0);
 
-const div = document.createElement("div");
-
-div.className="branch-card";
-
-div.innerHTML=`
-<div class="icon">${branch.icon}</div>
-
-<h3>${branch.name}</h3>
-
+const html = `
+<div class="branch-card">
+<div style="font-size:34px;">🏢</div>
+<h3>${branch}</h3>
 <p>${branchData.length} รายการ</p>
-
-<div class="kg">
-${total.toFixed(2)} kg
+<h2>${carbon.toFixed(2)} kg</h2>
 </div>
 `;
 
-grid.appendChild(div);
+container.innerHTML += html;
 
 });
 
@@ -765,71 +761,112 @@ grid.appendChild(div);
 
 function renderRanking(){
 
+const ranking = branches.map(branch=>{
+
+const data = records.filter(r=>r.branch===branch);
+
+const carbon = data.reduce((a,b)=>a+b.carbon,0);
+
+return {
+branch,
+carbon
+};
+
+}).sort((a,b)=>a.carbon-b.carbon);
+
 const list = document.getElementById("rankingList");
 
 list.innerHTML="";
 
-const data = branches.map(branch=>{
+ranking.forEach((r,i)=>{
 
-const total = records
-.filter(r=>r.branch===branch.name)
-.reduce((a,b)=>a+b.co2,0);
+let badge = "";
 
-return {
-name:branch.name,
-total
-};
+if(i===0) badge="gold";
+else if(i===1) badge="silver";
+else if(i===2) badge="bronze";
 
-});
-
-data.sort((a,b)=>a.total-b.total);
-
-const max = Math.max(...data.map(d=>d.total),1);
-
-data.forEach((item,index)=>{
-
-const trees = Math.floor(item.total/21);
-
-const div = document.createElement("div");
-
-div.className="rank";
-
-div.innerHTML=`
-
-<div style="width:100%">
-
-<div style="display:flex;justify-content:space-between">
-
+list.innerHTML += `
+<div class="rank">
+<div class="rank-left">
+<div class="badge ${badge}">
+${i+1}
+</div>
 <div>
-<h3>
-#${index+1} ${item.name}
-</h3>
-
-<p>
-🌳 เทียบ ${trees} ต้นไม้
+<h3>${r.branch}</h3>
+<p class="small">
+ลดคาร์บอนเทียบเท่าปลูก ${Math.floor(r.carbon/20)} ต้น
 </p>
-
-</div>
-
-<h2 style="color:#166534">
-${item.total.toFixed(2)} kg
-</h2>
-
-</div>
-
-<div class="bar">
-<div class="fill"
-style="width:${(item.total/max)*100}%">
 </div>
 </div>
-
+<h2>${r.carbon.toFixed(2)} kg</h2>
 </div>
-
 `;
 
-list.appendChild(div);
-
 });
+
+}
+
+function renderReport(){
+
+const total = records.reduce((a,b)=>a+b.carbon,0);
+
+document.getElementById("reportCarbon").innerText = total.toFixed(2);
+
+document.getElementById("reportItems").innerText = records.length;
+
+document.getElementById("reportTrees").innerText = Math.floor(total/20);
+
+document.getElementById("reportScore").innerText = Math.min(100,Math.floor(total*4));
+
+}
+
+function renderAI(){
+
+const total = records.reduce((a,b)=>a+b.carbon,0);
+
+let message = `
+องค์กรมีการปล่อยคาร์บอนรวม ${total.toFixed(2)} kg CO₂e
+`;
+
+if(total<10){
+message += `
+แนวโน้ม ESG อยู่ในระดับดีมาก
+`;
+}
+else{
+message += `
+ควรลดการใช้พลาสติกและเพิ่มการรีไซเคิล
+`;
+}
+
+document.getElementById("aiInsight").innerHTML = message;
+
+}
+
+function renderForecast(){
+
+const total = records.reduce((a,b)=>a+b.carbon,0);
+
+const nextMonth = total * 1.18;
+
+document.getElementById("forecastBox").innerHTML = `
+หากแนวโน้มยังเท่าเดิม
+
+เดือนหน้าจะมีการปล่อยประมาณ
+
+<b style="font-size:32px;">
+${nextMonth.toFixed(2)} kg CO₂e
+</b>
+
+ระบบแนะนำ:
+<ul style="margin-top:12px;padding-left:18px;">
+<li>ลดพลาสติกใช้ครั้งเดียว</li>
+<li>เพิ่มรีไซเคิลกากกาแฟ</li>
+<li>เพิ่มจุดแยกขยะ</li>
+<li>ติดตาม Scope 3 Supply Chain</li>
+</ul>
+`;
 
 }
 
@@ -837,25 +874,28 @@ let chart;
 
 function renderChart(){
 
-const ctx = document.getElementById("lineChart");
+const ctx = document.getElementById("chart1");
 
-const labels = records.map((r,i)=>i+1);
+const data = branches.map(branch=>{
 
-const data = records.map(r=>r.co2);
+const branchData = records.filter(r=>r.branch===branch);
+
+return branchData.reduce((a,b)=>a+b.carbon,0);
+
+});
 
 if(chart){
 chart.destroy();
 }
 
 chart = new Chart(ctx,{
-type:'line',
+type:'bar',
 data:{
-labels,
+labels:branches,
 datasets:[{
 label:'CO₂e',
-data,
-fill:true,
-tension:.4
+data:data,
+borderRadius:20
 }]
 },
 options:{
@@ -872,35 +912,53 @@ display:false
 
 function exportCSV(){
 
-let csv =
-"สาขา,ประเภท,น้ำหนัก,CO2e\n";
+let csv = "Branch,Weight,Carbon,Staff,Time\n";
 
 records.forEach(r=>{
 
-csv +=
-`${r.branch},${r.waste},${r.weight},${r.co2}\n`;
+csv += `
+${r.branch},
+${r.weight},
+${r.carbon},
+${r.staff},
+${r.time}
+`;
 
 });
 
-const blob = new Blob([csv],{
-type:'text/csv'
-});
+const blob = new Blob([csv],{type:'text/csv'});
 
 const a = document.createElement("a");
 
 a.href = URL.createObjectURL(blob);
 
-a.download = "hillkoff-report.csv";
+a.download = "hillkoff_esg.csv";
 
 a.click();
 
 }
 
-updateAll();
+function resetSystem(){
 
-setInterval(updateAll,3000);
+if(confirm("ล้างข้อมูลทั้งหมด ?")){
+
+records=[];
+
+saveLocal();
+
+renderAll();
+
+}
+
+}
+
+renderAll();
+
+setInterval(()=>{
+renderAll();
+},5000);
 
 </script>
 
 </body>
-  </html>
+</html>
