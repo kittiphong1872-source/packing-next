@@ -3,725 +3,893 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Hillkoff ESG Enterprise Dashboard</title>
 
-<title>Hillkoff ESG Intelligence Platform</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;700;800&display=swap" rel="stylesheet">
 
-<!-- Tailwind -->
-<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
 
-<!-- Firebase -->
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import {
-  getAuth,
-  GoogleAuthProvider,
-  signInWithPopup,
-  onAuthStateChanged,
-  signOut
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-
-import {
-  getFirestore,
-  collection,
-  addDoc,
-  getDocs,
-  query,
-  orderBy,
-  onSnapshot,
-  serverTimestamp
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-import {
-  getStorage,
-  ref,
-  uploadBytes,
-  getDownloadURL
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
-
-/* =========================================================
-   FIREBASE CONFIG
-========================================================= */
-
-const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT.firebaseapp.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT.appspot.com",
-  messagingSenderId: "XXXX",
-  appId: "XXXX"
-};
-
-const app = initializeApp(firebaseConfig);
-
-const auth = getAuth(app);
-const db = getFirestore(app);
-const storage = getStorage(app);
-
-window.db = db;
-window.auth = auth;
-window.storage = storage;
-
-/* =========================================================
-   GOOGLE LOGIN
-========================================================= */
-
-const provider = new GoogleAuthProvider();
-
-window.loginGoogle = async function () {
-  try {
-    await signInWithPopup(auth, provider);
-  } catch (e) {
-    alert(e.message);
-  }
-};
-
-window.logoutApp = async function () {
-  await signOut(auth);
-};
-
-onAuthStateChanged(auth, (user) => {
-  if (user) {
-    document.getElementById("loginPage").classList.add("hidden");
-    document.getElementById("appPage").classList.remove("hidden");
-
-    document.getElementById("userName").innerText = user.displayName;
-    document.getElementById("userEmail").innerText = user.email;
-
-    if (user.photoURL) {
-      document.getElementById("userAvatar").src = user.photoURL;
-    }
-
-    loadDashboard();
-    realtimeDashboard();
-
-  } else {
-    document.getElementById("loginPage").classList.remove("hidden");
-    document.getElementById("appPage").classList.add("hidden");
-  }
-});
-
-/* =========================================================
-   GLOBAL STATE
-========================================================= */
-
-window.records = [];
-window.currentTab = "dashboard";
-
-/* =========================================================
-   LOAD DASHBOARD
-========================================================= */
-
-async function loadDashboard() {
-
-  const q = query(
-    collection(db, "inventory_logs"),
-    orderBy("createdAt", "desc")
-  );
-
-  const snapshot = await getDocs(q);
-
-  records = [];
-
-  snapshot.forEach((doc) => {
-    records.push({
-      id: doc.id,
-      ...doc.data()
-    });
-  });
-
-  renderDashboard();
+<style>
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Sarabun',sans-serif;
 }
 
-/* =========================================================
-   REALTIME
-========================================================= */
-
-function realtimeDashboard() {
-
-  const q = query(
-    collection(db, "inventory_logs"),
-    orderBy("createdAt", "desc")
-  );
-
-  onSnapshot(q, (snapshot) => {
-
-    records = [];
-
-    snapshot.forEach((doc) => {
-      records.push({
-        id: doc.id,
-        ...doc.data()
-      });
-    });
-
-    renderDashboard();
-  });
+body{
+background:#eef5f0;
+color:#1b2b22;
 }
 
-/* =========================================================
-   IMPORT EXCEL
-========================================================= */
-
-window.importExcel = async function (event) {
-
-  const file = event.target.files[0];
-
-  if (!file) return;
-
-  const reader = new FileReader();
-
-  reader.onload = async function (e) {
-
-    const data = new Uint8Array(e.target.result);
-
-    const workbook = XLSX.read(data, {
-      type: "array"
-    });
-
-    const sheetName = workbook.SheetNames[0];
-
-    const worksheet = workbook.Sheets[sheetName];
-
-    const json = XLSX.utils.sheet_to_json(worksheet);
-
-    for (const row of json) {
-
-      const amount = Number(row.amount || 0);
-
-      const co2 = amount * 0.42;
-
-      const trees = (co2 / 21).toFixed(2);
-
-      await addDoc(collection(db, "inventory_logs"), {
-
-        branch: row.branch || "-",
-        department: row.department || "-",
-        item: row.item || "-",
-        amount: amount,
-        unit: row.unit || "-",
-        requester: row.requester || "-",
-        position: row.position || "-",
-        month: row.month || "-",
-        year: row.year || "-",
-
-        co2e: co2,
-        trees: trees,
-
-        aiPrediction:
-          amount > 100
-            ? "แนวโน้มการใช้สูงผิดปกติ"
-            : "อยู่ในเกณฑ์ปกติ",
-
-        createdAt: serverTimestamp()
-      });
-    }
-
-    alert("นำเข้าข้อมูลสำเร็จ");
-  };
-
-  reader.readAsArrayBuffer(file);
-};
-
-/* =========================================================
-   RENDER DASHBOARD
-========================================================= */
-
-function renderDashboard() {
-
-  let totalUsage = 0;
-  let totalCO2 = 0;
-  let totalTrees = 0;
-
-  const branchMap = {};
-
-  records.forEach((r) => {
-
-    totalUsage += Number(r.amount || 0);
-    totalCO2 += Number(r.co2e || 0);
-    totalTrees += Number(r.trees || 0);
-
-    if (!branchMap[r.branch]) {
-      branchMap[r.branch] = {
-        usage: 0,
-        co2: 0
-      };
-    }
-
-    branchMap[r.branch].usage += Number(r.amount || 0);
-    branchMap[r.branch].co2 += Number(r.co2e || 0);
-  });
-
-  document.getElementById("totalUsage").innerText =
-    totalUsage.toLocaleString();
-
-  document.getElementById("totalCO2").innerText =
-    totalCO2.toFixed(2);
-
-  document.getElementById("totalTrees").innerText =
-    totalTrees.toFixed(2);
-
-  /* ==============================
-     BRANCH RANKING
-  ============================== */
-
-  const ranking = Object.entries(branchMap)
-    .sort((a, b) => a[1].co2 - b[1].co2);
-
-  let rankingHTML = "";
-
-  ranking.forEach((r, index) => {
-
-    rankingHTML += `
-      <div class="bg-white rounded-2xl p-4 shadow mb-3">
-
-        <div class="flex justify-between items-center">
-
-          <div>
-            <div class="font-bold text-lg">
-              #${index + 1} ${r[0]}
-            </div>
-
-            <div class="text-sm text-gray-500">
-              ใช้งานรวม ${r[1].usage.toLocaleString()}
-            </div>
-          </div>
-
-          <div class="text-right">
-            <div class="font-black text-green-700 text-xl">
-              ${r[1].co2.toFixed(2)}
-            </div>
-
-            <div class="text-xs text-gray-500">
-              kg CO₂e
-            </div>
-          </div>
-
-        </div>
-
-      </div>
-    `;
-  });
-
-  document.getElementById("rankingList").innerHTML =
-    rankingHTML;
-
-  /* ==============================
-     RECENT TABLE
-  ============================== */
-
-  let table = "";
-
-  records.slice(0, 15).forEach((r) => {
-
-    table += `
-      <tr class="border-b">
-
-        <td class="p-2">${r.branch}</td>
-        <td class="p-2">${r.department}</td>
-        <td class="p-2">${r.item}</td>
-        <td class="p-2">${r.amount}</td>
-
-        <td class="p-2 text-green-700 font-bold">
-          ${Number(r.co2e).toFixed(2)}
-        </td>
-
-        <td class="p-2">
-          ${r.aiPrediction}
-        </td>
-
-      </tr>
-    `;
-  });
-
-  document.getElementById("tableBody").innerHTML = table;
-
-  /* ==============================
-     AI INSIGHT
-  ============================== */
-
-  const avg =
-    records.length > 0
-      ? totalUsage / records.length
-      : 0;
-
-  let insight = "";
-
-  if (avg > 120) {
-
-    insight = `
-      ⚠️ ระบบพบแนวโน้มการใช้วัสดุสิ้นเปลืองสูงกว่าค่าเฉลี่ยองค์กร
-      ควรลดการเบิกใช้ในบางแผนก
-    `;
-
-  } else {
-
-    insight = `
-      ✅ แนวโน้มการใช้วัสดุอยู่ในเกณฑ์ปกติ
-      องค์กรสามารถควบคุม Carbon Footprint ได้ดี
-    `;
-  }
-
-  document.getElementById("aiInsight").innerText =
-    insight;
+.app{
+max-width:480px;
+margin:auto;
+min-height:100vh;
+background:#f6fbf7;
+position:relative;
+overflow:hidden;
 }
 
-/* =========================================================
-   UPLOAD IMAGE
-========================================================= */
+.header{
+background:linear-gradient(135deg,#0f5132,#198754);
+padding:20px;
+color:#fff;
+position:sticky;
+top:0;
+z-index:100;
+box-shadow:0 5px 20px rgba(0,0,0,.15);
+}
 
-window.uploadImage = async function (event) {
+.header-top{
+display:flex;
+justify-content:space-between;
+align-items:center;
+}
 
-  const file = event.target.files[0];
+.logo{
+display:flex;
+align-items:center;
+gap:10px;
+}
 
-  if (!file) return;
+.logo-icon{
+font-size:28px;
+}
 
-  const storageRef = ref(
-    storage,
-    "uploads/" + Date.now() + "_" + file.name
-  );
+.logo-title{
+font-size:20px;
+font-weight:800;
+}
 
-  await uploadBytes(storageRef, file);
+.logo-sub{
+font-size:11px;
+opacity:.8;
+}
 
-  const url = await getDownloadURL(storageRef);
+.live{
+background:rgba(255,255,255,.15);
+padding:6px 12px;
+border-radius:30px;
+font-size:12px;
+display:flex;
+align-items:center;
+gap:8px;
+}
 
-  document.getElementById("uploadedImage").src = url;
+.dot{
+width:10px;
+height:10px;
+border-radius:50%;
+background:#00ff88;
+animation:pulse 1s infinite;
+}
 
-  alert("อัปโหลดรูปสำเร็จ");
-};
+@keyframes pulse{
+0%{transform:scale(1);}
+50%{transform:scale(1.5);}
+100%{transform:scale(1);}
+}
+
+.kpi-grid{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:12px;
+margin-top:18px;
+}
+
+.kpi-card{
+background:rgba(255,255,255,.12);
+backdrop-filter:blur(10px);
+padding:15px;
+border-radius:18px;
+}
+
+.kpi-label{
+font-size:11px;
+opacity:.8;
+margin-bottom:6px;
+}
+
+.kpi-value{
+font-size:24px;
+font-weight:800;
+}
+
+.kpi-sub{
+font-size:11px;
+opacity:.8;
+margin-top:4px;
+}
+
+.content{
+padding:16px;
+padding-bottom:120px;
+}
+
+.section{
+margin-bottom:22px;
+}
+
+.section-title{
+font-size:15px;
+font-weight:800;
+margin-bottom:12px;
+color:#14532d;
+display:flex;
+align-items:center;
+gap:8px;
+}
+
+.card{
+background:#fff;
+border-radius:20px;
+padding:16px;
+box-shadow:0 5px 20px rgba(0,0,0,.05);
+margin-bottom:14px;
+}
+
+.upload-box{
+border:2px dashed #198754;
+padding:30px 20px;
+border-radius:18px;
+text-align:center;
+background:#f5fff8;
+cursor:pointer;
+}
+
+.upload-box input{
+display:none;
+}
+
+.upload-icon{
+font-size:42px;
+margin-bottom:10px;
+}
+
+.btn{
+width:100%;
+border:none;
+padding:14px;
+border-radius:14px;
+font-weight:700;
+font-size:14px;
+cursor:pointer;
+}
+
+.btn-green{
+background:#198754;
+color:#fff;
+}
+
+.btn-blue{
+background:#0d6efd;
+color:#fff;
+}
+
+.btn-red{
+background:#dc3545;
+color:#fff;
+}
+
+.table{
+width:100%;
+border-collapse:collapse;
+margin-top:10px;
+}
+
+.table th{
+background:#198754;
+color:#fff;
+padding:10px;
+font-size:12px;
+}
+
+.table td{
+padding:10px;
+font-size:12px;
+border-bottom:1px solid #eee;
+}
+
+.rank-item{
+display:flex;
+align-items:center;
+gap:12px;
+padding:14px;
+background:#fff;
+border-radius:16px;
+margin-bottom:10px;
+box-shadow:0 4px 12px rgba(0,0,0,.05);
+}
+
+.rank-number{
+width:40px;
+height:40px;
+border-radius:50%;
+background:#198754;
+color:#fff;
+display:flex;
+align-items:center;
+justify-content:center;
+font-weight:800;
+}
+
+.rank-info{
+flex:1;
+}
+
+.rank-title{
+font-weight:700;
+font-size:14px;
+}
+
+.rank-sub{
+font-size:11px;
+color:#777;
+margin-top:2px;
+}
+
+.rank-score{
+font-size:16px;
+font-weight:800;
+color:#198754;
+}
+
+.nav{
+position:fixed;
+bottom:0;
+left:50%;
+transform:translateX(-50%);
+width:100%;
+max-width:480px;
+background:#fff;
+display:flex;
+justify-content:space-around;
+padding:12px 0;
+border-top:1px solid #ddd;
+z-index:100;
+}
+
+.nav button{
+background:none;
+border:none;
+display:flex;
+flex-direction:column;
+align-items:center;
+gap:4px;
+font-size:11px;
+color:#666;
+cursor:pointer;
+}
+
+.nav .active{
+color:#198754;
+font-weight:700;
+}
+
+.tab{
+display:none;
+}
+
+.tab.active{
+display:block;
+}
+
+.forecast-box{
+background:linear-gradient(135deg,#0d6efd,#0dcaf0);
+color:#fff;
+padding:18px;
+border-radius:18px;
+}
+
+.forecast-title{
+font-size:13px;
+opacity:.8;
+}
+
+.forecast-value{
+font-size:30px;
+font-weight:800;
+margin-top:5px;
+}
+
+.alert{
+background:#fff3cd;
+border-left:5px solid #ffc107;
+padding:14px;
+border-radius:14px;
+margin-top:12px;
+font-size:12px;
+line-height:1.6;
+}
+
+.executive-grid{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:12px;
+}
+
+.executive-card{
+background:#fff;
+padding:15px;
+border-radius:18px;
+box-shadow:0 5px 15px rgba(0,0,0,.05);
+}
+
+.executive-title{
+font-size:11px;
+color:#666;
+margin-bottom:8px;
+}
+
+.executive-value{
+font-size:22px;
+font-weight:800;
+color:#14532d;
+}
+
+.executive-sub{
+font-size:11px;
+color:#888;
+margin-top:4px;
+}
+
+.footer-space{
+height:100px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+<div class="header">
+
+<div class="header-top">
+<div class="logo">
+<div class="logo-icon">🌍</div>
+<div>
+<div class="logo-title">Hillkoff ESG</div>
+<div class="logo-sub">Enterprise Sustainability Platform</div>
+</div>
+</div>
+
+<div class="live">
+<div class="dot"></div>
+Realtime
+</div>
+</div>
+
+<div class="kpi-grid">
+
+<div class="kpi-card">
+<div class="kpi-label">Carbon Reduction</div>
+<div class="kpi-value" id="carbonValue">0</div>
+<div class="kpi-sub">kg CO₂e</div>
+</div>
+
+<div class="kpi-card">
+<div class="kpi-label">Equivalent Trees</div>
+<div class="kpi-value" id="treeValue">0</div>
+<div class="kpi-sub">ต้นไม้</div>
+</div>
+
+<div class="kpi-card">
+<div class="kpi-label">Total Departments</div>
+<div class="kpi-value" id="deptValue">0</div>
+<div class="kpi-sub">หน่วยงาน</div>
+</div>
+
+<div class="kpi-card">
+<div class="kpi-label">Uploaded Files</div>
+<div class="kpi-value" id="fileValue">0</div>
+<div class="kpi-sub">ไฟล์</div>
+</div>
+
+</div>
+</div>
+
+<div class="content">
+
+<!-- DASHBOARD -->
+<div id="dashboardTab" class="tab active">
+
+<div class="section">
+
+<div class="section-title">
+📈 Executive KPI Dashboard
+</div>
+
+<div class="executive-grid">
+
+<div class="executive-card">
+<div class="executive-title">ESG Score</div>
+<div class="executive-value" id="esgScore">0</div>
+<div class="executive-sub">องค์กรสีเขียว</div>
+</div>
+
+<div class="executive-card">
+<div class="executive-title">Sustainability Index</div>
+<div class="executive-value" id="sustainability">0%</div>
+<div class="executive-sub">คะแนนความยั่งยืน</div>
+</div>
+
+<div class="executive-card">
+<div class="executive-title">Cost Saving</div>
+<div class="executive-value" id="saving">0</div>
+<div class="executive-sub">บาท/ปี</div>
+</div>
+
+<div class="executive-card">
+<div class="executive-title">Forecast Risk</div>
+<div class="executive-value" id="risk">LOW</div>
+<div class="executive-sub">AI วิเคราะห์</div>
+</div>
+
+</div>
+
+</div>
+
+<div class="section">
+
+<div class="section-title">
+📊 Carbon Analytics
+</div>
+
+<div class="card">
+<canvas id="carbonChart"></canvas>
+</div>
+
+</div>
+
+<div class="section">
+
+<div class="section-title">
+🧠 AI Forecast
+</div>
+
+<div class="forecast-box">
+<div class="forecast-title">
+แนวโน้มการใช้ทรัพยากรเดือนหน้า
+</div>
+
+<div class="forecast-value" id="forecastValue">
+0%
+</div>
+
+<div style="margin-top:10px;font-size:12px;line-height:1.7;">
+AI วิเคราะห์จากข้อมูลการเบิกใช้ย้อนหลัง ระบบคาดการณ์ว่าองค์กรมีแนวโน้มการใช้ทรัพยากรเพิ่มขึ้นหรือลดลง
+</div>
+</div>
+
+<div class="alert" id="aiInsight">
+ยังไม่มีข้อมูลเพียงพอสำหรับ AI วิเคราะห์
+</div>
+
+</div>
+
+</div>
+
+<!-- IMPORT -->
+<div id="uploadTab" class="tab">
+
+<div class="section">
+
+<div class="section-title">
+📁 Import Excel Data
+</div>
+
+<div class="card">
+
+<label class="upload-box">
+
+<input type="file" id="excelFile" accept=".xlsx,.xls,.csv">
+
+<div class="upload-icon">📊</div>
+
+<div style="font-weight:700;">
+อัปโหลดไฟล์ Excel
+</div>
+
+<div style="font-size:12px;color:#666;margin-top:6px;">
+รองรับ .xlsx .xls .csv
+</div>
+
+</label>
+
+</div>
+
+</div>
+
+<div class="section">
+
+<div class="section-title">
+📋 Imported Data
+</div>
+
+<div class="card" style="overflow:auto;">
+<table class="table">
+<thead>
+<tr>
+<th>สาขา</th>
+<th>แผนก</th>
+<th>รายการ</th>
+<th>จำนวน</th>
+</tr>
+</thead>
+
+<tbody id="tableBody">
+
+</tbody>
+
+</table>
+</div>
+
+</div>
+
+</div>
+
+<!-- RANK -->
+<div id="rankTab" class="tab">
+
+<div class="section">
+
+<div class="section-title">
+🏆 Branch Ranking
+</div>
+
+<div id="rankingList">
+
+</div>
+
+</div>
+
+</div>
+
+<!-- REPORT -->
+<div id="reportTab" class="tab">
+
+<div class="section">
+
+<div class="section-title">
+📄 ESG Executive Report
+</div>
+
+<div class="card">
+
+<div style="font-size:13px;line-height:1.9;color:#444;">
+
+องค์กรกำลังติดตามตัวชี้วัดด้าน ESG ตามหลักอ้างอิง:
+
+<br><br>
+
+• ISO 14064-1:2018  
+• GHG Protocol Corporate Standard  
+• UN SDG Goal 12  
+• Science Based Targets initiative (SBTi)  
+• WBCSD Sustainability Framework  
+
+<br><br>
+
+ระบบวิเคราะห์:
+<br>
+
+✅ การใช้ทรัพยากร  
+<br>
+✅ แนวโน้มสิ้นเปลือง  
+<br>
+✅ Carbon Footprint  
+<br>
+✅ KPI ระดับผู้บริหาร  
+<br>
+✅ การจัดอันดับสาขา  
+<br>
+✅ Forecast การใช้วัสดุ  
+
+</div>
+
+<button class="btn btn-green" style="margin-top:18px;">
+Export PDF Report
+</button>
+
+<button class="btn btn-blue" style="margin-top:10px;">
+Export Excel Report
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="footer-space"></div>
+
+</div>
+
+<div class="nav">
+
+<button class="active" onclick="showTab('dashboardTab',this)">
+🏠
+<span>Dashboard</span>
+</button>
+
+<button onclick="showTab('uploadTab',this)">
+📁
+<span>Import</span>
+</button>
+
+<button onclick="showTab('rankTab',this)">
+🏆
+<span>Ranking</span>
+</button>
+
+<button onclick="showTab('reportTab',this)">
+📄
+<span>Report</span>
+</button>
+
+</div>
+
+</div>
+
+<script>
+
+let records = JSON.parse(localStorage.getItem('records')) || []
+
+const tableBody = document.getElementById('tableBody')
+
+function saveData(){
+localStorage.setItem('records',JSON.stringify(records))
+}
+
+function renderTable(){
+
+tableBody.innerHTML=''
+
+records.forEach(r=>{
+
+tableBody.innerHTML += `
+<tr>
+<td>${r.branch}</td>
+<td>${r.department}</td>
+<td>${r.item}</td>
+<td>${r.qty}</td>
+</tr>
+`
+
+})
+
+}
+
+function calculateKPI(){
+
+let totalQty = 0
+
+records.forEach(r=>{
+totalQty += Number(r.qty)
+})
+
+const carbon = totalQty * 0.42
+const trees = carbon / 21
+const departments = new Set(records.map(r=>r.department)).size
+const files = records.length
+
+document.getElementById('carbonValue').innerText = carbon.toFixed(1)
+document.getElementById('treeValue').innerText = trees.toFixed(1)
+document.getElementById('deptValue').innerText = departments
+document.getElementById('fileValue').innerText = files
+
+document.getElementById('esgScore').innerText = Math.min(100,Math.round(carbon/10))
+document.getElementById('sustainability').innerText = Math.max(0,100-Math.round(carbon/20)) + '%'
+
+document.getElementById('saving').innerText =
+(Math.max(0,50000-carbon*10)).toLocaleString()
+
+document.getElementById('risk').innerText =
+carbon > 500 ? 'HIGH' : carbon > 200 ? 'MEDIUM' : 'LOW'
+
+forecast(carbon)
+
+ranking(carbon)
+
+renderChart()
+
+}
+
+function forecast(carbon){
+
+let forecast = (carbon*1.12).toFixed(1)
+
+document.getElementById('forecastValue').innerText =
+forecast + ' kg'
+
+let msg = ''
+
+if(carbon > 500){
+
+msg = `
+⚠️ AI ตรวจพบแนวโน้มการใช้ทรัพยากรสูงกว่าค่าเฉลี่ยองค์กร 
+แนะนำให้ลดการสั่งซื้อวัสดุสำนักงาน และเพิ่มการใช้วัสดุ Reuse
+`
+
+}else{
+
+msg = `
+✅ แนวโน้มองค์กรอยู่ในเกณฑ์ดี
+สามารถลด Carbon Footprint ได้ต่อเนื่อง
+`
+
+}
+
+document.getElementById('aiInsight').innerText = msg
+
+}
+
+function ranking(){
+
+const branchMap = {}
+
+records.forEach(r=>{
+
+if(!branchMap[r.branch]){
+branchMap[r.branch]=0
+}
+
+branchMap[r.branch]+=Number(r.qty)
+
+})
+
+const sorted = Object.entries(branchMap)
+.sort((a,b)=>a[1]-b[1])
+
+const rankingList = document.getElementById('rankingList')
+
+rankingList.innerHTML=''
+
+sorted.forEach((r,index)=>{
+
+const carbon = (r[1]*0.42).toFixed(1)
+const tree = (carbon/21).toFixed(1)
+
+rankingList.innerHTML += `
+
+<div class="rank-item">
+
+<div class="rank-number">
+${index+1}
+</div>
+
+<div class="rank-info">
+
+<div class="rank-title">
+${r[0]}
+</div>
+
+<div class="rank-sub">
+ลดคาร์บอนได้ ${carbon} kg CO₂e
+</div>
+
+</div>
+
+<div class="rank-score">
+🌳 ${tree}
+</div>
+
+</div>
+
+`
+
+})
+
+}
+
+function renderChart(){
+
+const ctx = document.getElementById('carbonChart')
+
+const monthly = [12,19,10,22,17,15,20]
+
+new Chart(ctx,{
+type:'line',
+data:{
+labels:['Jan','Feb','Mar','Apr','May','Jun','Jul'],
+datasets:[{
+label:'Carbon',
+data:monthly,
+borderWidth:3,
+tension:.4
+}]
+},
+options:{
+responsive:true
+}
+})
+
+}
+
+document.getElementById('excelFile').addEventListener('change',function(e){
+
+const file = e.target.files[0]
+
+const reader = new FileReader()
+
+reader.onload = function(evt){
+
+const data = new Uint8Array(evt.target.result)
+
+const workbook = XLSX.read(data,{type:'array'})
+
+const sheet = workbook.Sheets[workbook.SheetNames[0]]
+
+const json = XLSX.utils.sheet_to_json(sheet)
+
+json.forEach(row=>{
+
+records.push({
+branch:row.branch || row.Branch || 'สำนักงานใหญ่',
+department:row.department || row.Department || 'Office',
+item:row.item || row.Item || 'Paper',
+qty:row.qty || row.Qty || 0
+})
+
+})
+
+saveData()
+
+renderTable()
+
+calculateKPI()
+
+alert('นำเข้าข้อมูลสำเร็จ')
+
+}
+
+reader.readAsArrayBuffer(file)
+
+})
+
+function showTab(tabId,el){
+
+document.querySelectorAll('.tab').forEach(t=>{
+t.classList.remove('active')
+})
+
+document.getElementById(tabId).classList.add('active')
+
+document.querySelectorAll('.nav button').forEach(b=>{
+b.classList.remove('active')
+})
+
+el.classList.add('active')
+
+}
+
+renderTable()
+calculateKPI()
 
 </script>
 
-<!-- XLSX -->
-<script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
-
-</head>
-
-<body class="bg-gray-100">
-
-<!-- =====================================================
-LOGIN PAGE
-===================================================== -->
-
-<div
-  id="loginPage"
-  class="min-h-screen flex items-center justify-center p-6"
->
-
-  <div class="bg-white w-full max-w-sm rounded-3xl p-8 shadow-2xl">
-
-    <div class="text-center">
-
-      <div class="text-5xl mb-4">
-        ☕
-      </div>
-
-      <div class="text-3xl font-black text-green-800">
-        Hillkoff
-      </div>
-
-      <div class="text-sm text-gray-500 mt-2">
-        ESG Intelligence Platform
-      </div>
-
-    </div>
-
-    <button
-      onclick="loginGoogle()"
-      class="w-full bg-green-700 hover:bg-green-800 transition text-white py-4 rounded-2xl mt-8 font-bold text-lg"
-    >
-      Login with Google
-    </button>
-
-  </div>
-
-</div>
-
-<!-- =====================================================
-APP PAGE
-===================================================== -->
-
-<div id="appPage" class="hidden">
-
-  <!-- TOPBAR -->
-
-  <div class="bg-green-800 text-white p-4 sticky top-0 z-50 shadow-xl">
-
-    <div class="flex justify-between items-center">
-
-      <div>
-        <div class="font-black text-xl">
-          Hillkoff ESG
-        </div>
-
-        <div class="text-xs opacity-80">
-          Enterprise Dashboard
-        </div>
-      </div>
-
-      <div class="flex items-center gap-3">
-
-        <div class="text-right">
-
-          <div
-            id="userName"
-            class="font-bold text-sm"
-          ></div>
-
-          <div
-            id="userEmail"
-            class="text-xs opacity-70"
-          ></div>
-
-        </div>
-
-        <img
-          id="userAvatar"
-          class="w-12 h-12 rounded-full border-2 border-white"
-        />
-
-      </div>
-
-    </div>
-
-  </div>
-
-  <!-- MAIN -->
-
-  <div class="p-4 pb-40 max-w-7xl mx-auto">
-
-    <!-- KPI -->
-
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-
-      <div class="bg-white rounded-3xl p-5 shadow">
-
-        <div class="text-gray-500 text-sm">
-          การใช้วัสดุรวม
-        </div>
-
-        <div
-          id="totalUsage"
-          class="text-4xl font-black text-green-800 mt-2"
-        >
-          0
-        </div>
-
-      </div>
-
-      <div class="bg-white rounded-3xl p-5 shadow">
-
-        <div class="text-gray-500 text-sm">
-          Carbon Footprint
-        </div>
-
-        <div
-          id="totalCO2"
-          class="text-4xl font-black text-red-600 mt-2"
-        >
-          0
-        </div>
-
-      </div>
-
-      <div class="bg-white rounded-3xl p-5 shadow">
-
-        <div class="text-gray-500 text-sm">
-          เทียบเท่าปลูกต้นไม้
-        </div>
-
-        <div
-          id="totalTrees"
-          class="text-4xl font-black text-green-700 mt-2"
-        >
-          0
-        </div>
-
-      </div>
-
-    </div>
-
-    <!-- AI INSIGHT -->
-
-    <div class="bg-white rounded-3xl p-5 shadow mt-5">
-
-      <div class="font-black text-xl mb-3">
-        🤖 AI Executive Insight
-      </div>
-
-      <div
-        id="aiInsight"
-        class="text-gray-700 leading-8"
-      >
-        กำลังวิเคราะห์ข้อมูล...
-      </div>
-
-    </div>
-
-    <!-- IMPORT -->
-
-    <div class="bg-white rounded-3xl p-5 shadow mt-5">
-
-      <div class="font-black text-xl mb-4">
-        📤 Import Excel
-      </div>
-
-      <input
-        type="file"
-        accept=".xlsx,.xls"
-        onchange="importExcel(event)"
-        class="w-full border rounded-2xl p-4"
-      />
-
-      <div class="text-sm text-gray-500 mt-3">
-        รองรับข้อมูล:
-        branch / department / item / amount
-      </div>
-
-    </div>
-
-    <!-- IMAGE -->
-
-    <div class="bg-white rounded-3xl p-5 shadow mt-5">
-
-      <div class="font-black text-xl mb-4">
-        🖼 Upload Evidence
-      </div>
-
-      <input
-        type="file"
-        onchange="uploadImage(event)"
-        class="w-full border rounded-2xl p-4"
-      />
-
-      <img
-        id="uploadedImage"
-        class="mt-4 rounded-2xl w-full"
-      />
-
-    </div>
-
-    <!-- RANKING -->
-
-    <div class="mt-6">
-
-      <div class="font-black text-2xl mb-4">
-        🏆 Branch Ranking
-      </div>
-
-      <div id="rankingList"></div>
-
-    </div>
-
-    <!-- TABLE -->
-
-    <div class="bg-white rounded-3xl p-5 shadow mt-6 overflow-auto">
-
-      <div class="font-black text-xl mb-4">
-        📊 Executive Data Table
-      </div>
-
-      <table class="w-full text-sm">
-
-        <thead>
-
-          <tr class="bg-gray-100">
-
-            <th class="p-2 text-left">สาขา</th>
-            <th class="p-2 text-left">แผนก</th>
-            <th class="p-2 text-left">รายการ</th>
-            <th class="p-2 text-left">จำนวน</th>
-            <th class="p-2 text-left">CO₂e</th>
-            <th class="p-2 text-left">AI</th>
-
-          </tr>
-
-        </thead>
-
-        <tbody id="tableBody"></tbody>
-
-      </table>
-
-    </div>
-
-    <!-- ESG INFO -->
-
-    <div class="bg-white rounded-3xl p-5 shadow mt-6">
-
-      <div class="font-black text-xl mb-4">
-        🌍 ESG Reference Standards
-      </div>
-
-      <div class="space-y-3 text-sm text-gray-700 leading-7">
-
-        <div>
-          • ISO 14064-1:2018
-          การวัดและรายงานก๊าซเรือนกระจกระดับองค์กร
-        </div>
-
-        <div>
-          • GHG Protocol Corporate Standard
-        </div>
-
-        <div>
-          • Science Based Targets initiative (SBTi)
-        </div>
-
-        <div>
-          • UN SDG Goal 12
-          Responsible Consumption and Production
-        </div>
-
-        <div>
-          • Greenhouse Gas Equivalencies Calculator — EPA
-        </div>
-
-      </div>
-
-    </div>
-
-  </div>
-
-  <!-- BOTTOM NAV -->
-
-  <div
-    class="fixed bottom-0 left-0 right-0 bg-white border-t shadow-2xl"
-  >
-
-    <div class="grid grid-cols-5">
-
-      <button class="p-4 text-center">
-        <div>🏠</div>
-        <div class="text-xs">Dashboard</div>
-      </button>
-
-      <button class="p-4 text-center">
-        <div>📊</div>
-        <div class="text-xs">Analytics</div>
-      </button>
-
-      <button class="p-4 text-center">
-        <div>🏆</div>
-        <div class="text-xs">Ranking</div>
-      </button>
-
-      <button class="p-4 text-center">
-        <div>🌍</div>
-        <div class="text-xs">ESG</div>
-      </button>
-
-      <button
-        onclick="logoutApp()"
-        class="p-4 text-center"
-      >
-        <div>🚪</div>
-        <div class="text-xs">Logout</div>
-      </button>
-
-    </div>
-
-  </div>
-
-</div>
-
 </body>
-</html>
+  </html>
