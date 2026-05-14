@@ -1,399 +1,890 @@
-<!DOCTYPE html><html lang="th">
+<!DOCTYPE html>
+<html lang="th">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Hillkoff Zero Waste Platform Enterprise</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <style>
-    body {
-      background: linear-gradient(135deg,#ecfdf5,#f0fdf4,#dcfce7);
-      font-family: Arial, sans-serif;
-    }
-    .glass {
-      background: rgba(255,255,255,0.7);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255,255,255,0.3);
-    }
-    .card-hover:hover {
-      transform: translateY(-4px);
-      transition: .3s;
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+<title>Hillkoff Zero Waste Platform</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+*{
+font-family:'Sarabun',sans-serif;
+}
+
+body{
+background:#eef7f0;
+overflow:hidden;
+}
+
+.glass{
+background:rgba(255,255,255,.75);
+backdrop-filter:blur(16px);
+border:1px solid rgba(255,255,255,.4);
+}
+
+.sidebar-btn{
+transition:.2s;
+}
+
+.sidebar-btn:hover{
+transform:translateX(4px);
+background:#14532d;
+color:white;
+}
+
+.sidebar-active{
+background:#14532d;
+color:white;
+}
+
+.card{
+border-radius:24px;
+background:white;
+box-shadow:0 4px 20px rgba(0,0,0,.06);
+}
+
+.fade{
+animation:fade .25s ease;
+}
+
+@keyframes fade{
+from{
+opacity:0;
+transform:translateY(10px);
+}
+to{
+opacity:1;
+transform:translateY(0px);
+}
+}
+
+.badge{
+padding:4px 10px;
+border-radius:999px;
+font-size:12px;
+font-weight:700;
+}
+
+.green{
+background:#dcfce7;
+color:#166534;
+}
+
+.red{
+background:#fee2e2;
+color:#991b1b;
+}
+
+.blue{
+background:#dbeafe;
+color:#1d4ed8;
+}
+</style>
 </head>
-<body class="min-h-screen text-gray-800">  <!-- HEADER -->  <header class="sticky top-0 z-50 glass shadow-lg">
-    <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-      <div>
-        <h1 class="text-2xl font-black text-green-800">☕ Hillkoff Zero Waste</h1>
-        <p class="text-xs text-green-700">AI ESG Sustainability Platform</p>
-      </div>
-      <div class="flex gap-2">
-        <button class="bg-green-700 text-white px-4 py-2 rounded-xl">Login Gmail</button>
-        <button class="bg-black text-white px-4 py-2 rounded-xl">Admin</button>
-      </div>
-    </div>
-  </header>  <!-- HERO -->  <section class="max-w-7xl mx-auto p-4">
-    <div class="glass rounded-3xl p-8 shadow-xl bg-gradient-to-r from-green-800 to-green-600 text-white">
-      <div class="grid md:grid-cols-2 gap-6 items-center">
-        <div>
-          <h2 class="text-5xl font-black leading-tight">Enterprise ESG Dashboard</h2>
-          <p class="mt-4 text-green-100">
-            ระบบ AI วิเคราะห์ขยะ + Carbon Footprint + ESG Analytics สำหรับ Hillkoff ทุกสาขา
-          </p>
-          <div class="flex flex-wrap gap-2 mt-4">
-            <span class="bg-white/20 px-3 py-1 rounded-full text-sm">ISO 14064</span>
-            <span class="bg-white/20 px-3 py-1 rounded-full text-sm">GHG Protocol</span>
-            <span class="bg-white/20 px-3 py-1 rounded-full text-sm">SDG 12</span>
-            <span class="bg-white/20 px-3 py-1 rounded-full text-sm">Gemini Vision AI</span>
-          </div>
-        </div>
-        <div class="grid grid-cols-2 gap-4">
-          <div class="bg-white/10 rounded-2xl p-5">
-            <div class="text-sm">CO₂e Total</div>
-            <div class="text-4xl font-black">1,245</div>
-            <div class="text-xs">kg CO₂e</div>
-          </div>
-          <div class="bg-white/10 rounded-2xl p-5">
-            <div class="text-sm">Waste Logs</div>
-            <div class="text-4xl font-black">284</div>
-            <div class="text-xs">records</div>
-          </div>
-          <div class="bg-white/10 rounded-2xl p-5">
-            <div class="text-sm">Branches</div>
-            <div class="text-4xl font-black">6</div>
-            <div class="text-xs">Hillkoff</div>
-          </div>
-          <div class="bg-white/10 rounded-2xl p-5">
-            <div class="text-sm">AI Accuracy</div>
-            <div class="text-4xl font-black">94%</div>
-            <div class="text-xs">Gemini Vision</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>  <!-- DASHBOARD -->  <section class="max-w-7xl mx-auto p-4 grid lg:grid-cols-3 gap-6"><!-- LEFT -->
-<div class="lg:col-span-2 space-y-6">
 
-  <!-- BRANCHES -->
-  <div class="glass rounded-3xl p-6 shadow-xl">
-    <div class="flex justify-between items-center mb-4">
-      <h3 class="text-2xl font-bold text-green-800">🌿 Branch Statistics</h3>
-      <button class="bg-green-700 text-white px-4 py-2 rounded-xl">View All</button>
-    </div>
+<body>
 
-    <div class="grid md:grid-cols-3 gap-4">
+<div class="flex h-screen">
 
-      <div class="bg-white rounded-2xl p-5 shadow card-hover border-t-4 border-green-800">
-        <div class="text-3xl">🏢</div>
-        <h4 class="font-bold mt-2">สำนักงานใหญ่</h4>
-        <p class="text-sm text-gray-500">CO₂e 240 kg</p>
-      </div>
+<!-- SIDEBAR -->
+<div class="w-[290px] bg-[#0f3d22] text-white p-5 flex flex-col">
 
-      <div class="bg-white rounded-2xl p-5 shadow card-hover border-t-4 border-green-700">
-        <div class="text-3xl">🐘</div>
-        <h4 class="font-bold mt-2">ช้างเผือก</h4>
-        <p class="text-sm text-gray-500">CO₂e 180 kg</p>
-      </div>
+<div class="flex items-center gap-3 mb-8">
+<div class="text-4xl">☕</div>
+<div>
+<div class="font-extrabold text-2xl">Hillkoff</div>
+<div class="text-sm opacity-80">Zero Waste Platform</div>
+</div>
+</div>
 
-      <div class="bg-white rounded-2xl p-5 shadow card-hover border-t-4 border-green-600">
-        <div class="text-3xl">🎓</div>
-        <h4 class="font-bold mt-2">มหิดล</h4>
-        <p class="text-sm text-gray-500">CO₂e 120 kg</p>
-      </div>
+<div class="space-y-2">
 
-      <div class="bg-white rounded-2xl p-5 shadow card-hover border-t-4 border-green-500">
-        <div class="text-3xl">🌿</div>
-        <h4 class="font-bold mt-2">ป่าแพง</h4>
-        <p class="text-sm text-gray-500">CO₂e 160 kg</p>
-      </div>
+<button onclick="showPage('dashboard')" class="sidebar-btn sidebar-active w-full text-left p-4 rounded-2xl font-bold" id="btn-dashboard">
+📊 Dashboard
+</button>
 
-      <div class="bg-white rounded-2xl p-5 shadow card-hover border-t-4 border-green-400">
-        <div class="text-3xl">🌱</div>
-        <h4 class="font-bold mt-2">ทับเดื่อ</h4>
-        <p class="text-sm text-gray-500">CO₂e 100 kg</p>
-      </div>
+<button onclick="showPage('waste')" class="sidebar-btn w-full text-left p-4 rounded-2xl font-bold" id="btn-waste">
+📝 บันทึกขยะ
+</button>
 
-      <div class="bg-white rounded-2xl p-5 shadow card-hover border-t-4 border-green-300">
-        <div class="text-3xl">☕</div>
-        <h4 class="font-bold mt-2">ราติก้า</h4>
-        <p class="text-sm text-gray-500">CO₂e 80 kg</p>
-      </div>
+<button onclick="showPage('analytics')" class="sidebar-btn w-full text-left p-4 rounded-2xl font-bold" id="btn-analytics">
+📈 Analytics
+</button>
 
-    </div>
-  </div>
+<button onclick="showPage('leaderboard')" class="sidebar-btn w-full text-left p-4 rounded-2xl font-bold" id="btn-leaderboard">
+🏆 Ranking
+</button>
 
-  <!-- CHART -->
-  <div class="glass rounded-3xl p-6 shadow-xl">
-    <div class="flex justify-between items-center mb-4">
-      <h3 class="text-2xl font-bold text-green-800">📊 Analytics</h3>
-      <div class="flex gap-2">
-        <button class="bg-green-100 px-3 py-1 rounded-lg">Daily</button>
-        <button class="bg-green-700 text-white px-3 py-1 rounded-lg">Monthly</button>
-        <button class="bg-green-100 px-3 py-1 rounded-lg">Yearly</button>
-      </div>
-    </div>
+<button onclick="showPage('report')" class="sidebar-btn w-full text-left p-4 rounded-2xl font-bold" id="btn-report">
+📄 รายงาน ESG
+</button>
 
-    <canvas id="chart1" height="120"></canvas>
-  </div>
+<button onclick="showPage('executive')" class="sidebar-btn w-full text-left p-4 rounded-2xl font-bold" id="btn-executive">
+🌍 Executive
+</button>
 
-  <!-- WASTE LOG -->
-  <div class="glass rounded-3xl p-6 shadow-xl">
-    <h3 class="text-2xl font-bold text-green-800 mb-6">📝 Waste Logging System</h3>
+<button onclick="showPage('ai')" class="sidebar-btn w-full text-left p-4 rounded-2xl font-bold" id="btn-ai">
+🤖 Gemini AI
+</button>
 
-    <div class="grid md:grid-cols-2 gap-6">
-
-      <div>
-        <label class="font-bold">1. เลือกสาขา</label>
-        <select class="w-full mt-2 p-3 rounded-xl border">
-          <option>สำนักงานใหญ่</option>
-          <option>ช้างเผือก</option>
-          <option>มหิดล</option>
-          <option>ป่าแพง</option>
-          <option>ทับเดื่อ</option>
-          <option>ราติก้า</option>
-        </select>
-      </div>
-
-      <div>
-        <label class="font-bold">2. ประเภทขยะ</label>
-        <select class="w-full mt-2 p-3 rounded-xl border">
-          <option>กากกาแฟ</option>
-          <option>พลาสติก</option>
-          <option>เศษอาหาร</option>
-          <option>กระดาษ</option>
-          <option>แก้ว</option>
-          <option>อิเล็กทรอนิกส์</option>
-        </select>
-      </div>
-
-      <div>
-        <label class="font-bold">3. ปริมาณ</label>
-        <select class="w-full mt-2 p-3 rounded-xl border">
-          <option>น้อยมาก</option>
-          <option>น้อย</option>
-          <option>ปานกลาง</option>
-          <option>มาก</option>
-        </select>
-      </div>
-
-      <div>
-        <label class="font-bold">4. วิธีจัดการ</label>
-        <select class="w-full mt-2 p-3 rounded-xl border">
-          <option>รีไซเคิล</option>
-          <option>หมักปุ๋ย</option>
-          <option>นำกลับมาใช้ซ้ำ</option>
-          <option>ฝังกลบ</option>
-          <option>เผา</option>
-        </select>
-      </div>
-
-      <div class="md:col-span-2">
-        <label class="font-bold">5. อัปโหลดรูป</label>
-        <input type="file" class="w-full mt-2 p-3 rounded-xl border bg-white" />
-      </div>
-
-    </div>
-
-    <div class="grid md:grid-cols-3 gap-4 mt-6">
-      <div class="bg-green-50 rounded-2xl p-5">
-        <div class="text-sm text-gray-500">AI Verification</div>
-        <div class="text-3xl font-black text-green-700">92%</div>
-      </div>
-
-      <div class="bg-blue-50 rounded-2xl p-5">
-        <div class="text-sm text-gray-500">CO₂e Estimate</div>
-        <div class="text-3xl font-black text-blue-700">24 kg</div>
-      </div>
-
-      <div class="bg-yellow-50 rounded-2xl p-5">
-        <div class="text-sm text-gray-500">ESG Score</div>
-        <div class="text-3xl font-black text-yellow-700">A+</div>
-      </div>
-    </div>
-
-    <button class="mt-6 bg-green-700 hover:bg-green-800 text-white px-6 py-4 rounded-2xl w-full text-lg font-bold shadow-xl">
-      ✅ Save Waste Record
-    </button>
-  </div>
-
-  <!-- REPORTS -->
-  <div class="glass rounded-3xl p-6 shadow-xl">
-    <h3 class="text-2xl font-bold text-green-800 mb-4">📄 ESG Reports</h3>
-
-    <div class="grid md:grid-cols-3 gap-4">
-      <button class="bg-green-700 text-white p-5 rounded-2xl text-lg font-bold shadow-xl">Export PDF</button>
-      <button class="bg-blue-700 text-white p-5 rounded-2xl text-lg font-bold shadow-xl">Export CSV</button>
-      <button class="bg-red-700 text-white p-5 rounded-2xl text-lg font-bold shadow-xl">Send Gmail</button>
-    </div>
-
-    <div class="mt-6 overflow-auto">
-      <table class="w-full text-sm">
-        <thead>
-          <tr class="bg-green-100 text-left">
-            <th class="p-3">Branch</th>
-            <th class="p-3">Waste</th>
-            <th class="p-3">CO₂e</th>
-            <th class="p-3">AI</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr class="border-b">
-            <td class="p-3">สำนักงานใหญ่</td>
-            <td class="p-3">กากกาแฟ</td>
-            <td class="p-3">22kg</td>
-            <td class="p-3">✅</td>
-          </tr>
-          <tr class="border-b">
-            <td class="p-3">ช้างเผือก</td>
-            <td class="p-3">พลาสติก</td>
-            <td class="p-3">18kg</td>
-            <td class="p-3">✅</td>
-          </tr>
-          <tr class="border-b">
-            <td class="p-3">มหิดล</td>
-            <td class="p-3">เศษอาหาร</td>
-            <td class="p-3">10kg</td>
-            <td class="p-3">⚠️</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
+<button onclick="showPage('setting')" class="sidebar-btn w-full text-left p-4 rounded-2xl font-bold" id="btn-setting">
+⚙️ ตั้งค่า
+</button>
 
 </div>
 
-<!-- RIGHT -->
+<div class="mt-auto">
+
+<div class="glass rounded-3xl p-4 text-black">
+
+<div class="font-bold text-sm mb-2">
+🌱 Carbon Footprint
+</div>
+
+<div class="text-3xl font-extrabold text-green-700" id="totalCO2">
+124.6
+</div>
+
+<div class="text-xs opacity-70">
+kg CO₂e ทั้งองค์กร
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- MAIN -->
+<div class="flex-1 overflow-hidden">
+
+<!-- TOPBAR -->
+<div class="h-[85px] bg-white flex items-center justify-between px-8 border-b">
+
+<div>
+
+<div class="text-3xl font-extrabold text-[#14532d]">
+Hillkoff ESG Platform
+</div>
+
+<div class="text-sm text-gray-500">
+ISO 14064 · GHG Protocol · SDG 12
+</div>
+
+</div>
+
+<div class="flex items-center gap-4">
+
+<div class="text-right">
+<div class="font-bold">
+ผู้ดูแลระบบ
+</div>
+<div class="text-sm text-gray-500">
+admin@hillkoff.com
+</div>
+</div>
+
+<img src="https://i.pravatar.cc/100" class="w-14 h-14 rounded-full">
+
+</div>
+
+</div>
+
+<!-- CONTENT -->
+<div class="h-[calc(100vh-85px)] overflow-auto p-8">
+
+<!-- DASHBOARD -->
+<div id="dashboard" class="page fade">
+
+<div class="grid grid-cols-4 gap-6 mb-6">
+
+<div class="card p-6">
+<div class="text-gray-500 text-sm">
+CO₂e รวม
+</div>
+<div class="text-4xl font-extrabold text-green-700 mt-2">
+124.6
+</div>
+<div class="text-sm mt-2">
+kg CO₂e
+</div>
+</div>
+
+<div class="card p-6">
+<div class="text-gray-500 text-sm">
+รายการวันนี้
+</div>
+<div class="text-4xl font-extrabold text-blue-700 mt-2">
+68
+</div>
+<div class="text-sm mt-2">
+Waste Logs
+</div>
+</div>
+
+<div class="card p-6">
+<div class="text-gray-500 text-sm">
+AI Verified
+</div>
+<div class="text-4xl font-extrabold text-purple-700 mt-2">
+92%
+</div>
+<div class="text-sm mt-2">
+Gemini Accuracy
+</div>
+</div>
+
+<div class="card p-6">
+<div class="text-gray-500 text-sm">
+รีไซเคิล
+</div>
+<div class="text-4xl font-extrabold text-orange-600 mt-2">
+71%
+</div>
+<div class="text-sm mt-2">
+Recycling Rate
+</div>
+</div>
+
+</div>
+
+<div class="grid grid-cols-3 gap-6">
+
+<div class="card p-6 col-span-2">
+
+<div class="flex items-center justify-between mb-5">
+
+<div class="font-bold text-xl">
+📈 แนวโน้ม Carbon Footprint
+</div>
+
+<select class="border rounded-xl px-4 py-2">
+<option>รายวัน</option>
+<option>รายเดือน</option>
+<option>รายปี</option>
+</select>
+
+</div>
+
+<canvas id="chart1"></canvas>
+
+</div>
+
+<div class="card p-6">
+
+<div class="font-bold text-xl mb-5">
+🏢 สรุปแต่ละสาขา
+</div>
+
+<div class="space-y-4">
+
+<div>
+<div class="flex justify-between text-sm mb-1">
+<span>สำนักงานใหญ่</span>
+<span>32kg</span>
+</div>
+<div class="w-full bg-gray-100 h-3 rounded-full">
+<div class="bg-green-700 h-3 rounded-full w-[82%]"></div>
+</div>
+</div>
+
+<div>
+<div class="flex justify-between text-sm mb-1">
+<span>ช้างเผือก</span>
+<span>28kg</span>
+</div>
+<div class="w-full bg-gray-100 h-3 rounded-full">
+<div class="bg-green-600 h-3 rounded-full w-[70%]"></div>
+</div>
+</div>
+
+<div>
+<div class="flex justify-between text-sm mb-1">
+<span>มหิดล</span>
+<span>21kg</span>
+</div>
+<div class="w-full bg-gray-100 h-3 rounded-full">
+<div class="bg-green-500 h-3 rounded-full w-[55%]"></div>
+</div>
+</div>
+
+<div>
+<div class="flex justify-between text-sm mb-1">
+<span>ราติก้า</span>
+<span>16kg</span>
+</div>
+<div class="w-full bg-gray-100 h-3 rounded-full">
+<div class="bg-green-400 h-3 rounded-full w-[38%]"></div>
+</div>
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="card p-6 mt-6">
+
+<div class="font-bold text-xl mb-5">
+🕒 รายการล่าสุด
+</div>
+
+<div class="space-y-4">
+
+<div class="flex items-center justify-between border-b pb-3">
+
+<div class="flex items-center gap-4">
+<div class="text-3xl">☕</div>
+<div>
+<div class="font-bold">
+สำนักงานใหญ่ · กากกาแฟ
+</div>
+<div class="text-sm text-gray-500">
+5 นาทีที่แล้ว
+</div>
+</div>
+</div>
+
+<div class="flex items-center gap-3">
+
+<div class="badge green">
+AI Verified
+</div>
+
+<div class="font-bold text-green-700">
+1.4kg
+</div>
+
+</div>
+
+</div>
+
+<div class="flex items-center justify-between border-b pb-3">
+
+<div class="flex items-center gap-4">
+<div class="text-3xl">🧴</div>
+<div>
+<div class="font-bold">
+ช้างเผือก · พลาสติก
+</div>
+<div class="text-sm text-gray-500">
+12 นาทีที่แล้ว
+</div>
+</div>
+</div>
+
+<div class="flex items-center gap-3">
+
+<div class="badge blue">
+Recycled
+</div>
+
+<div class="font-bold text-blue-700">
+3.8kg
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- WASTE -->
+<div id="waste" class="page hidden fade">
+
+<div class="card p-8 max-w-5xl mx-auto">
+
+<div class="text-3xl font-extrabold text-[#14532d] mb-2">
+📝 ระบบบันทึกขยะ
+</div>
+
+<div class="text-gray-500 mb-8">
+5 ขั้นตอน Zero Waste Logging
+</div>
+
+<div class="grid grid-cols-5 gap-4 mb-8">
+
+<div class="bg-green-700 text-white rounded-2xl p-4 text-center font-bold">
+1<br>สาขา
+</div>
+
+<div class="bg-green-100 rounded-2xl p-4 text-center font-bold">
+2<br>ประเภท
+</div>
+
+<div class="bg-green-100 rounded-2xl p-4 text-center font-bold">
+3<br>ปริมาณ
+</div>
+
+<div class="bg-green-100 rounded-2xl p-4 text-center font-bold">
+4<br>จัดการ
+</div>
+
+<div class="bg-green-100 rounded-2xl p-4 text-center font-bold">
+5<br>AI
+</div>
+
+</div>
+
+<div class="mb-8">
+
+<div class="font-bold text-xl mb-4">
+เลือกสาขา
+</div>
+
+<div class="grid grid-cols-3 gap-4">
+
+<button class="border-2 border-green-700 bg-green-50 rounded-3xl p-6 text-center hover:scale-105 transition">
+<div class="text-4xl mb-3">🏢</div>
+<div class="font-bold">
+สำนักงานใหญ่
+</div>
+</button>
+
+<button class="border rounded-3xl p-6 text-center hover:scale-105 transition">
+<div class="text-4xl mb-3">🐘</div>
+<div class="font-bold">
+ช้างเผือก
+</div>
+</button>
+
+<button class="border rounded-3xl p-6 text-center hover:scale-105 transition">
+<div class="text-4xl mb-3">🎓</div>
+<div class="font-bold">
+มหิดล
+</div>
+</button>
+
+<button class="border rounded-3xl p-6 text-center hover:scale-105 transition">
+<div class="text-4xl mb-3">🌿</div>
+<div class="font-bold">
+ป่าแพง
+</div>
+</button>
+
+<button class="border rounded-3xl p-6 text-center hover:scale-105 transition">
+<div class="text-4xl mb-3">🌱</div>
+<div class="font-bold">
+ทับเดื่อ
+</div>
+</button>
+
+<button class="border rounded-3xl p-6 text-center hover:scale-105 transition">
+<div class="text-4xl mb-3">☕</div>
+<div class="font-bold">
+ราติก้า
+</div>
+</button>
+
+</div>
+
+</div>
+
+<div class="flex justify-end">
+<button class="bg-green-700 hover:bg-green-800 text-white px-8 py-4 rounded-2xl font-bold text-lg">
+ถัดไป →
+</button>
+</div>
+
+</div>
+
+</div>
+
+<!-- ANALYTICS -->
+<div id="analytics" class="page hidden fade">
+
+<div class="grid grid-cols-2 gap-6">
+
+<div class="card p-6">
+<div class="font-bold text-2xl mb-4">
+📈 Analytics
+</div>
+<canvas id="chart2"></canvas>
+</div>
+
+<div class="card p-6">
+<div class="font-bold text-2xl mb-4">
+♻️ Recycling Rate
+</div>
+<canvas id="chart3"></canvas>
+</div>
+
+</div>
+
+</div>
+
+<!-- LEADERBOARD -->
+<div id="leaderboard" class="page hidden fade">
+
+<div class="card p-8">
+
+<div class="text-3xl font-extrabold mb-6">
+🏆 Green Leaderboard
+</div>
+
+<div class="space-y-5">
+
+<div class="flex items-center justify-between bg-yellow-50 rounded-3xl p-6">
+<div class="flex items-center gap-5">
+<div class="text-5xl">🥇</div>
+<div>
+<div class="font-bold text-2xl">
+สำนักงานใหญ่
+</div>
+<div class="text-gray-500">
+ลด CO₂e ได้ดีที่สุด
+</div>
+</div>
+</div>
+<div class="text-right">
+<div class="text-3xl font-extrabold text-green-700">
+12kg
+</div>
+<div class="text-sm">
+CO₂e Saved
+</div>
+</div>
+</div>
+
+<div class="flex items-center justify-between bg-gray-50 rounded-3xl p-6">
+<div class="flex items-center gap-5">
+<div class="text-5xl">🥈</div>
+<div>
+<div class="font-bold text-2xl">
+ช้างเผือก
+</div>
+<div class="text-gray-500">
+อันดับ 2
+</div>
+</div>
+</div>
+<div class="text-right">
+<div class="text-3xl font-extrabold text-green-700">
+9kg
+</div>
+</div>
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- REPORT -->
+<div id="report" class="page hidden fade">
+
+<div class="grid grid-cols-3 gap-6">
+
+<div class="card p-8">
+
+<div class="text-5xl mb-4">
+📄
+</div>
+
+<div class="font-bold text-2xl mb-2">
+Export PDF
+</div>
+
+<div class="text-gray-500 mb-6">
+รายงานมาตรฐาน ISO 14064
+</div>
+
+<button class="w-full bg-green-700 hover:bg-green-800 text-white p-4 rounded-2xl font-bold">
+ดาวน์โหลด PDF
+</button>
+
+</div>
+
+<div class="card p-8">
+
+<div class="text-5xl mb-4">
+📊
+</div>
+
+<div class="font-bold text-2xl mb-2">
+Export Excel
+</div>
+
+<div class="text-gray-500 mb-6">
+สำหรับผู้บริหาร ESG
+</div>
+
+<button class="w-full bg-blue-700 hover:bg-blue-800 text-white p-4 rounded-2xl font-bold">
+Export CSV
+</button>
+
+</div>
+
+<div class="card p-8">
+
+<div class="text-5xl mb-4">
+📧
+</div>
+
+<div class="font-bold text-2xl mb-2">
+Gmail Report
+</div>
+
+<div class="text-gray-500 mb-6">
+ส่งรายงานอัตโนมัติ
+</div>
+
+<button class="w-full bg-red-600 hover:bg-red-700 text-white p-4 rounded-2xl font-bold">
+ส่ง Email
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- EXECUTIVE -->
+<div id="executive" class="page hidden fade">
+
+<div class="card p-8">
+
+<div class="text-3xl font-extrabold mb-6">
+🌍 Executive Dashboard
+</div>
+
+<div class="grid grid-cols-4 gap-6">
+
+<div class="bg-green-50 rounded-3xl p-6">
+<div class="text-sm text-gray-500">
+Carbon Reduction
+</div>
+<div class="text-4xl font-extrabold text-green-700 mt-3">
+-18%
+</div>
+</div>
+
+<div class="bg-blue-50 rounded-3xl p-6">
+<div class="text-sm text-gray-500">
+Waste Recycled
+</div>
+<div class="text-4xl font-extrabold text-blue-700 mt-3">
+71%
+</div>
+</div>
+
+<div class="bg-orange-50 rounded-3xl p-6">
+<div class="text-sm text-gray-500">
+ESG Score
+</div>
+<div class="text-4xl font-extrabold text-orange-600 mt-3">
+92
+</div>
+</div>
+
+<div class="bg-purple-50 rounded-3xl p-6">
+<div class="text-sm text-gray-500">
+AI Accuracy
+</div>
+<div class="text-4xl font-extrabold text-purple-700 mt-3">
+94%
+</div>
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- AI -->
+<div id="ai" class="page hidden fade">
+
+<div class="card p-8">
+
+<div class="text-3xl font-extrabold mb-6">
+🤖 Gemini Vision AI
+</div>
+
+<div class="grid grid-cols-2 gap-8">
+
+<div>
+
+<div class="border-2 border-dashed rounded-3xl h-[320px] flex items-center justify-center text-gray-400 text-xl">
+📷 Upload Waste Image
+</div>
+
+<button class="w-full mt-5 bg-green-700 hover:bg-green-800 text-white p-4 rounded-2xl font-bold">
+วิเคราะห์ด้วย AI
+</button>
+
+</div>
+
+<div>
+
+<div class="bg-green-50 rounded-3xl p-6">
+
+<div class="font-bold text-2xl mb-5">
+ผลวิเคราะห์
+</div>
+
+<div class="space-y-4">
+
+<div class="flex justify-between">
+<span>ประเภท:</span>
+<b>กากกาแฟ</b>
+</div>
+
+<div class="flex justify-between">
+<span>AI Confidence:</span>
+<b>94%</b>
+</div>
+
+<div class="flex justify-between">
+<span>AI Result:</span>
+<span class="badge green">Verified</span>
+</div>
+
+<div class="flex justify-between">
+<span>Carbon:</span>
+<b>1.4kg CO₂e</b>
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- SETTING -->
+<div id="setting" class="page hidden fade">
+
+<div class="card p-8 max-w-4xl">
+
+<div class="text-3xl font-extrabold mb-6">
+⚙️ ตั้งค่าระบบ
+</div>
+
 <div class="space-y-6">
 
-  <!-- LEADERBOARD -->
-  <div class="glass rounded-3xl p-6 shadow-xl">
-    <h3 class="text-2xl font-bold text-green-800 mb-4">🏆 Leaderboard</h3>
+<div>
+<div class="font-bold mb-2">
+Gemini API Key
+</div>
+<input class="w-full border rounded-2xl p-4" placeholder="ใส่ Gemini API Key">
+</div>
 
-    <div class="space-y-4">
+<div>
+<div class="font-bold mb-2">
+Firebase URL
+</div>
+<input class="w-full border rounded-2xl p-4" placeholder="Firebase URL">
+</div>
 
-      <div class="bg-yellow-50 rounded-2xl p-4 flex items-center justify-between">
-        <div>
-          <div class="font-bold">🥇 ช้างเผือก</div>
-          <div class="text-sm text-gray-500">Lowest CO₂e</div>
-        </div>
-        <div class="text-2xl font-black text-yellow-700">98</div>
-      </div>
+<div>
+<div class="font-bold mb-2">
+Database
+</div>
+<select class="w-full border rounded-2xl p-4">
+<option>Firebase</option>
+<option>Supabase</option>
+</select>
+</div>
 
-      <div class="bg-gray-50 rounded-2xl p-4 flex items-center justify-between">
-        <div>
-          <div class="font-bold">🥈 ราติก้า</div>
-          <div class="text-sm text-gray-500">Recycling Rate</div>
-        </div>
-        <div class="text-2xl font-black text-gray-700">92%</div>
-      </div>
-
-      <div class="bg-orange-50 rounded-2xl p-4 flex items-center justify-between">
-        <div>
-          <div class="font-bold">🥉 ทับเดื่อ</div>
-          <div class="text-sm text-gray-500">Waste Reduction</div>
-        </div>
-        <div class="text-2xl font-black text-orange-700">84%</div>
-      </div>
-
-    </div>
-  </div>
-
-  <!-- AI ALERT -->
-  <div class="glass rounded-3xl p-6 shadow-xl">
-    <h3 class="text-2xl font-bold text-red-700 mb-4">🚨 Smart Alerts</h3>
-
-    <div class="space-y-4">
-      <div class="bg-red-50 border border-red-200 rounded-2xl p-4">
-        <div class="font-bold text-red-700">CO₂e Spike</div>
-        <div class="text-sm">สำนักงานใหญ่มีปริมาณ CO₂e สูงขึ้น 22%</div>
-      </div>
-
-      <div class="bg-yellow-50 border border-yellow-200 rounded-2xl p-4">
-        <div class="font-bold text-yellow-700">AI Mismatch</div>
-        <div class="text-sm">Gemini พบประเภทขยะไม่ตรงกับข้อมูล</div>
-      </div>
-
-      <div class="bg-blue-50 border border-blue-200 rounded-2xl p-4">
-        <div class="font-bold text-blue-700">Forecast</div>
-        <div class="text-sm">คาดการณ์ขยะเพิ่มขึ้น 8% เดือนหน้า</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- EXECUTIVE KPI -->
-  <div class="glass rounded-3xl p-6 shadow-xl">
-    <h3 class="text-2xl font-bold text-green-800 mb-4">📈 Executive KPI</h3>
-
-    <div class="space-y-4">
-      <div>
-        <div class="flex justify-between text-sm mb-1">
-          <span>Carbon Reduction</span>
-          <span>78%</span>
-        </div>
-        <div class="w-full bg-gray-200 rounded-full h-4">
-          <div class="bg-green-700 h-4 rounded-full" style="width:78%"></div>
-        </div>
-      </div>
-
-      <div>
-        <div class="flex justify-between text-sm mb-1">
-          <span>Recycling Rate</span>
-          <span>91%</span>
-        </div>
-        <div class="w-full bg-gray-200 rounded-full h-4">
-          <div class="bg-blue-700 h-4 rounded-full" style="width:91%"></div>
-        </div>
-      </div>
-
-      <div>
-        <div class="flex justify-between text-sm mb-1">
-          <span>ESG Performance</span>
-          <span>96%</span>
-        </div>
-        <div class="w-full bg-gray-200 rounded-full h-4">
-          <div class="bg-yellow-500 h-4 rounded-full" style="width:96%"></div>
-        </div>
-      </div>
-    </div>
-  </div>
+<button class="bg-green-700 hover:bg-green-800 text-white px-8 py-4 rounded-2xl font-bold">
+บันทึกการตั้งค่า
+</button>
 
 </div>
 
-  </section>  <!-- FOOTER -->  <footer class="mt-10 bg-green-900 text-white p-8 text-center">
-    <h3 class="text-2xl font-black">🌍 Hillkoff Sustainability Platform</h3>
-    <p class="mt-2 text-green-200">
-      AI-powered ESG + Sustainability Platform ระดับองค์กรจริง
-    </p>
-    <div class="flex justify-center gap-4 mt-4 flex-wrap">
-      <span>ISO 14064</span>
-      <span>GHG Protocol</span>
-      <span>WEEE</span>
-      <span>SDG 12</span>
-      <span>Gemini Vision AI</span>
-    </div>
-  </footer>  <script>
-    const ctx = document.getElementById('chart1');
+</div>
 
-    new Chart(ctx, {
-      type: 'bar',
-      data: {
-        labels: ['HQ','CPK','MHD','PPG','TDE','RTC'],
-        datasets: [{
-          label: 'CO₂e',
-          data: [240,180,120,160,100,80],
-          borderWidth: 1
-        }]
-      },
-      options: {
-        responsive: true,
-        plugins: {
-          legend: {
-            display: true
-          }
-        }
-      }
-    });
+</div>
 
-    console.log('Hillkoff Zero Waste Platform Loaded');
-  </script></body>
-        </html>
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+function showPage(page){
+
+document.querySelectorAll('.page').forEach(p=>{
+p.classList.add('hidden')
+})
+
+document.getElementById(page).classList.remove('hidden')
+
+document.querySelectorAll('.sidebar-btn').forEach(btn=>{
+btn.classList.remove('sidebar-active')
+})
+
+document.getElementById('btn-'+page).classList.add('sidebar-active')
+
+}
+
+new Chart(document.getElementById('chart1'),{
+type:'line',
+data:{
+labels:['ม.ค','ก.พ','มี.ค','เม.ย','พ.ค','มิ.ย'],
+datasets:[{
+label:'CO₂e',
+data:[12,19,9,15,7,11],
+borderColor:'#166534',
+backgroundColor:'rgba(22,101,52,.1)',
+fill:true,
+tension:.4
+}]
+}
+})
+
+new Chart(document.getElementById('chart2'),{
+type:'bar',
+data:{
+labels:['HQ','CPK','MHD','RTC'],
+datasets:[{
+label:'Waste',
+data:[12,9,14,7],
+backgroundColor:[
+'#166534',
+'#15803d',
+'#22c55e',
+'#4ade80'
+]
+}]
+}
+})
+
+new Chart(document.getElementById('chart3'),{
+type:'doughnut',
+data:{
+labels:['Recycle','Landfill','Compost'],
+datasets:[{
+data:[71,18,11],
+backgroundColor:[
+'#166534',
+'#dc2626',
+'#2563eb'
+]
+}]
+}
+})
+
+</script>
+
+</body>
+  </html>
