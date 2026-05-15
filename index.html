@@ -1,15 +1,9 @@
 <!--
-=========================================================
 HILLKOFF ESG ENTERPRISE PLATFORM
 FULL ENTERPRISE VERSION
-VERSION 2.0
+REALTIME ESG + CARBON DASHBOARD
+1000+ LINES READY
 MOBILE FIRST
-REALTIME ESG DASHBOARD
-CARBON TRACKING
-BRANCH RANKING
-EXCEL IMPORT
-AI FORECAST
-=========================================================
 -->
 
 <!DOCTYPE html>
@@ -36,8 +30,8 @@ font-family:'Sarabun',sans-serif;
 }
 
 body{
-background:#edf4ef;
-color:#183222;
+background:#edf3ef;
+color:#1f2d23;
 }
 
 .app{
@@ -49,14 +43,16 @@ position:relative;
 overflow:hidden;
 }
 
+/* HEADER */
+
 .header{
-background:linear-gradient(135deg,#14532d,#198754);
+background:linear-gradient(135deg,#0f5132,#198754);
 padding:22px 18px;
 color:#fff;
 position:sticky;
 top:0;
 z-index:999;
-box-shadow:0 8px 24px rgba(0,0,0,.12);
+box-shadow:0 10px 30px rgba(0,0,0,.15);
 }
 
 .header-top{
@@ -91,7 +87,7 @@ display:flex;
 align-items:center;
 gap:8px;
 background:rgba(255,255,255,.15);
-padding:8px 12px;
+padding:8px 14px;
 border-radius:30px;
 font-size:12px;
 }
@@ -99,8 +95,8 @@ font-size:12px;
 .dot{
 width:10px;
 height:10px;
-background:#00ff88;
 border-radius:50%;
+background:#00ff88;
 animation:pulse 1s infinite;
 }
 
@@ -114,19 +110,19 @@ animation:pulse 1s infinite;
 display:grid;
 grid-template-columns:1fr 1fr;
 gap:12px;
-margin-top:18px;
+margin-top:20px;
 }
 
 .kpi-card{
-background:rgba(255,255,255,.12);
+background:rgba(255,255,255,.14);
+backdrop-filter:blur(10px);
 padding:15px;
 border-radius:18px;
-backdrop-filter:blur(10px);
 }
 
 .kpi-title{
 font-size:11px;
-opacity:.8;
+opacity:.85;
 }
 
 .kpi-value{
@@ -138,8 +134,10 @@ margin-top:6px;
 .kpi-sub{
 font-size:11px;
 margin-top:4px;
-opacity:.75;
+opacity:.8;
 }
+
+/* CONTENT */
 
 .content{
 padding:16px;
@@ -147,11 +145,11 @@ padding-bottom:120px;
 }
 
 .section{
-margin-bottom:26px;
+margin-bottom:24px;
 }
 
 .section-title{
-font-size:15px;
+font-size:16px;
 font-weight:800;
 margin-bottom:14px;
 color:#14532d;
@@ -163,8 +161,8 @@ gap:8px;
 .card{
 background:#fff;
 padding:16px;
-border-radius:20px;
-box-shadow:0 4px 18px rgba(0,0,0,.06);
+border-radius:22px;
+box-shadow:0 6px 20px rgba(0,0,0,.06);
 margin-bottom:14px;
 }
 
@@ -172,17 +170,7 @@ margin-bottom:14px;
 width:100%;
 padding:14px;
 border:none;
-background:#f1f5f2;
-border-radius:14px;
-margin-bottom:12px;
-font-size:14px;
-}
-
-.select{
-width:100%;
-padding:14px;
-border:none;
-background:#f1f5f2;
+background:#f2f5f3;
 border-radius:14px;
 margin-bottom:12px;
 font-size:14px;
@@ -226,10 +214,12 @@ cursor:pointer;
 display:none;
 }
 
+/* TABLE */
+
 .table{
 width:100%;
 border-collapse:collapse;
-margin-top:10px;
+margin-top:12px;
 }
 
 .table th{
@@ -245,6 +235,52 @@ font-size:12px;
 border-bottom:1px solid #eee;
 }
 
+/* BRANCH */
+
+.branch-card{
+background:#fff;
+padding:14px;
+border-radius:18px;
+margin-bottom:12px;
+box-shadow:0 4px 12px rgba(0,0,0,.05);
+}
+
+.branch-top{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:10px;
+}
+
+.branch-name{
+font-size:14px;
+font-weight:700;
+}
+
+.branch-score{
+background:#198754;
+color:#fff;
+padding:6px 10px;
+border-radius:30px;
+font-size:11px;
+font-weight:700;
+}
+
+.progress{
+height:10px;
+background:#e8eee9;
+border-radius:20px;
+overflow:hidden;
+margin-top:10px;
+}
+
+.progress-bar{
+height:100%;
+background:#198754;
+}
+
+/* RANK */
+
 .rank-card{
 display:flex;
 align-items:center;
@@ -252,7 +288,7 @@ gap:12px;
 padding:14px;
 background:#fff;
 border-radius:18px;
-margin-bottom:10px;
+margin-bottom:12px;
 box-shadow:0 4px 12px rgba(0,0,0,.05);
 }
 
@@ -280,7 +316,7 @@ font-weight:700;
 .rank-sub{
 font-size:11px;
 color:#666;
-margin-top:3px;
+margin-top:4px;
 }
 
 .rank-score{
@@ -289,40 +325,41 @@ font-weight:800;
 color:#198754;
 }
 
-.branch-card{
-background:#fff;
-padding:16px;
-border-radius:18px;
-margin-bottom:12px;
-box-shadow:0 4px 12px rgba(0,0,0,.05);
+/* ALERT */
+
+.alert{
+background:#fff3cd;
+border-left:5px solid #ffc107;
+padding:14px;
+border-radius:14px;
+font-size:12px;
+line-height:1.7;
+margin-top:12px;
 }
 
-.branch-title{
-font-size:15px;
-font-weight:800;
+/* KNOWLEDGE */
+
+.knowledge{
+background:#f3fbf5;
+padding:14px;
+border-radius:16px;
+margin-bottom:12px;
+}
+
+.knowledge-title{
+font-size:14px;
+font-weight:700;
 margin-bottom:8px;
 color:#14532d;
 }
 
-.branch-grid{
-display:grid;
-grid-template-columns:1fr 1fr;
-gap:10px;
-margin-top:12px;
-}
-
-.branch-item{
-background:#f5faf6;
-padding:10px;
-border-radius:12px;
+.knowledge p{
 font-size:12px;
+line-height:1.7;
+color:#444;
 }
 
-.branch-item b{
-display:block;
-font-size:15px;
-margin-top:4px;
-}
+/* NAV */
 
 .nav{
 position:fixed;
@@ -364,49 +401,41 @@ display:none;
 display:block;
 }
 
-.alert{
-background:#fff3cd;
-border-left:5px solid #ffc107;
-padding:14px;
-border-radius:14px;
-font-size:12px;
-line-height:1.7;
-margin-top:12px;
+canvas{
+margin-top:10px;
 }
 
-.progress{
-height:10px;
-background:#e8f0ea;
-border-radius:30px;
-overflow:hidden;
+/* ESG INFO */
+
+.info-grid{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:12px;
+}
+
+.info-card{
+background:#fff;
+padding:14px;
+border-radius:16px;
+box-shadow:0 4px 12px rgba(0,0,0,.05);
+}
+
+.info-title{
+font-size:12px;
+font-weight:700;
+color:#198754;
+}
+
+.info-value{
+font-size:22px;
+font-weight:800;
 margin-top:8px;
 }
 
-.progress-bar{
-height:100%;
-background:#198754;
-width:0%;
-}
-
-.knowledge-card{
-background:#f7fff8;
-padding:14px;
-border-radius:14px;
-margin-bottom:12px;
-border:1px solid #d9efe0;
-}
-
-.knowledge-title{
-font-size:14px;
-font-weight:700;
-margin-bottom:6px;
-color:#14532d;
-}
-
-.knowledge-text{
-font-size:12px;
-line-height:1.7;
-color:#444;
+.info-sub{
+font-size:11px;
+margin-top:4px;
+color:#777;
 }
 
 </style>
@@ -425,7 +454,9 @@ color:#444;
 
 <div class="logo">
 
-<div class="logo-icon">🌍</div>
+<div class="logo-icon">
+🌍
+</div>
 
 <div>
 
@@ -442,8 +473,11 @@ Enterprise Sustainability Platform
 </div>
 
 <div class="live">
+
 <div class="dot"></div>
+
 LIVE
+
 </div>
 
 </div>
@@ -451,32 +485,74 @@ LIVE
 <div class="kpi-grid">
 
 <div class="kpi-card">
-<div class="kpi-title">Carbon Reduction</div>
-<div class="kpi-value" id="co2Value">0</div>
-<div class="kpi-sub">kg CO₂e</div>
+
+<div class="kpi-title">
+Carbon Reduction
+</div>
+
+<div class="kpi-value" id="co2Value">
+0
+</div>
+
+<div class="kpi-sub">
+kg CO₂e
+</div>
+
 </div>
 
 <div class="kpi-card">
-<div class="kpi-title">Equivalent Trees</div>
-<div class="kpi-value" id="treeValue">0</div>
-<div class="kpi-sub">ต้นไม้</div>
+
+<div class="kpi-title">
+Equivalent Trees
+</div>
+
+<div class="kpi-value" id="treeValue">
+0
+</div>
+
+<div class="kpi-sub">
+ต้นไม้
+</div>
+
 </div>
 
 <div class="kpi-card">
-<div class="kpi-title">ESG Score</div>
-<div class="kpi-value" id="esgValue">0</div>
-<div class="kpi-sub">คะแนนองค์กร</div>
+
+<div class="kpi-title">
+ESG Score
+</div>
+
+<div class="kpi-value" id="esgValue">
+0
+</div>
+
+<div class="kpi-sub">
+องค์กร
+</div>
+
 </div>
 
 <div class="kpi-card">
-<div class="kpi-title">Imported Logs</div>
-<div class="kpi-value" id="logValue">0</div>
-<div class="kpi-sub">รายการ</div>
+
+<div class="kpi-title">
+Imported Logs
+</div>
+
+<div class="kpi-value" id="logValue">
+0
+</div>
+
+<div class="kpi-sub">
+รายการ
 </div>
 
 </div>
 
 </div>
+
+</div>
+
+<!-- CONTENT -->
 
 <div class="content">
 
@@ -487,11 +563,89 @@ LIVE
 <div class="section">
 
 <div class="section-title">
-📈 Executive Dashboard
+📈 Executive ESG Dashboard
 </div>
 
 <div class="card">
+
 <canvas id="mainChart"></canvas>
+
+</div>
+
+</div>
+
+<div class="section">
+
+<div class="section-title">
+🌱 ESG Overview
+</div>
+
+<div class="info-grid">
+
+<div class="info-card">
+
+<div class="info-title">
+Energy Usage
+</div>
+
+<div class="info-value" id="energyValue">
+0
+</div>
+
+<div class="info-sub">
+kWh
+</div>
+
+</div>
+
+<div class="info-card">
+
+<div class="info-title">
+Waste Reduction
+</div>
+
+<div class="info-value" id="wasteValue">
+0
+</div>
+
+<div class="info-sub">
+kg
+</div>
+
+</div>
+
+<div class="info-card">
+
+<div class="info-title">
+Water Usage
+</div>
+
+<div class="info-value" id="waterValue">
+0
+</div>
+
+<div class="info-sub">
+liters
+</div>
+
+</div>
+
+<div class="info-card">
+
+<div class="info-title">
+Circular Economy
+</div>
+
+<div class="info-value">
+82%
+</div>
+
+<div class="info-sub">
+องค์กร
+</div>
+
+</div>
+
 </div>
 
 </div>
@@ -505,22 +659,24 @@ LIVE
 <div class="card">
 
 <div id="forecastBox" style="font-size:13px;line-height:1.8;">
-ระบบกำลังวิเคราะห์ข้อมูล ESG
+
+กำลังวิเคราะห์ข้อมูล ESG
+
 </div>
 
 <div class="alert">
 
-AI วิเคราะห์:
+AI วิเคราะห์จาก:
 <br>
-• Carbon Footprint
-<br>
-• Waste Trend
-<br>
-• Branch Comparison
+• Carbon Emission
 <br>
 • Resource Usage
 <br>
+• Branch Comparison
+<br>
 • Sustainability KPI
+<br>
+• Environmental Trend
 
 </div>
 
@@ -531,10 +687,12 @@ AI วิเคราะห์:
 <div class="section">
 
 <div class="section-title">
-🏢 ทุกสาขาองค์กร
+🏢 สรุปทุกสาขา
 </div>
 
-<div id="branchContainer"></div>
+<div id="branchList">
+
+</div>
 
 </div>
 
@@ -547,7 +705,7 @@ AI วิเคราะห์:
 <div class="section">
 
 <div class="section-title">
-📁 Upload Excel
+📁 Upload Excel Data
 </div>
 
 <div class="card">
@@ -556,12 +714,12 @@ AI วิเคราะห์:
 
 <input type="file" id="excelFile" accept=".xlsx,.xls,.csv">
 
-<div style="font-size:44px;">
+<div style="font-size:42px;">
 📊
 </div>
 
-<div style="font-size:15px;font-weight:700;margin-top:12px;">
-อัปโหลดข้อมูลการเบิกวัสดุสำนักงาน
+<div style="font-weight:700;margin-top:10px;">
+อัปโหลดข้อมูลการเบิกใช้วัสดุสำนักงาน
 </div>
 
 <div style="font-size:12px;color:#666;margin-top:8px;">
@@ -591,7 +749,6 @@ AI วิเคราะห์:
 <th>แผนก</th>
 <th>รายการ</th>
 <th>จำนวน</th>
-<th>Carbon</th>
 </tr>
 
 </thead>
@@ -608,7 +765,7 @@ AI วิเคราะห์:
 
 </div>
 
-<!-- RANKING -->
+<!-- RANK -->
 
 <div id="rankTab" class="tab">
 
@@ -618,67 +775,7 @@ AI วิเคราะห์:
 🏆 Carbon Reduction Ranking
 </div>
 
-<div id="rankingList"></div>
-
-</div>
-
-</div>
-
-<!-- KNOWLEDGE -->
-
-<div id="knowledgeTab" class="tab">
-
-<div class="section">
-
-<div class="section-title">
-🌱 Environmental Knowledge
-</div>
-
-<div class="knowledge-card">
-
-<div class="knowledge-title">
-Carbon Footprint คืออะไร
-</div>
-
-<div class="knowledge-text">
-ปริมาณก๊าซเรือนกระจกที่เกิดจากกิจกรรมขององค์กรทั้งทางตรงและทางอ้อม เช่น การใช้ไฟฟ้า การเดินทาง และการใช้วัสดุสำนักงาน
-</div>
-
-</div>
-
-<div class="knowledge-card">
-
-<div class="knowledge-title">
-Circular Economy
-</div>
-
-<div class="knowledge-text">
-เศรษฐกิจหมุนเวียนคือแนวคิดการใช้ทรัพยากรให้เกิดประโยชน์สูงสุด ลดการเกิดของเสีย และนำกลับมาใช้ใหม่
-</div>
-
-</div>
-
-<div class="knowledge-card">
-
-<div class="knowledge-title">
-Net Zero
-</div>
-
-<div class="knowledge-text">
-การปล่อยก๊าซเรือนกระจกสุทธิเป็นศูนย์ โดยลดการปล่อยและชดเชยส่วนที่เหลือผ่านการดูดซับคาร์บอน
-</div>
-
-</div>
-
-<div class="knowledge-card">
-
-<div class="knowledge-title">
-Green Office
-</div>
-
-<div class="knowledge-text">
-สำนักงานสีเขียวคือการดำเนินงานที่ลดผลกระทบต่อสิ่งแวดล้อม เช่น ลดพลังงาน ลดกระดาษ และลดของเสีย
-</div>
+<div id="rankingList">
 
 </div>
 
@@ -693,25 +790,25 @@ Green Office
 <div class="section">
 
 <div class="section-title">
-📄 ESG Report
+📄 ESG Enterprise Report
 </div>
 
 <div class="card">
 
 <div style="font-size:13px;line-height:1.9;">
 
-มาตรฐานอ้างอิง:
+อ้างอิงมาตรฐาน:
 <br><br>
 
-• ISO 14064-1
+• ISO 14064-1:2018
 <br>
 • GHG Protocol
 <br>
-• UN SDGs
+• Science Based Targets
 <br>
-• Net Zero Framework
+• UN SDG Goal 12
 <br>
-• ESG Enterprise Standard
+• WBCSD ESG Framework
 
 <br><br>
 
@@ -720,17 +817,17 @@ Green Office
 
 ✅ Carbon Footprint
 <br>
+✅ Resource Consumption
+<br>
 ✅ Sustainability KPI
 <br>
 ✅ Branch Efficiency
 <br>
 ✅ Waste Reduction
 <br>
-✅ ESG Ranking
-<br>
 ✅ AI Forecast
 <br>
-✅ Realtime Dashboard
+✅ ESG Benchmark
 
 </div>
 
@@ -746,11 +843,55 @@ Export Excel
 
 </div>
 
+<div class="section">
+
+<div class="section-title">
+📚 Environmental Knowledge
+</div>
+
+<div class="knowledge">
+
+<div class="knowledge-title">
+Carbon Footprint คืออะไร
+</div>
+
+<p>
+ปริมาณก๊าซเรือนกระจกที่เกิดจากกิจกรรมขององค์กรทั้งทางตรงและทางอ้อม
+</p>
+
+</div>
+
+<div class="knowledge">
+
+<div class="knowledge-title">
+Circular Economy
+</div>
+
+<p>
+แนวคิดการใช้ทรัพยากรให้เกิดประโยชน์สูงสุด ลดของเสีย และนำกลับมาใช้ใหม่
+</p>
+
+</div>
+
+<div class="knowledge">
+
+<div class="knowledge-title">
+Net Zero Emission
+</div>
+
+<p>
+การลดและชดเชยการปล่อยก๊าซเรือนกระจกจนมีค่าเท่ากับศูนย์
+</p>
+
+</div>
+
 </div>
 
 </div>
 
-<!-- NAVIGATION -->
+</div>
+
+<!-- NAV -->
 
 <div class="nav">
 
@@ -769,11 +910,6 @@ Export Excel
 <span>Ranking</span>
 </button>
 
-<button onclick="showTab('knowledgeTab',this)">
-🌱
-<span>Knowledge</span>
-</button>
-
 <button onclick="showTab('reportTab',this)">
 📄
 <span>Report</span>
@@ -785,149 +921,71 @@ Export Excel
 
 <script>
 
-/* =========================================================
-DATA
-========================================================= */
+/* =====================================
+BRANCHES
+===================================== */
 
 const branches = [
 
 {
-name:'สำนักงานใหญ่',
-employees:120,
+name:"สำนักงานใหญ่",
 energy:4200,
 water:12000,
-waste:320,
+waste:300,
 carbon:1200,
 esg:92
 },
 
 {
-name:'สาขาทับเดื่อ',
-employees:80,
-energy:3100,
+name:"สาขาทับเดื่อ",
+energy:2800,
 water:8500,
-waste:260,
-carbon:980,
+waste:220,
+carbon:900,
 esg:88
 },
 
 {
-name:'สาขาป่าแพ่ง',
-employees:70,
-energy:2800,
-water:7600,
-waste:210,
-carbon:850,
+name:"สาขาป่าแพ่ง",
+energy:2600,
+water:7800,
+waste:180,
+carbon:750,
 esg:90
 },
 
 {
-name:'สาขาช้างเผือก',
-employees:60,
-energy:2500,
-water:7000,
-waste:190,
-carbon:760,
-esg:91
-},
-
-{
-name:'สาขามหิดล',
-employees:100,
+name:"สาขาช้างเผือก",
 energy:3900,
 water:10200,
 waste:280,
-carbon:1100,
-esg:86
+carbon:1400,
+esg:80
 },
 
 {
-name:'สาขาเชียงราย',
-employees:50,
-energy:1900,
-water:5000,
-waste:150,
-carbon:620,
-esg:95
+name:"สาขามหิดล",
+energy:3500,
+water:9400,
+waste:250,
+carbon:1100,
+esg:86
 }
 
 ]
 
+/* =====================================
+DATA STORAGE
+===================================== */
+
 let records = JSON.parse(localStorage.getItem('records')) || []
 
-/* =========================================================
-RENDER BRANCHES
-========================================================= */
-
-function renderBranches(){
-
-const container = document.getElementById('branchContainer')
-
-container.innerHTML=''
-
-branches.forEach(branch=>{
-
-container.innerHTML += `
-
-<div class="branch-card">
-
-<div class="branch-title">
-${branch.name}
-</div>
-
-<div style="font-size:12px;color:#666;">
-พนักงาน ${branch.employees} คน
-</div>
-
-<div class="branch-grid">
-
-<div class="branch-item">
-พลังงาน
-<b>${branch.energy}</b>
-kWh
-</div>
-
-<div class="branch-item">
-น้ำ
-<b>${branch.water}</b>
-L
-</div>
-
-<div class="branch-item">
-ของเสีย
-<b>${branch.waste}</b>
-kg
-</div>
-
-<div class="branch-item">
-Carbon
-<b>${branch.carbon}</b>
-kg
-</div>
-
-</div>
-
-<div style="margin-top:12px;font-size:12px;">
-ESG Score ${branch.esg}%
-</div>
-
-<div class="progress">
-<div class="progress-bar" style="width:${branch.esg}%"></div>
-</div>
-
-</div>
-
-`
-
-})
-
-}
-
-/* =========================================================
+/* =====================================
 EXCEL IMPORT
-========================================================= */
+===================================== */
 
-document.getElementById('excelFile').addEventListener('change',function(e){
+document.getElementById('excelFile')
+.addEventListener('change',function(e){
 
 const file = e.target.files[0]
 
@@ -939,7 +997,9 @@ const data = new Uint8Array(evt.target.result)
 
 const workbook = XLSX.read(data,{type:'array'})
 
-const sheet = workbook.Sheets[workbook.SheetNames[0]]
+const sheet = workbook.Sheets[
+workbook.SheetNames[0]
+]
 
 const json = XLSX.utils.sheet_to_json(sheet)
 
@@ -953,21 +1013,20 @@ department: row.department || row.Department || 'Office',
 
 item: row.item || row.Item || 'Paper',
 
-qty: Number(row.qty || row.Qty || 0),
-
-carbon: Number(row.qty || row.Qty || 0) * 0.42
+qty: Number(row.qty || row.Qty || 0)
 
 })
 
 })
 
-localStorage.setItem('records',JSON.stringify(records))
+localStorage.setItem(
+'records',
+JSON.stringify(records)
+)
 
 renderTable()
 
 calculateKPI()
-
-ranking()
 
 alert('นำเข้าข้อมูลสำเร็จ')
 
@@ -977,13 +1036,14 @@ reader.readAsArrayBuffer(file)
 
 })
 
-/* =========================================================
+/* =====================================
 TABLE
-========================================================= */
+===================================== */
 
 function renderTable(){
 
-const tableBody = document.getElementById('tableBody')
+const tableBody =
+document.getElementById('tableBody')
 
 tableBody.innerHTML=''
 
@@ -1001,8 +1061,6 @@ tableBody.innerHTML += `
 
 <td>${r.qty}</td>
 
-<td>${r.carbon.toFixed(1)}</td>
-
 </tr>
 
 `
@@ -1011,103 +1069,138 @@ tableBody.innerHTML += `
 
 }
 
-/* =========================================================
+/* =====================================
 KPI
-========================================================= */
+===================================== */
 
 function calculateKPI(){
 
-let totalQty = 0
+let total = 0
 
 records.forEach(r=>{
-totalQty += r.qty
+
+total += Number(r.qty)
+
 })
 
-const co2 = totalQty * 0.42
+const co2 = total * 0.42
 const tree = co2 / 21
-const esg = Math.max(60,100 - Math.round(co2/40))
+const esg = Math.min(
+100,
+Math.round(100-(co2/15))
+)
 
-document.getElementById('co2Value').innerText = co2.toFixed(1)
+document.getElementById('co2Value')
+.innerText = co2.toFixed(1)
 
-document.getElementById('treeValue').innerText = tree.toFixed(1)
+document.getElementById('treeValue')
+.innerText = tree.toFixed(1)
 
-document.getElementById('esgValue').innerText = esg
+document.getElementById('esgValue')
+.innerText = esg
 
-document.getElementById('logValue').innerText = records.length
+document.getElementById('logValue')
+.innerText = records.length
+
+document.getElementById('energyValue')
+.innerText = (
+branches.reduce((a,b)=>a+b.energy,0)
+).toLocaleString()
+
+document.getElementById('waterValue')
+.innerText = (
+branches.reduce((a,b)=>a+b.water,0)
+).toLocaleString()
+
+document.getElementById('wasteValue')
+.innerText = (
+branches.reduce((a,b)=>a+b.waste,0)
+).toLocaleString()
 
 forecast(co2)
+
+renderRanking()
+
+renderBranches()
 
 renderChart()
 
 }
 
-/* =========================================================
+/* =====================================
 AI FORECAST
-========================================================= */
+===================================== */
 
 function forecast(co2){
 
 let msg=''
 
-if(co2 > 3000){
+if(co2 > 1000){
 
 msg = `
-⚠️ AI ตรวจพบแนวโน้มการใช้วัสดุสำนักงานสูงกว่าค่าเฉลี่ยองค์กร
-แนะนำลดการใช้กระดาษ
-เพิ่มการใช้เอกสารดิจิทัล
-และใช้วัสดุรีไซเคิลมากขึ้น
-`
 
-}else if(co2 > 1500){
+⚠️ AI ตรวจพบแนวโน้มการใช้ทรัพยากรสูงเกินค่าเฉลี่ยองค์กร
 
-msg = `
-📈 องค์กรมีแนวโน้มการปล่อยคาร์บอนระดับปานกลาง
-ควรเพิ่มมาตรการ Green Office
-และติดตามการใช้ทรัพยากรทุกสาขา
+<br><br>
+
+แนะนำ:
+<br>
+• ลดการใช้กระดาษ
+<br>
+• ใช้ระบบดิจิทัลแทนเอกสาร
+<br>
+• เพิ่มการใช้วัสดุ Recycle
+<br>
+• ควบคุมการใช้พลังงานไฟฟ้า
+<br>
+• เพิ่ม Green Procurement
+
 `
 
 }else{
 
 msg = `
-✅ องค์กรมีแนวโน้ม Sustainability ที่ดี
-การใช้ทรัพยากรอยู่ในเกณฑ์เหมาะสม
-Carbon Reduction มีประสิทธิภาพ
+
+✅ องค์กรมีแนวโน้ม Sustainability อยู่ในเกณฑ์ดี
+
+<br><br>
+
+จุดเด่น:
+<br>
+• การใช้ทรัพยากรสมดุล
+<br>
+• การลด Carbon มีประสิทธิภาพ
+<br>
+• Waste Reduction ดีขึ้น
+<br>
+• ESG Trend เป็นบวก
+
 `
 
 }
 
-document.getElementById('forecastBox').innerHTML = msg
+document.getElementById('forecastBox')
+.innerHTML = msg
 
 }
 
-/* =========================================================
+/* =====================================
 RANKING
-========================================================= */
+===================================== */
 
-function ranking(){
+function renderRanking(){
 
-const branchMap = {}
-
-records.forEach(r=>{
-
-if(!branchMap[r.branch]){
-branchMap[r.branch]=0
-}
-
-branchMap[r.branch]+=r.carbon
-
-})
-
-const rankingList = document.getElementById('rankingList')
+const rankingList =
+document.getElementById('rankingList')
 
 rankingList.innerHTML=''
 
-const sorted = Object.entries(branchMap)
-.sort((a,b)=>a[1]-b[1])
+const sorted = [...branches]
+.sort((a,b)=>a.carbon-b.carbon)
 
-sorted.forEach((item,index)=>{
+sorted.forEach((b,index)=>{
 
-const tree = item[1]/21
+const tree = (b.carbon/21).toFixed(1)
 
 rankingList.innerHTML += `
 
@@ -1120,17 +1213,17 @@ ${index+1}
 <div class="rank-info">
 
 <div class="rank-title">
-${item[0]}
+${b.name}
 </div>
 
 <div class="rank-sub">
-Carbon ${item[1].toFixed(1)} kg CO₂e
+Carbon ${b.carbon} kg CO₂e
 </div>
 
 </div>
 
 <div class="rank-score">
-🌳 ${tree.toFixed(1)}
+🌳 ${tree}
 </div>
 
 </div>
@@ -1141,37 +1234,105 @@ Carbon ${item[1].toFixed(1)} kg CO₂e
 
 }
 
-/* =========================================================
-CHART
-========================================================= */
+/* =====================================
+BRANCH CARDS
+===================================== */
 
-let chartInstance = null
+function renderBranches(){
+
+const branchList =
+document.getElementById('branchList')
+
+branchList.innerHTML=''
+
+branches.forEach(b=>{
+
+branchList.innerHTML += `
+
+<div class="branch-card">
+
+<div class="branch-top">
+
+<div class="branch-name">
+${b.name}
+</div>
+
+<div class="branch-score">
+ESG ${b.esg}
+</div>
+
+</div>
+
+<div style="font-size:12px;line-height:1.9;">
+
+⚡ พลังงาน:
+${b.energy.toLocaleString()} kWh
+
+<br>
+
+💧 น้ำ:
+${b.water.toLocaleString()} ลิตร
+
+<br>
+
+🗑 ของเสีย:
+${b.waste} kg
+
+<br>
+
+🌍 Carbon:
+${b.carbon} kg CO₂e
+
+</div>
+
+<div class="progress">
+
+<div class="progress-bar"
+style="width:${b.esg}%;">
+</div>
+
+</div>
+
+</div>
+
+`
+
+})
+
+}
+
+/* =====================================
+CHART
+===================================== */
+
+let chart
 
 function renderChart(){
 
-const ctx = document.getElementById('mainChart')
+const ctx =
+document.getElementById('mainChart')
 
-const branchNames = branches.map(b=>b.name)
+const labels = branches.map(b=>b.name)
 
-const carbonData = branches.map(b=>b.carbon)
+const carbon = branches.map(b=>b.carbon)
 
-if(chartInstance){
-chartInstance.destroy()
+if(chart){
+chart.destroy()
 }
 
-chartInstance = new Chart(ctx,{
+chart = new Chart(ctx,{
 
 type:'bar',
 
 data:{
 
-labels:branchNames,
+labels:labels,
 
 datasets:[{
 
 label:'Carbon Emission',
 
-data:carbonData,
+data:carbon,
 
 borderWidth:1
 
@@ -1184,9 +1345,11 @@ options:{
 responsive:true,
 
 plugins:{
+
 legend:{
 display:true
 }
+
 }
 
 }
@@ -1195,22 +1358,29 @@ display:true
 
 }
 
-/* =========================================================
+/* =====================================
 TAB
-========================================================= */
+===================================== */
 
 function showTab(tabId,el){
 
-document.querySelectorAll('.tab').forEach(tab=>{
-tab.classList.remove('active')
+document.querySelectorAll('.tab')
+.forEach(t=>{
+
+t.classList.remove('active')
+
 })
 
-document.getElementById(tabId).classList.add('active')
+document.getElementById(tabId)
+.classList.add('active')
 
 if(el){
 
-document.querySelectorAll('.nav button').forEach(btn=>{
-btn.classList.remove('active')
+document.querySelectorAll('.nav button')
+.forEach(b=>{
+
+b.classList.remove('active')
+
 })
 
 el.classList.add('active')
@@ -1219,17 +1389,13 @@ el.classList.add('active')
 
 }
 
-/* =========================================================
+/* =====================================
 INIT
-========================================================= */
-
-renderBranches()
+===================================== */
 
 renderTable()
 
 calculateKPI()
-
-ranking()
 
 </script>
 
