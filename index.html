@@ -1,16 +1,14 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 
-<title>Hillkoff ESG Enterprise Platform</title>
+<title>Hillkoff ESG Enterprise Dashboard</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;700;800&display=swap" rel="stylesheet">
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
 
 <style>
 
@@ -22,15 +20,15 @@ font-family:'Sarabun',sans-serif;
 }
 
 body{
-background:#edf5ef;
-color:#1f2d24;
+background:#edf4ef;
+color:#1d2b22;
 }
 
 .app{
 max-width:480px;
 margin:auto;
-background:#f8fcf9;
 min-height:100vh;
+background:#f8fcf9;
 padding-bottom:120px;
 }
 
@@ -38,73 +36,33 @@ padding-bottom:120px;
 background:linear-gradient(135deg,#14532d,#198754);
 padding:24px 18px;
 color:#fff;
-position:sticky;
-top:0;
-z-index:999;
-box-shadow:0 10px 25px rgba(0,0,0,.12);
+border-bottom-left-radius:30px;
+border-bottom-right-radius:30px;
+box-shadow:0 10px 30px rgba(0,0,0,.12);
 }
 
-.header-top{
-display:flex;
-justify-content:space-between;
-align-items:center;
-}
-
-.logo{
-display:flex;
-align-items:center;
-gap:12px;
-}
-
-.logo-icon{
-font-size:34px;
-}
-
-.logo-title{
-font-size:22px;
+.header-title{
+font-size:24px;
 font-weight:800;
 }
 
-.logo-sub{
-font-size:11px;
-opacity:.8;
-}
-
-.live{
-display:flex;
-align-items:center;
-gap:8px;
-background:rgba(255,255,255,.15);
-padding:8px 12px;
-border-radius:30px;
+.header-sub{
 font-size:12px;
-}
-
-.dot{
-width:10px;
-height:10px;
-border-radius:50%;
-background:#00ff88;
-animation:pulse 1s infinite;
-}
-
-@keyframes pulse{
-0%{transform:scale(1);}
-50%{transform:scale(1.4);}
-100%{transform:scale(1);}
+opacity:.85;
+margin-top:5px;
 }
 
 .kpi-grid{
 display:grid;
 grid-template-columns:1fr 1fr;
 gap:12px;
-margin-top:22px;
+margin-top:20px;
 }
 
 .kpi-card{
-background:rgba(255,255,255,.13);
+background:rgba(255,255,255,.12);
 padding:16px;
-border-radius:18px;
+border-radius:20px;
 backdrop-filter:blur(10px);
 }
 
@@ -114,14 +72,14 @@ opacity:.8;
 }
 
 .kpi-value{
-font-size:25px;
+font-size:24px;
 font-weight:800;
-margin-top:6px;
+margin-top:8px;
 }
 
 .kpi-sub{
 font-size:11px;
-margin-top:5px;
+margin-top:4px;
 opacity:.8;
 }
 
@@ -134,54 +92,18 @@ margin-bottom:24px;
 }
 
 .section-title{
-font-size:15px;
+font-size:16px;
 font-weight:800;
 margin-bottom:14px;
 color:#14532d;
-display:flex;
-align-items:center;
-gap:8px;
 }
 
 .card{
 background:#fff;
 padding:16px;
-border-radius:20px;
-box-shadow:0 5px 20px rgba(0,0,0,.05);
+border-radius:22px;
+box-shadow:0 6px 20px rgba(0,0,0,.05);
 margin-bottom:14px;
-}
-
-.branch-card{
-padding:16px;
-background:#fff;
-border-radius:18px;
-margin-bottom:12px;
-box-shadow:0 5px 14px rgba(0,0,0,.05);
-}
-
-.branch-name{
-font-size:15px;
-font-weight:800;
-color:#14532d;
-}
-
-.branch-info{
-font-size:12px;
-line-height:1.9;
-margin-top:10px;
-}
-
-.progress{
-height:12px;
-background:#e9ecef;
-border-radius:30px;
-overflow:hidden;
-margin-top:10px;
-}
-
-.progress-bar{
-height:100%;
-background:#198754;
 }
 
 .table{
@@ -201,100 +123,108 @@ font-size:12px;
 padding:10px;
 font-size:12px;
 border-bottom:1px solid #eee;
+text-align:center;
 }
 
-.input{
-width:100%;
+.rank-card{
+display:flex;
+align-items:center;
+gap:12px;
 padding:14px;
-border:none;
-background:#f1f5f2;
-border-radius:14px;
-margin-bottom:12px;
-}
-
-.btn{
-width:100%;
-padding:14px;
-border:none;
-border-radius:14px;
-font-weight:700;
-cursor:pointer;
-}
-
-.btn-green{
-background:#198754;
-color:#fff;
-}
-
-.knowledge-card{
-padding:16px;
 border-radius:18px;
 background:#fff;
 margin-bottom:12px;
 box-shadow:0 4px 12px rgba(0,0,0,.05);
 }
 
-.knowledge-title{
-font-size:14px;
+.rank-number{
+width:42px;
+height:42px;
+border-radius:50%;
+background:#198754;
+color:#fff;
+display:flex;
+align-items:center;
+justify-content:center;
 font-weight:800;
-margin-bottom:8px;
+}
+
+.rank-info{
+flex:1;
+}
+
+.rank-title{
+font-size:14px;
+font-weight:700;
+}
+
+.rank-sub{
+font-size:11px;
+color:#666;
+margin-top:3px;
+}
+
+.rank-score{
+font-size:18px;
+font-weight:800;
+color:#198754;
+}
+
+.branch-card{
+background:#fff;
+padding:16px;
+border-radius:20px;
+margin-bottom:14px;
+box-shadow:0 5px 14px rgba(0,0,0,.05);
+}
+
+.branch-title{
+font-size:16px;
+font-weight:800;
+margin-bottom:10px;
 color:#14532d;
 }
 
-.knowledge-text{
-font-size:12px;
-line-height:1.8;
-color:#444;
+.branch-grid{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:10px;
+}
+
+.mini-box{
+background:#f4faf6;
+padding:12px;
+border-radius:14px;
+}
+
+.mini-title{
+font-size:11px;
+color:#666;
+}
+
+.mini-value{
+font-size:18px;
+font-weight:800;
+margin-top:6px;
 }
 
 .alert{
 background:#fff3cd;
-border-left:5px solid #ffc107;
 padding:14px;
-border-radius:14px;
+border-radius:16px;
 font-size:12px;
 line-height:1.8;
-margin-top:12px;
+border-left:5px solid #ffc107;
 }
 
-.nav{
-position:fixed;
-bottom:0;
-left:50%;
-transform:translateX(-50%);
-max-width:480px;
-width:100%;
-background:#fff;
-display:flex;
-justify-content:space-around;
-padding:12px 0;
-border-top:1px solid #ddd;
-z-index:999;
-}
-
-.nav button{
-background:none;
-border:none;
-display:flex;
-flex-direction:column;
-align-items:center;
-gap:4px;
-font-size:11px;
-cursor:pointer;
-color:#666;
-}
-
-.nav .active{
+.green{
 color:#198754;
-font-weight:800;
+font-weight:700;
 }
 
-.tab{
-display:none;
-}
-
-.tab.active{
-display:block;
+.red{
+color:#dc3545;
+font-weight:700;
 }
 
 </style>
@@ -307,55 +237,38 @@ display:block;
 
 <div class="header">
 
-<div class="header-top">
-
-<div class="logo">
-
-<div class="logo-icon">🌍</div>
-
-<div>
-<div class="logo-title">
-Hillkoff ESG
+<div class="header-title">
+🌍 Hillkoff ESG Platform
 </div>
 
-<div class="logo-sub">
-Enterprise Sustainability Platform
-</div>
-</div>
-
-</div>
-
-<div class="live">
-<div class="dot"></div>
-LIVE
-</div>
-
+<div class="header-sub">
+Enterprise Sustainability Dashboard
 </div>
 
 <div class="kpi-grid">
 
 <div class="kpi-card">
-<div class="kpi-title">Carbon Footprint</div>
-<div class="kpi-value" id="carbonValue">0</div>
+<div class="kpi-title">Carbon Reduction</div>
+<div class="kpi-value" id="totalCarbon">0</div>
 <div class="kpi-sub">kg CO₂e</div>
 </div>
 
 <div class="kpi-card">
-<div class="kpi-title">Energy Usage</div>
-<div class="kpi-value" id="energyValue">0</div>
-<div class="kpi-sub">kWh</div>
-</div>
-
-<div class="kpi-card">
-<div class="kpi-title">Water Usage</div>
-<div class="kpi-value" id="waterValue">0</div>
-<div class="kpi-sub">Liters</div>
+<div class="kpi-title">Equivalent Trees</div>
+<div class="kpi-value" id="totalTrees">0</div>
+<div class="kpi-sub">ต้นไม้</div>
 </div>
 
 <div class="kpi-card">
 <div class="kpi-title">ESG Score</div>
-<div class="kpi-value" id="esgValue">0</div>
-<div class="kpi-sub">Enterprise</div>
+<div class="kpi-value" id="esgScore">0</div>
+<div class="kpi-sub">องค์กร</div>
+</div>
+
+<div class="kpi-card">
+<div class="kpi-title">Total Branches</div>
+<div class="kpi-value">5</div>
+<div class="kpi-sub">สาขา</div>
 </div>
 
 </div>
@@ -366,85 +279,24 @@ LIVE
 
 <!-- DASHBOARD -->
 
-<div id="dashboardTab" class="tab active">
-
 <div class="section">
 
 <div class="section-title">
-📈 ESG Dashboard
+📈 Carbon Dashboard
 </div>
 
 <div class="card">
-<canvas id="mainChart"></canvas>
+<canvas id="carbonChart"></canvas>
 </div>
 
 </div>
+
+<!-- TABLE -->
 
 <div class="section">
 
 <div class="section-title">
-🧠 AI Sustainability Insight
-</div>
-
-<div class="card">
-
-<div id="aiBox" style="font-size:13px;line-height:1.9;">
-
-กำลังวิเคราะห์ข้อมูล ESG...
-
-</div>
-
-<div class="alert">
-
-AI วิเคราะห์จาก:
-<br><br>
-
-• Carbon Footprint
-<br>
-• Energy Consumption
-<br>
-• Water Usage
-<br>
-• Waste Management
-<br>
-• Renewable Energy
-<br>
-• ESG Compliance
-<br>
-• Sustainability KPI
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-<!-- BRANCH -->
-
-<div id="branchTab" class="tab">
-
-<div class="section">
-
-<div class="section-title">
-🏢 ทุกสาขาองค์กร
-</div>
-
-<div id="branchList"></div>
-
-</div>
-
-</div>
-
-<!-- DATA -->
-
-<div id="dataTab" class="tab">
-
-<div class="section">
-
-<div class="section-title">
-📋 ESG Records
+📋 ข้อมูลการเบิกใช้วัสดุ
 </div>
 
 <div class="card" style="overflow:auto;">
@@ -452,15 +304,13 @@ AI วิเคราะห์จาก:
 <table class="table">
 
 <thead>
-
 <tr>
 <th>สาขา</th>
 <th>พลังงาน</th>
-<th>น้ำ</th>
-<th>ขยะ</th>
-<th>CO₂</th>
+<th>กระดาษ</th>
+<th>พลาสติก</th>
+<th>Carbon</th>
 </tr>
-
 </thead>
 
 <tbody id="tableBody">
@@ -473,160 +323,63 @@ AI วิเคราะห์จาก:
 
 </div>
 
-</div>
-
-<!-- KNOWLEDGE -->
-
-<div id="knowledgeTab" class="tab">
+<!-- RANKING -->
 
 <div class="section">
 
 <div class="section-title">
-📚 Environmental Knowledge
+🏆 อันดับสาขาลดคาร์บอน
 </div>
 
-<div class="knowledge-card">
-
-<div class="knowledge-title">
-Carbon Footprint คืออะไร
-</div>
-
-<div class="knowledge-text">
-ปริมาณก๊าซเรือนกระจกที่เกิดจากกิจกรรมขององค์กร ทั้งทางตรงและทางอ้อม
-</div>
+<div id="rankingList"></div>
 
 </div>
 
-<div class="knowledge-card">
-
-<div class="knowledge-title">
-Net Zero คืออะไร
-</div>
-
-<div class="knowledge-text">
-การลดและชดเชยการปล่อยคาร์บอนให้สมดุลจนใกล้ศูนย์ที่สุด
-</div>
-
-</div>
-
-<div class="knowledge-card">
-
-<div class="knowledge-title">
-Circular Economy
-</div>
-
-<div class="knowledge-text">
-ระบบเศรษฐกิจหมุนเวียนที่เน้น Reuse Reduce Recycle เพื่อลดของเสีย
-</div>
-
-</div>
-
-<div class="knowledge-card">
-
-<div class="knowledge-title">
-Scope 1 2 3
-</div>
-
-<div class="knowledge-text">
-Scope 1 การปล่อยตรง
-<br><br>
-Scope 2 ไฟฟ้า
-<br><br>
-Scope 3 Supply Chain และกิจกรรมทางอ้อม
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-<!-- REPORT -->
-
-<div id="reportTab" class="tab">
+<!-- BRANCH DETAIL -->
 
 <div class="section">
 
 <div class="section-title">
-📄 ESG Report
+🏢 รายละเอียดแต่ละสาขา
+</div>
+
+<div id="branchContainer"></div>
+
+</div>
+
+<!-- AI -->
+
+<div class="section">
+
+<div class="section-title">
+🧠 AI ESG วิเคราะห์องค์กร
 </div>
 
 <div class="card">
 
-<div style="font-size:13px;line-height:2;">
+<div id="aiBox" style="font-size:13px;line-height:1.9;"></div>
 
-มาตรฐานที่รองรับ:
-<br><br>
+<div class="alert">
 
-• ISO 14064-1
+AI วิเคราะห์จาก:
 <br>
-• GHG Protocol
+• การใช้พลังงาน
 <br>
-• Science Based Targets
+• การใช้กระดาษ
 <br>
-• UN SDGs
+• การใช้พลาสติก
 <br>
-• WBCSD ESG Framework
+• Carbon Footprint
 <br>
-• Carbon Accounting
+• ESG Trend
 <br>
-• Net Zero Framework
-
-<br><br>
-
-เป้าหมายองค์กร:
-<br><br>
-
-✅ ลดคาร์บอน 50% ภายในปี 2030
-<br>
-✅ Renewable Energy 80%
-<br>
-✅ Zero Waste to Landfill
-<br>
-✅ Net Zero 2050
-
-</div>
-
-<button class="btn btn-green" style="margin-top:20px;">
-Export ESG Report
-</button>
+• Sustainability KPI
 
 </div>
 
 </div>
 
 </div>
-
-</div>
-
-<!-- NAV -->
-
-<div class="nav">
-
-<button class="active" onclick="showTab('dashboardTab',this)">
-🏠
-<span>Dashboard</span>
-</button>
-
-<button onclick="showTab('branchTab',this)">
-🏢
-<span>Branches</span>
-</button>
-
-<button onclick="showTab('dataTab',this)">
-📋
-<span>Data</span>
-</button>
-
-<button onclick="showTab('knowledgeTab',this)">
-📚
-<span>Knowledge</span>
-</button>
-
-<button onclick="showTab('reportTab',this)">
-📄
-<span>Report</span>
-</button>
 
 </div>
 
@@ -634,176 +387,75 @@ Export ESG Report
 
 <script>
 
-/* =========================
-BRANCH DATA
-========================= */
-
 const branches = [
 
 {
-name:"สำนักงานใหญ่ เชียงใหม่",
-employees:120,
-energy:5400,
-water:12000,
-waste:540,
-carbon:1800,
-renewable:35,
-esg:88
+name:"สำนักงานใหญ่",
+energy:3200,
+paper:450,
+plastic:120,
+carbon:980,
+esg:92
 },
 
 {
-name:"สาขากรุงเทพ",
-employees:210,
-energy:9200,
-water:22000,
-waste:1200,
-carbon:3900,
-renewable:22,
-esg:74
+name:"สาขาทับเดื่อ",
+energy:2800,
+paper:390,
+plastic:110,
+carbon:840,
+esg:95
 },
 
 {
-name:"สาขาภูเก็ต",
-employees:70,
-energy:2100,
-water:5300,
-waste:220,
-carbon:900,
-renewable:48,
-esg:91
+name:"สาขาป่าแพ่ง",
+energy:4100,
+paper:620,
+plastic:190,
+carbon:1450,
+esg:71
 },
 
 {
-name:"สาขาขอนแก่น",
-employees:58,
-energy:1800,
-water:4100,
-waste:180,
+name:"สาขาช้างเผือก",
+energy:2500,
+paper:320,
+plastic:90,
 carbon:720,
-renewable:50,
-esg:93
+esg:97
 },
 
 {
-name:"สาขาเชียงราย",
-employees:40,
-energy:1200,
-water:3000,
-waste:110,
-carbon:520,
-renewable:61,
-esg:96
+name:"สาขามหิดล",
+energy:3600,
+paper:510,
+plastic:140,
+carbon:1100,
+esg:84
 }
 
 ]
 
-/* =========================
-LOAD DATA
-========================= */
-
-function loadDashboard(){
-
-let totalCarbon = 0
-let totalEnergy = 0
-let totalWater = 0
-let totalESG = 0
-
-branches.forEach(b=>{
-
-totalCarbon += b.carbon
-totalEnergy += b.energy
-totalWater += b.water
-totalESG += b.esg
-
-})
-
-document.getElementById('carbonValue').innerText = totalCarbon
-document.getElementById('energyValue').innerText = totalEnergy
-document.getElementById('waterValue').innerText = totalWater
-document.getElementById('esgValue').innerText =
-Math.round(totalESG / branches.length)
-
-renderBranches()
-renderTable()
-renderChart()
-aiForecast(totalCarbon)
-
-}
-
-/* =========================
-BRANCH
-========================= */
-
-function renderBranches(){
-
-const branchList =
-document.getElementById('branchList')
-
-branchList.innerHTML=''
-
-branches.forEach(b=>{
-
-branchList.innerHTML += `
-
-<div class="branch-card">
-
-<div class="branch-name">
-${b.name}
-</div>
-
-<div class="branch-info">
-
-👥 พนักงาน ${b.employees} คน
-<br>
-⚡ พลังงาน ${b.energy} kWh
-<br>
-💧 น้ำ ${b.water} Liters
-<br>
-♻️ ขยะ ${b.waste} kg
-<br>
-🌍 Carbon ${b.carbon} kg CO₂e
-<br>
-☀️ Renewable ${b.renewable}%
-<br>
-📈 ESG Score ${b.esg}
-
-</div>
-
-<div class="progress">
-<div class="progress-bar"
-style="width:${b.esg}%">
-</div>
-</div>
-
-</div>
-
-`
-
-})
-
-}
-
-/* =========================
+/* ======================
 TABLE
-========================= */
+====================== */
 
 function renderTable(){
 
-const tableBody =
-document.getElementById('tableBody')
+const table = document.getElementById('tableBody')
 
-tableBody.innerHTML=''
+table.innerHTML=''
 
 branches.forEach(b=>{
 
-tableBody.innerHTML += `
+table.innerHTML += `
 
 <tr>
 <td>${b.name}</td>
-<td>${b.energy}</td>
-<td>${b.water}</td>
-<td>${b.waste}</td>
-<td>${b.carbon}</td>
+<td>${b.energy} kWh</td>
+<td>${b.paper} รีม</td>
+<td>${b.plastic} kg</td>
+<td>${b.carbon} kg</td>
 </tr>
 
 `
@@ -812,14 +464,138 @@ tableBody.innerHTML += `
 
 }
 
-/* =========================
+/* ======================
+KPI
+====================== */
+
+function renderKPI(){
+
+let totalCarbon = 0
+let totalESG = 0
+
+branches.forEach(b=>{
+
+totalCarbon += b.carbon
+totalESG += b.esg
+
+})
+
+const trees = (totalCarbon/21).toFixed(0)
+const avgESG = (totalESG/branches.length).toFixed(0)
+
+document.getElementById('totalCarbon').innerText = totalCarbon
+document.getElementById('totalTrees').innerText = trees
+document.getElementById('esgScore').innerText = avgESG
+
+}
+
+/* ======================
+RANKING
+====================== */
+
+function renderRanking(){
+
+const ranking = [...branches].sort((a,b)=>a.carbon-b.carbon)
+
+const box = document.getElementById('rankingList')
+
+box.innerHTML=''
+
+ranking.forEach((b,index)=>{
+
+const tree = (b.carbon/21).toFixed(1)
+
+box.innerHTML += `
+
+<div class="rank-card">
+
+<div class="rank-number">
+${index+1}
+</div>
+
+<div class="rank-info">
+
+<div class="rank-title">
+${b.name}
+</div>
+
+<div class="rank-sub">
+Carbon ${b.carbon} kg CO₂e
+</div>
+
+</div>
+
+<div class="rank-score">
+🌳 ${tree}
+</div>
+
+</div>
+
+`
+
+})
+
+}
+
+/* ======================
+BRANCH DETAIL
+====================== */
+
+function renderBranches(){
+
+const container = document.getElementById('branchContainer')
+
+container.innerHTML=''
+
+branches.forEach(b=>{
+
+container.innerHTML += `
+
+<div class="branch-card">
+
+<div class="branch-title">
+${b.name}
+</div>
+
+<div class="branch-grid">
+
+<div class="mini-box">
+<div class="mini-title">Energy Usage</div>
+<div class="mini-value">${b.energy}</div>
+</div>
+
+<div class="mini-box">
+<div class="mini-title">Paper Usage</div>
+<div class="mini-value">${b.paper}</div>
+</div>
+
+<div class="mini-box">
+<div class="mini-title">Plastic Waste</div>
+<div class="mini-value">${b.plastic}</div>
+</div>
+
+<div class="mini-box">
+<div class="mini-title">ESG Score</div>
+<div class="mini-value">${b.esg}</div>
+</div>
+
+</div>
+
+</div>
+
+`
+
+})
+
+}
+
+/* ======================
 CHART
-========================= */
+====================== */
 
 function renderChart(){
 
-const ctx =
-document.getElementById('mainChart')
+const ctx = document.getElementById('carbonChart')
 
 new Chart(ctx,{
 
@@ -829,21 +605,15 @@ data:{
 
 labels:branches.map(b=>b.name),
 
-datasets:[
+datasets:[{
 
-{
-label:'Carbon',
+label:'Carbon Emission',
+
 data:branches.map(b=>b.carbon),
-borderWidth:1
-},
 
-{
-label:'Energy',
-data:branches.map(b=>b.energy),
 borderWidth:1
-}
 
-]
+}]
 
 },
 
@@ -855,96 +625,60 @@ responsive:true
 
 }
 
-/* =========================
-AI FORECAST
-========================= */
+/* ======================
+AI ANALYSIS
+====================== */
 
-function aiForecast(carbon){
+function renderAI(){
 
-let msg=''
+const highest = [...branches].sort((a,b)=>b.carbon-a.carbon)[0]
 
-if(carbon > 6000){
+const lowest = [...branches].sort((a,b)=>a.carbon-b.carbon)[0]
 
-msg = `
+document.getElementById('aiBox').innerHTML = `
 
-⚠️ AI ตรวจพบแนวโน้ม Carbon Footprint สูงกว่าค่าเฉลี่ยองค์กร
+องค์กรมีแนวโน้มการใช้พลังงานอยู่ในระดับปานกลาง
 
-แนะนำ:
+สาขาที่ช่วยลด Carbon ได้ดีที่สุดคือ
+<span class="green">${lowest.name}</span>
+
+มีค่า Carbon เพียง
+<span class="green">${lowest.carbon} kg CO₂e</span>
+
+สาขาที่ควรปรับปรุงคือ
+<span class="red">${highest.name}</span>
+
+เนื่องจากมีการใช้พลังงานและวัสดุสูงที่สุด
+
+AI แนะนำ:
 <br><br>
 
-• เพิ่ม Renewable Energy
+• ลดการใช้กระดาษภายในองค์กร
 <br>
-• ลดการใช้พลังงานสำนักงาน
+• เพิ่มการใช้วัสดุ Recycle
 <br>
-• ลด Waste to Landfill
+• เปลี่ยนหลอดไฟเป็น LED
 <br>
-• ใช้ Circular Economy
+• เพิ่มการแยกขยะทุกสาขา
 <br>
-• ลดการใช้พลาสติก
+• ลดการใช้พลาสติกแบบ Single-use
 <br>
-• เพิ่ม Green Supply Chain
-
-`
-
-}else{
-
-msg = `
-
-✅ องค์กรมีแนวโน้ม ESG อยู่ในเกณฑ์ดี
-
-จุดเด่น:
-<br><br>
-
-• Carbon อยู่ในระดับควบคุมได้
-<br>
-• Renewable Energy เติบโตดี
-<br>
-• Waste Reduction มีประสิทธิภาพ
-<br>
-• ESG Compliance สูง
-<br>
-• Sustainability Trend เป็นบวก
+• ใช้ Solar Energy ในสาขาหลัก
 
 `
 
 }
 
-document.getElementById('aiBox').innerHTML = msg
-
-}
-
-/* =========================
-TAB
-========================= */
-
-function showTab(tabId,el){
-
-document.querySelectorAll('.tab')
-.forEach(tab=>{
-tab.classList.remove('active')
-})
-
-document.getElementById(tabId)
-.classList.add('active')
-
-if(el){
-
-document.querySelectorAll('.nav button')
-.forEach(btn=>{
-btn.classList.remove('active')
-})
-
-el.classList.add('active')
-
-}
-
-}
-
-/* =========================
+/* ======================
 INIT
-========================= */
+====================== */
 
-loadDashboard()
+renderTable()
+renderKPI()
+renderRanking()
+renderBranches()
+renderChart()
+renderAI()
 
 </script>
 
