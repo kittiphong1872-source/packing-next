@@ -74,6 +74,14 @@
   .btn-upload { width:100%;margin-top:14px;padding:13px;background:rgba(255,255,255,.95);color:var(--g2);border:none;border-radius:14px;font-family:var(--font);font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:all .2s;box-shadow:0 4px 20px rgba(0,0,0,.15); }
   .btn-upload:hover { background:#fff;transform:translateY(-1px);box-shadow:0 6px 28px rgba(0,0,0,.2); }
 
+  /* EMPTY STATE */
+  .empty-state { text-align:center;padding:32px 20px;color:var(--text3); }
+  .empty-state-icon { font-size:44px;margin-bottom:12px;opacity:.6; }
+  .empty-state-title { font-size:14px;font-weight:600;color:var(--text);margin-bottom:6px; }
+  .empty-state-sub { font-size:12px;line-height:1.6; }
+  .empty-state-btn { display:inline-flex;align-items:center;gap:6px;margin-top:14px;padding:10px 20px;background:var(--g2);color:#fff;border:none;border-radius:12px;font-family:var(--font);font-size:13px;font-weight:600;cursor:pointer;transition:all .2s; }
+  .empty-state-btn:hover { background:var(--g3);transform:translateY(-1px); }
+
   /* SECTIONS */
   .section { margin-top:36px; }
   .section-title { font-size:13px;font-weight:600;color:var(--text3);letter-spacing:.8px;text-transform:uppercase;margin-bottom:12px;display:flex;align-items:center;gap:8px; }
@@ -87,16 +95,19 @@
   .branch-card:hover { transform:translateY(-2px);box-shadow:var(--shadow-lg); }
   .branch-head { display:flex;align-items:center;justify-content:space-between;margin-bottom:8px; }
   .branch-icon { font-size:22px; }
-  .status-dot { width:8px;height:8px;border-radius:50%;background:var(--g5);box-shadow:0 0 0 3px rgba(34,197,94,.2); }
+  .status-dot { width:8px;height:8px;border-radius:50%;background:var(--g7);box-shadow:0 0 0 3px rgba(134,239,172,.2); }
+  .status-dot.active { background:var(--g5);box-shadow:0 0 0 3px rgba(34,197,94,.2); }
   .status-dot.fair { background:#f59e0b;box-shadow:0 0 0 3px rgba(245,158,11,.2); }
   .branch-name { font-size:12px;font-weight:600;color:var(--text);margin-bottom:2px; }
   .branch-sub { font-size:10px;color:var(--text3); }
-  .branch-co2 { font-size:22px;font-weight:800;color:var(--g2);margin:6px 0 2px; }
+  .branch-co2 { font-size:22px;font-weight:800;color:var(--text3);margin:6px 0 2px; }
+  .branch-co2.has-data { color:var(--g2); }
   .branch-co2-lbl { font-size:9px;color:var(--text3);letter-spacing:.5px; }
   .branch-score { display:flex;align-items:center;gap:6px;margin-top:8px; }
   .score-bar { flex:1;height:4px;background:var(--g9);border-radius:4px;overflow:hidden; }
   .score-fill { height:100%;border-radius:4px;background:linear-gradient(90deg,var(--g4),var(--g5)); }
-  .score-val { font-size:10px;font-weight:600;color:var(--g3); }
+  .score-val { font-size:10px;font-weight:600;color:var(--text3); }
+  .score-val.has-data { color:var(--g3); }
 
   /* CHART CARDS */
   .chart-card { background:var(--card);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow);border:1px solid var(--border); }
@@ -108,7 +119,8 @@
   .kpi-row { display:grid;grid-template-columns:repeat(3,1fr);gap:10px; }
   .kpi-card { background:var(--card);border-radius:16px;padding:14px 12px;text-align:center;box-shadow:var(--shadow);border:1px solid var(--border); }
   .kpi-icon { font-size:22px;margin-bottom:4px; }
-  .kpi-val { font-size:18px;font-weight:800;color:var(--g2);line-height:1; }
+  .kpi-val { font-size:18px;font-weight:800;color:var(--text3);line-height:1; }
+  .kpi-val.has-data { color:var(--g2); }
   .kpi-unit { font-size:9px;font-weight:500;color:var(--text3); }
   .kpi-lbl { font-size:10px;color:var(--text3);margin-top:3px; }
 
@@ -189,8 +201,6 @@
   }
   .waste-input:focus { border-color:var(--g4); }
 
-  .divider-form { height:1px;background:var(--border);margin:14px 0; }
-
   .btn-analyze {
     width:100%;padding:14px;
     background:linear-gradient(135deg,var(--g2),var(--g4));
@@ -202,7 +212,6 @@
   }
   .btn-analyze:hover { transform:translateY(-2px);box-shadow:0 8px 30px rgba(22,101,52,.4); }
   .btn-analyze:disabled { opacity:.6;cursor:not-allowed;transform:none; }
-  .btn-analyze.loading { pointer-events:none; }
   .spin-icon { animation:spin .8s linear infinite;display:inline-block; }
 
   .form-result-banner {
@@ -226,7 +235,8 @@
   .metric-chip-badge { font-size:9px;padding:2px 7px;border-radius:6px;font-weight:600; }
   .badge-up { background:#dcfce7;color:var(--g2); }
   .badge-down { background:#fee2e2;color:#991b1b; }
-  .metric-chip-val { font-size:22px;font-weight:800;color:var(--g2); }
+  .metric-chip-val { font-size:22px;font-weight:800;color:var(--text3); }
+  .metric-chip-val.has-data { color:var(--g2); }
   .metric-chip-unit { font-size:10px;color:var(--text3); }
 
   /* RANKING */
@@ -423,7 +433,7 @@
     <div class="section-title">Carbon รายเดือน</div>
     <div class="chart-card">
       <div class="chart-title">Carbon Emission 2024</div>
-      <div class="chart-sub">tCO₂e รายเดือนทุกสาขา</div>
+      <div class="chart-sub">tCO₂e รายเดือน — กรอกข้อมูลเพื่อเริ่มติดตาม</div>
       <div class="chart-wrap"><canvas id="carbonMonthlyChart"></canvas></div>
     </div>
   </div>
@@ -432,9 +442,9 @@
   <div class="section">
     <div class="section-title">การใช้ทรัพยากรรวม</div>
     <div class="kpi-row">
-      <div class="kpi-card"><div class="kpi-icon">⚡</div><div class="kpi-val" id="kpiElec">—</div><div class="kpi-unit">kWh</div><div class="kpi-lbl">ไฟฟ้า</div></div>
-      <div class="kpi-card"><div class="kpi-icon">💧</div><div class="kpi-val" id="kpiWater">—</div><div class="kpi-unit">m³</div><div class="kpi-lbl">น้ำ</div></div>
-      <div class="kpi-card"><div class="kpi-icon">⛽</div><div class="kpi-val" id="kpiFuel">—</div><div class="kpi-unit">L</div><div class="kpi-lbl">เชื้อเพลิง</div></div>
+      <div class="kpi-card"><div class="kpi-icon">⚡</div><div class="kpi-val" id="kpiElec">0</div><div class="kpi-unit">kWh</div><div class="kpi-lbl">ไฟฟ้า</div></div>
+      <div class="kpi-card"><div class="kpi-icon">💧</div><div class="kpi-val" id="kpiWater">0</div><div class="kpi-unit">m³</div><div class="kpi-lbl">น้ำ</div></div>
+      <div class="kpi-card"><div class="kpi-icon">⛽</div><div class="kpi-val" id="kpiFuel">0</div><div class="kpi-unit">L</div><div class="kpi-lbl">เชื้อเพลิง</div></div>
     </div>
   </div>
 
@@ -650,9 +660,9 @@
       <div class="ai-insight-box" id="aiInsightBox">
         <div class="ai-insight-title">
           <span>💡</span> AI Insight
-          <div class="generating-anim" id="genAnim"><div class="dot-anim"></div><div class="dot-anim"></div><div class="dot-anim"></div></div>
+          <div class="generating-anim" id="genAnim" style="display:none"><div class="dot-anim"></div><div class="dot-anim"></div><div class="dot-anim"></div></div>
         </div>
-        <div class="ai-insight-text" id="aiInsightText">กำลังวิเคราะห์แนวโน้ม...</div>
+        <div class="ai-insight-text" id="aiInsightText">กรอกข้อมูลในหน้า Upload เพื่อเริ่มการคาดการณ์ด้วย AI</div>
       </div>
     </div>
   </div>
@@ -666,10 +676,10 @@
       <button class="tab-btn" onclick="switchTab(this,'branch')">สาขา</button>
     </div>
     <div class="metric-chips">
-      <div class="metric-chip"><div class="metric-chip-top"><span class="metric-chip-lbl">Carbon รวม</span><span class="metric-chip-badge badge-down">▼ 4.2%</span></div><div class="metric-chip-val" id="m1">—</div><div class="metric-chip-unit">tCO₂e</div></div>
-      <div class="metric-chip"><div class="metric-chip-top"><span class="metric-chip-lbl">ไฟฟ้ารวม</span><span class="metric-chip-badge badge-up">▲ 1.1%</span></div><div class="metric-chip-val" id="m2">—</div><div class="metric-chip-unit">kWh</div></div>
-      <div class="metric-chip"><div class="metric-chip-top"><span class="metric-chip-lbl">น้ำรวม</span><span class="metric-chip-badge badge-down">▼ 2.3%</span></div><div class="metric-chip-val" id="m3">—</div><div class="metric-chip-unit">m³</div></div>
-      <div class="metric-chip"><div class="metric-chip-top"><span class="metric-chip-lbl">เชื้อเพลิง</span><span class="metric-chip-badge badge-down">▼ 3.7%</span></div><div class="metric-chip-val" id="m4">—</div><div class="metric-chip-unit">ลิตร</div></div>
+      <div class="metric-chip"><div class="metric-chip-top"><span class="metric-chip-lbl">Carbon รวม</span></div><div class="metric-chip-val" id="m1">0</div><div class="metric-chip-unit">tCO₂e</div></div>
+      <div class="metric-chip"><div class="metric-chip-top"><span class="metric-chip-lbl">ไฟฟ้ารวม</span></div><div class="metric-chip-val" id="m2">0</div><div class="metric-chip-unit">kWh</div></div>
+      <div class="metric-chip"><div class="metric-chip-top"><span class="metric-chip-lbl">น้ำรวม</span></div><div class="metric-chip-val" id="m3">0</div><div class="metric-chip-unit">m³</div></div>
+      <div class="metric-chip"><div class="metric-chip-top"><span class="metric-chip-lbl">เชื้อเพลิง</span></div><div class="metric-chip-val" id="m4">0</div><div class="metric-chip-unit">ลิตร</div></div>
     </div>
     <div class="chart-card">
       <div class="chart-title">แนวโน้มการใช้พลังงาน</div>
@@ -734,7 +744,7 @@
     <div class="section-title" style="margin-top:20px">TCFD Framework</div>
     <div class="tcfd-grid">
       <div class="tcfd-item"><div class="tcfd-icon">🏛️</div><div class="tcfd-title">Governance</div><div class="tcfd-desc">การกำกับดูแลด้านสภาพภูมิอากาศ</div><div class="tcfd-score green">✓ 92%</div></div>
-      <div class="tcfd-item"><div class="tcfd-icon">⚠️</div><div class="tcfd-title">Risk & Opp.</div><div class="tcfd-desc">ความเสี่ยงและโอกาสด้านภูมิอากาศ</div><div class="tcfd-score amber">● 74%</div></div>
+      <div class="tcfd-item"><div class="tcfd-icon">⚠️</div><div class="tcfd-title">Risk &amp; Opp.</div><div class="tcfd-desc">ความเสี่ยงและโอกาสด้านภูมิอากาศ</div><div class="tcfd-score amber">● 74%</div></div>
       <div class="tcfd-item"><div class="tcfd-icon">🎯</div><div class="tcfd-title">Strategy</div><div class="tcfd-desc">กลยุทธ์รับมือการเปลี่ยนแปลง</div><div class="tcfd-score green">✓ 88%</div></div>
       <div class="tcfd-item"><div class="tcfd-icon">📏</div><div class="tcfd-title">Metrics</div><div class="tcfd-desc">ตัวชี้วัดและเป้าหมาย Net Zero</div><div class="tcfd-score green">✓ 95%</div></div>
     </div>
@@ -744,8 +754,8 @@
     <div class="section-title">Carbon Credit Platform</div>
     <div class="credit-hero">
       <div class="credit-label">Carbon Credits Available</div>
-      <div class="credit-val" id="totalCredits">142 <span style="font-size:16px;opacity:.7">tCO₂e</span></div>
-      <div class="credit-sub">มูลค่าตลาดโดยประมาณ ฿ <span id="creditValue">284,000</span></div>
+      <div class="credit-val" id="totalCredits">0 <span style="font-size:16px;opacity:.7">tCO₂e</span></div>
+      <div class="credit-sub">มูลค่าตลาดโดยประมาณ ฿ <span id="creditValue">0</span></div>
       <div class="credit-actions">
         <button class="credit-btn buy" onclick="showToast('💰 เชื่อมต่อ Carbon Credit Exchange...')">🛒 ซื้อ Credits</button>
         <button class="credit-btn sell" onclick="showToast('📈 ส่งคำสั่งขาย Carbon Credits...')">💸 ขาย Credits</button>
@@ -845,32 +855,34 @@ const BRANCHES = [
   { id:"RTK", name:"สาขาราติก้า",   nameEn:"Ratica",        icon:"🫘", color:"#0f766e" },
 ];
 
-function rng(seed){ let s=seed; return ()=>{ s=(s*1103515245+12345)&0x7fffffff; return s/0x7fffffff; }; }
+// ══ BUG FIX #1: ข้อมูลเริ่มต้นทุกค่าเป็น 0 / false ══
+// ไม่มี dummy random data — ค่าทุกตัวเริ่มที่ 0 ทั้งหมด
+let BRANCH_DATA = BRANCHES.map(b => ({
+  ...b,
+  elec: 0,
+  water: 0,
+  fuel: 0,
+  co2: 0,
+  score: 0,
+  entries: 0,
+  hasData: false,   // <-- flag บอกว่ายังไม่มีข้อมูล
+  waste: { general:0, recycle:0, organic:0, hazard:0 },
+  status: 'none'
+}));
 
-// Base data — updated when user submits manual entry
-let BRANCH_DATA = BRANCHES.map((b,i)=>{
-  const r=rng(i*99+7);
-  const elec=Math.round(2000+r()*3000);
-  const water=Math.round(50+r()*200);
-  const fuel=Math.round(100+r()*400);
-  const co2=+(elec*0.4716/1000+water*0.00149+fuel*2.31).toFixed(2);
-  const score=Math.round(60+r()*39);
-  const waste={general:Math.round(20+r()*80),recycle:Math.round(10+r()*50),organic:Math.round(5+r()*30),hazard:Math.round(1+r()*10)};
-  return {...b,elec,water,fuel,co2,score,entries:Math.round(20+r()*80),waste,
-    status:score>=85?"excellent":score>=70?"good":"fair"};
-});
+// Monthly log: เก็บข้อมูลที่กรอกเข้ามาจริงๆ
+// key: "branchId_YYYY-MM" → { elec, water, fuel, co2, waste }
+const MONTHLY_LOG = {};
 
-const MONTHS=["ม.ค.","ก.พ.","มี.ค.","เม.ย.","พ.ค.","มิ.ย.","ก.ค.","ส.ค.","ก.ย.","ต.ค.","พ.ย.","ธ.ค."];
-const MONTHLY_DATA=MONTHS.map((m,i)=>{
-  const r=rng(i*31+3);
-  return{month:m,electricity:Math.round(8000+r()*4000),water:Math.round(500+r()*300),
-    fuel:Math.round(800+r()*600),carbon:+(4+r()*3).toFixed(2)};
-});
-const DAILY_DATA=Array.from({length:30},(_,i)=>{ const r=rng(i*17+5); return{day:i+1,carbon:+(0.1+r()*0.4).toFixed(3),energy:Math.round(200+r()*300)}; });
+// ██ BUG FIX #2: chart carbon monthly เริ่มเป็น 0 ทุกเดือน
+const MONTHS = ["ม.ค.","ก.พ.","มี.ค.","เม.ย.","พ.ค.","มิ.ย.","ก.ค.","ส.ค.","ก.ย.","ต.ค.","พ.ย.","ธ.ค."];
+
+// Monthly carbon summary (index 0–11 = ม.ค.–ธ.ค.) — เริ่มที่ 0
+let MONTHLY_CARBON = Array(12).fill(0);
 
 function getTotals(){
   return {
-    co2: BRANCH_DATA.reduce((s,b)=>s+b.co2,0).toFixed(2),
+    co2: BRANCH_DATA.reduce((s,b)=>+(s+b.co2).toFixed(4),0).toFixed(2),
     elec: BRANCH_DATA.reduce((s,b)=>s+b.elec,0),
     water: BRANCH_DATA.reduce((s,b)=>s+b.water,0),
     fuel: BRANCH_DATA.reduce((s,b)=>s+b.fuel,0),
@@ -878,21 +890,25 @@ function getTotals(){
   };
 }
 
+function hasAnyData(){
+  return BRANCH_DATA.some(b=>b.hasData);
+}
+
 // ══════════════ HERO ══════════════
 function renderHero(page){
-  const slot=document.getElementById('heroSlot');
-  const t=getTotals();
-  const heroes={
+  const slot = document.getElementById('heroSlot');
+  const t = getTotals();
+  const heroes = {
     home:`<div class="hero-card">
       <div class="hero-label">Carbon Footprint รวมองค์กร</div>
       <div style="display:flex;align-items:flex-end;gap:4px">
         <div class="hero-co2">${t.co2}</div>
         <div style="color:rgba(255,255,255,.6);font-size:13px;margin-bottom:10px">tCO₂e</div>
       </div>
-      <div class="hero-sub">ข้อมูลสะสมทุกสาขา</div>
+      <div class="hero-sub">${hasAnyData()?'ข้อมูลสะสมทุกสาขา':'ยังไม่มีข้อมูล — เริ่มกรอกข้อมูลในหน้า Upload'}</div>
       <div class="hero-kpis">
-        <div class="hero-kpi"><div class="hero-kpi-val">${t.entries}</div><div class="hero-kpi-lbl">รายการ</div></div>
-        <div class="hero-kpi"><div class="hero-kpi-val">${num(t.elec)}</div><div class="hero-kpi-lbl">kWh</div></div>
+        <div class="hero-kpi"><div class="hero-kpi-val">${t.entries||0}</div><div class="hero-kpi-lbl">รายการ</div></div>
+        <div class="hero-kpi"><div class="hero-kpi-val">${t.elec>0?num(t.elec):'0'}</div><div class="hero-kpi-lbl">kWh</div></div>
         <div class="hero-kpi"><div class="hero-kpi-val">6</div><div class="hero-kpi-lbl">สาขา</div></div>
       </div>
       <div class="hero-tags">
@@ -906,20 +922,24 @@ function renderHero(page){
     ranking:`<div class="hero-card" style="padding:14px 18px"><div class="hero-label">Branch Ranking</div><div style="display:flex;align-items:center;gap:12px;margin-top:4px"><span style="font-size:32px">🏆</span><div><div style="color:#fff;font-size:17px;font-weight:700">จัดอันดับสาขา</div><div style="color:rgba(255,255,255,.65);font-size:11px">Sustainability · Carbon · Energy</div></div></div></div>`,
     reports:`<div class="hero-card" style="padding:14px 18px"><div class="hero-label">AI Reports · TCFD · Carbon Credit</div><div style="display:flex;align-items:center;gap:12px;margin-top:4px"><span style="font-size:32px">📄</span><div><div style="color:#fff;font-size:17px;font-weight:700">รายงานอัตโนมัติ + ESG Platform</div><div style="color:rgba(255,255,255,.65);font-size:11px">AI Report · TCFD · Carbon Credit</div></div></div></div>`,
   };
-  slot.innerHTML=heroes[page]||heroes.home;
+  slot.innerHTML = heroes[page] || heroes.home;
 }
 
 // ══════════════ NAVIGATION ══════════════
-let currentPage='home';
-const charts={};
+let currentPage = 'home';
+const charts = {};
 
-function navigate(page,btn){
+function navigate(page, btn){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.getElementById('page-'+page).classList.add('active');
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   if(btn) btn.classList.add('active');
-  else document.querySelectorAll('.nav-item').forEach(n=>{ if(n.getAttribute('onclick')&&n.getAttribute('onclick').includes("'"+page+"'")) n.classList.add('active'); });
-  renderHero(page); currentPage=page; window.scrollTo(0,0);
+  else document.querySelectorAll('.nav-item').forEach(n=>{
+    if(n.getAttribute('onclick')&&n.getAttribute('onclick').includes("'"+page+"'")) n.classList.add('active');
+  });
+  renderHero(page);
+  currentPage = page;
+  window.scrollTo(0,0);
   if(page==='analytics') initAnalyticsCharts();
   if(page==='ranking')   renderRanking('score');
 }
@@ -927,42 +947,86 @@ function navigate(page,btn){
 // ══════════════ HOME CHARTS ══════════════
 function initHomeCharts(){
   renderBranchCards();
-  const t=getTotals();
-  document.getElementById('kpiElec').textContent=num(t.elec);
-  document.getElementById('kpiWater').textContent=num(t.water);
-  document.getElementById('kpiFuel').textContent=num(t.fuel);
+  updateKPIs();
 
   if(charts.carbonMonthly) charts.carbonMonthly.destroy();
-  const ctx=document.getElementById('carbonMonthlyChart').getContext('2d');
-  charts.carbonMonthly=new Chart(ctx,{
+  const ctx = document.getElementById('carbonMonthlyChart').getContext('2d');
+  charts.carbonMonthly = new Chart(ctx, {
     type:'line',
-    data:{labels:MONTHLY_DATA.map(d=>d.month),datasets:[{label:'tCO₂e',data:MONTHLY_DATA.map(d=>d.carbon),borderColor:'#16a34a',backgroundColor:'rgba(22,163,74,.08)',borderWidth:2.5,tension:.4,fill:true,pointBackgroundColor:'#16a34a',pointRadius:3,pointHoverRadius:6}]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:v=>v.raw+' tCO₂e'}}},scales:{x:{grid:{display:false},ticks:{font:{size:10},color:'#9ca3af'}},y:{grid:{color:'rgba(0,0,0,.04)'},ticks:{font:{size:10},color:'#9ca3af'}}}}
+    data:{
+      labels: MONTHS,
+      datasets:[{
+        label:'tCO₂e',
+        data: MONTHLY_CARBON,
+        borderColor:'#16a34a',
+        backgroundColor:'rgba(22,163,74,.08)',
+        borderWidth:2.5,
+        tension:.4,
+        fill:true,
+        pointBackgroundColor:'#16a34a',
+        pointRadius:3,
+        pointHoverRadius:6
+      }]
+    },
+    options:{
+      responsive:true,
+      maintainAspectRatio:false,
+      plugins:{
+        legend:{display:false},
+        tooltip:{callbacks:{label:v=>v.raw+' tCO₂e'}}
+      },
+      scales:{
+        x:{grid:{display:false},ticks:{font:{size:10},color:'#9ca3af'}},
+        y:{grid:{color:'rgba(0,0,0,.04)'},ticks:{font:{size:10},color:'#9ca3af'},min:0}
+      }
+    }
   });
 }
 
+function updateKPIs(){
+  const t = getTotals();
+  // ██ BUG FIX #3: ใช้ class has-data ควบคุมสีข้อความ
+  const elecEl = document.getElementById('kpiElec');
+  const waterEl = document.getElementById('kpiWater');
+  const fuelEl = document.getElementById('kpiFuel');
+
+  elecEl.textContent = t.elec > 0 ? num(t.elec) : '0';
+  waterEl.textContent = t.water > 0 ? num(t.water) : '0';
+  fuelEl.textContent = t.fuel > 0 ? num(t.fuel) : '0';
+
+  elecEl.className = 'kpi-val' + (t.elec>0?' has-data':'');
+  waterEl.className = 'kpi-val' + (t.water>0?' has-data':'');
+  fuelEl.className = 'kpi-val' + (t.fuel>0?' has-data':'');
+}
+
 function renderBranchCards(){
-  const grid=document.getElementById('branchGrid');
-  grid.innerHTML=BRANCH_DATA.map((b,i)=>`
+  const grid = document.getElementById('branchGrid');
+  grid.innerHTML = BRANCH_DATA.map((b,i) => `
     <div class="branch-card" style="--bc:${b.color}" onclick="openBranchModal(${i})">
-      <div class="branch-head"><span class="branch-icon">${b.icon}</span><div class="status-dot ${b.status==='fair'?'fair':''}"></div></div>
+      <div class="branch-head">
+        <span class="branch-icon">${b.icon}</span>
+        <div class="status-dot ${b.hasData?(b.status==='fair'?'fair':'active'):''}"></div>
+      </div>
       <div class="branch-name">${b.name}</div>
       <div class="branch-sub">${b.nameEn} · ${b.id}</div>
-      <div class="branch-co2">${b.co2}</div>
-      <div class="branch-co2-lbl">tCO₂e</div>
-      <div class="branch-score"><div class="score-bar"><div class="score-fill" style="width:${b.score}%"></div></div><span class="score-val">${b.score}</span></div>
+      <div class="branch-co2 ${b.hasData?'has-data':''}">${b.hasData?b.co2:'—'}</div>
+      <div class="branch-co2-lbl">${b.hasData?'tCO₂e':'ยังไม่มีข้อมูล'}</div>
+      <div class="branch-score">
+        <div class="score-bar"><div class="score-fill" style="width:${b.score}%"></div></div>
+        <span class="score-val ${b.hasData?'has-data':''}">${b.hasData?b.score:'—'}</span>
+      </div>
     </div>
   `).join('');
 }
 
 // ══════════════ MANUAL DATA ENTRY ══════════════
 function analyzeManualData(){
-  const btn=document.getElementById('btnAnalyze');
-  const branchId=document.getElementById('f-branch').value;
-  const month=document.getElementById('f-month').value;
-  const elec=parseFloat(document.getElementById('f-elec').value)||0;
-  const water=parseFloat(document.getElementById('f-water').value)||0;
-  const fuel=parseFloat(document.getElementById('f-fuel').value)||0;
+  const btn = document.getElementById('btnAnalyze');
+  const branchId = document.getElementById('f-branch').value;
+  const monthVal = document.getElementById('f-month').value; // "YYYY-MM"
+  const elec = parseFloat(document.getElementById('f-elec').value) || 0;
+  const water = parseFloat(document.getElementById('f-water').value) || 0;
+  const fuel = parseFloat(document.getElementById('f-fuel').value) || 0;
 
   if(!elec && !water && !fuel){
     showToast('⚠️ กรุณากรอกข้อมูลอย่างน้อย 1 รายการ');
@@ -970,54 +1034,78 @@ function analyzeManualData(){
   }
 
   // Loading state
-  btn.innerHTML='<span class="spin-icon">⏳</span> กำลังคำนวณ Carbon...';
-  btn.disabled=true;
+  btn.innerHTML = '<span class="spin-icon">⏳</span> กำลังคำนวณ Carbon...';
+  btn.disabled = true;
 
   setTimeout(()=>{
-    // Calculate carbon
-    const co2Elec=+(elec*0.4716/1000).toFixed(4);
-    const co2Water=+(water*0.00149).toFixed(4);
-    const fuelType=document.getElementById('f-fuel-type').value;
-    const fuelFactor={diesel:2.67,gasoline:2.31,lpg:2.98,cng:2.15}[fuelType]||2.31;
-    const co2Fuel=+(fuel*fuelFactor/1000).toFixed(4);
-    const co2Total=+(co2Elec+co2Water+co2Fuel).toFixed(4);
+    // คำนวณ Carbon
+    const co2Elec = +(elec * 0.4716 / 1000).toFixed(4);
+    const co2Water = +(water * 0.00149).toFixed(4);
+    const fuelType = document.getElementById('f-fuel-type').value;
+    const fuelFactor = {diesel:2.67, gasoline:2.31, lpg:2.98, cng:2.15}[fuelType] || 2.31;
+    const co2Fuel = +(fuel * fuelFactor / 1000).toFixed(4);
+    const co2Total = +(co2Elec + co2Water + co2Fuel).toFixed(4);
 
     // Waste totals
-    const wGen=(parseFloat(document.getElementById('w-food').value)||0)+(parseFloat(document.getElementById('w-paper').value)||0)+(parseFloat(document.getElementById('w-plastic').value)||0);
-    const wRec=(parseFloat(document.getElementById('wr-paper').value)||0)+(parseFloat(document.getElementById('wr-plastic').value)||0)+(parseFloat(document.getElementById('wr-metal').value)||0);
-    const wOrg=(parseFloat(document.getElementById('wo-coffee').value)||0)+(parseFloat(document.getElementById('wo-food').value)||0)+(parseFloat(document.getElementById('wo-other').value)||0);
-    const wHaz=(parseFloat(document.getElementById('wh-chem').value)||0)+(parseFloat(document.getElementById('wh-batt').value)||0)+(parseFloat(document.getElementById('wh-landfill').value)||0);
-    const wTotal=wGen+wRec+wOrg+wHaz;
-    const recycleRate=wTotal>0?((wRec+wOrg)/wTotal*100).toFixed(1):0;
+    const wGen = (parseFloat(document.getElementById('w-food').value)||0)
+               + (parseFloat(document.getElementById('w-paper').value)||0)
+               + (parseFloat(document.getElementById('w-plastic').value)||0);
+    const wRec = (parseFloat(document.getElementById('wr-paper').value)||0)
+               + (parseFloat(document.getElementById('wr-plastic').value)||0)
+               + (parseFloat(document.getElementById('wr-metal').value)||0);
+    const wOrg = (parseFloat(document.getElementById('wo-coffee').value)||0)
+               + (parseFloat(document.getElementById('wo-food').value)||0)
+               + (parseFloat(document.getElementById('wo-other').value)||0);
+    const wHaz = (parseFloat(document.getElementById('wh-chem').value)||0)
+               + (parseFloat(document.getElementById('wh-batt').value)||0)
+               + (parseFloat(document.getElementById('wh-landfill').value)||0);
+    const wTotal = wGen + wRec + wOrg + wHaz;
+    const recycleRate = wTotal > 0 ? ((wRec+wOrg)/wTotal*100).toFixed(1) : 0;
 
-    // Update branch data
-    const bIdx=BRANCH_DATA.findIndex(b=>b.id===branchId);
-    if(bIdx>=0){
-      if(elec) BRANCH_DATA[bIdx].elec=elec;
-      if(water) BRANCH_DATA[bIdx].water=water;
-      if(fuel)  BRANCH_DATA[bIdx].fuel=fuel;
-      if(co2Total>0) BRANCH_DATA[bIdx].co2=co2Total;
-      BRANCH_DATA[bIdx].entries++;
-      if(wTotal>0){
-        BRANCH_DATA[bIdx].waste={
-          general:wGen,recycle:wRec,organic:wOrg,hazard:wHaz
-        };
-      }
-      // Recalculate score
-      const newScore=Math.min(100,Math.round(BRANCH_DATA[bIdx].score + recycleRate*0.2 - (co2Total>2?5:0)));
-      BRANCH_DATA[bIdx].score=Math.max(50,newScore);
-      BRANCH_DATA[bIdx].status=BRANCH_DATA[bIdx].score>=85?"excellent":BRANCH_DATA[bIdx].score>=70?"good":"fair";
+    // ██ BUG FIX #4: อัปเดต BRANCH_DATA สะสม (ไม่ replace ทั้งหมด — บวกทับ)
+    const bIdx = BRANCH_DATA.findIndex(b=>b.id===branchId);
+    if(bIdx >= 0){
+      const b = BRANCH_DATA[bIdx];
+      b.elec  += elec;
+      b.water += water;
+      b.fuel  += fuel;
+      b.co2   = +(b.co2 + co2Total).toFixed(4);
+      b.entries++;
+      b.hasData = true;
+      b.waste.general += wGen;
+      b.waste.recycle += wRec;
+      b.waste.organic += wOrg;
+      b.waste.hazard  += wHaz;
+
+      // คำนวณ score จากข้อมูลจริง
+      // score = recycleRate ถ่วงน้ำหนัก + ปรับตาม co2 ต่อรายการ
+      const co2PerEntry = b.co2 / b.entries;
+      const baseScore = Math.min(100, Math.round(50 + parseFloat(recycleRate)*0.5 - co2PerEntry*10));
+      b.score = Math.max(1, Math.min(100, baseScore));
+      b.status = b.score>=85?"excellent":b.score>=70?"good":"fair";
     }
 
-    // Show result banner
-    const resultEl=document.getElementById('analyzeResult');
-    const monthLabel=month?month:'—';
-    resultEl.style.display='block';
-    resultEl.innerHTML=`
+    // ██ BUG FIX #5: บันทึก Monthly Carbon Log แยกตามเดือน
+    const monthIndex = monthVal ? (parseInt(monthVal.split('-')[1]) - 1) : new Date().getMonth();
+    MONTHLY_CARBON[monthIndex] = +(MONTHLY_CARBON[monthIndex] + co2Total).toFixed(4);
+
+    // Log รายเดือน
+    const logKey = `${branchId}_${monthVal}`;
+    if(!MONTHLY_LOG[logKey]) MONTHLY_LOG[logKey] = {elec:0,water:0,fuel:0,co2:0};
+    MONTHLY_LOG[logKey].elec  += elec;
+    MONTHLY_LOG[logKey].water += water;
+    MONTHLY_LOG[logKey].fuel  += fuel;
+    MONTHLY_LOG[logKey].co2   = +(MONTHLY_LOG[logKey].co2 + co2Total).toFixed(4);
+
+    // แสดงผล
+    const resultEl = document.getElementById('analyzeResult');
+    const branchName = BRANCHES.find(b=>b.id===branchId)?.name || branchId;
+    resultEl.style.display = 'block';
+    resultEl.innerHTML = `
       <div class="form-result-banner">
         <div class="form-result-banner-icon">✅</div>
         <div class="form-result-banner-text">
-          <h4>บันทึกสำเร็จ — ${BRANCHES.find(b=>b.id===branchId)?.name||branchId} · ${monthLabel}</h4>
+          <h4>บันทึกสำเร็จ — ${branchName} · ${monthVal||'—'}</h4>
           <p>Carbon: ${co2Total} tCO₂e · ขยะรีไซเคิล: ${recycleRate}% · ข้อมูลอัปเดตทุกหน้าแล้ว</p>
         </div>
       </div>
@@ -1047,42 +1135,75 @@ function analyzeManualData(){
         ${wTotal>0?`<div style="margin-top:8px;padding:10px;background:#fef9c3;border-radius:10px;border:1px solid #fde68a">
           <div style="font-size:11px;font-weight:600;color:#92400e;margin-bottom:4px">📦 สรุปขยะ</div>
           <div style="font-size:11px;color:#78350f;line-height:1.7">
-            ทิ้ง: <b>${wGen} กก.</b> · รีไซเคิล: <b>${wRec} กก.</b> · ปุ๋ย: <b>${wOrg} กก.</b> · อันตราย/ฝังกลบ: <b>${wHaz} กก.</b><br>
+            ทิ้ง: <b>${wGen} กก.</b> · รีไซเคิล: <b>${wRec} กก.</b> · ปุ๋ย: <b>${wOrg} กก.</b> · อันตราย: <b>${wHaz} กก.</b><br>
             รวม: <b>${wTotal.toFixed(1)} กก.</b> · Zero Waste Rate: <b>${recycleRate}%</b>
           </div>
         </div>`:''}
       </div>
     `;
 
-    // Refresh all pages
+    // Refresh ทุกหน้า
     renderBranchCards();
-    const t=getTotals();
-    document.getElementById('kpiElec').textContent=num(t.elec);
-    document.getElementById('kpiWater').textContent=num(t.water);
-    document.getElementById('kpiFuel').textContent=num(t.fuel);
+    updateKPIs();
     renderHero(currentPage);
 
-    // Reset analytics charts so they refresh
-    ['trend','branchBar','donut','radar'].forEach(k=>{ if(charts[k]){charts[k].destroy();delete charts[k];} });
+    // อัปเดต carbon monthly chart
+    if(charts.carbonMonthly){
+      charts.carbonMonthly.data.datasets[0].data = [...MONTHLY_CARBON];
+      charts.carbonMonthly.update();
+    }
 
-    btn.innerHTML='🔍 วิเคราะห์และบันทึกข้อมูล';
-    btn.disabled=false;
-    showToast('✅ อัปเดตข้อมูล '+BRANCHES.find(b=>b.id===branchId)?.name+' เรียบร้อย');
+    // อัปเดต Carbon Credit
+    const totalCo2 = parseFloat(getTotals().co2);
+    const credits = Math.round(totalCo2 * 2.4);
+    const credEl = document.getElementById('totalCredits');
+    const credValEl = document.getElementById('creditValue');
+    if(credEl) credEl.innerHTML = credits + ' <span style="font-size:16px;opacity:.7">tCO₂e</span>';
+    if(credValEl) credValEl.textContent = (credits * 2000).toLocaleString();
+
+    // ██ BUG FIX #6: destroy charts analytics เพื่อ re-render ด้วยข้อมูลใหม่
+    ['trend','branchBar','donut','radar'].forEach(k=>{
+      if(charts[k]){ charts[k].destroy(); delete charts[k]; }
+    });
+
+    btn.innerHTML = '🔍 วิเคราะห์และบันทึกข้อมูล';
+    btn.disabled = false;
+    showToast('✅ อัปเดตข้อมูล '+branchName+' เรียบร้อย');
     pushNotif('📊 บันทึกข้อมูลสำเร็จ','Carbon: '+co2Total+' tCO₂e · Recycle: '+recycleRate+'%','done');
   }, 1200);
 }
 
 // ══════════════ AI FORECAST ══════════════
 function initForecast(){
-  const futureMonths=['ก.ค.','ส.ค.','ก.ย.'];
-  const t=getTotals();
-  const baseCO2=parseFloat(t.co2);
-  const forecasts=futureMonths.map((m,i)=>{
-    const r=rng(i*77+3)();
-    const trend=(r-.4)*8;
-    return{month:m,val:(baseCO2*(1+trend/100)).toFixed(2),trend};
+  const futureMonths = ['ก.ค.','ส.ค.','ก.ย.'];
+  const t = getTotals();
+  const baseCO2 = parseFloat(t.co2);
+
+  // ██ BUG FIX #7: ถ้าไม่มีข้อมูล แสดง empty state แทน forecast
+  if(!hasAnyData()){
+    document.getElementById('forecastGrid').innerHTML = `
+      <div style="grid-column:1/-1">
+        <div class="empty-state">
+          <div class="empty-state-icon">🤖</div>
+          <div class="empty-state-title">ยังไม่มีข้อมูลสำหรับคาดการณ์</div>
+          <div class="empty-state-sub">กรอกข้อมูลสาขาอย่างน้อย 1 รายการ<br>เพื่อให้ AI เริ่มคาดการณ์ได้</div>
+          <button class="empty-state-btn" onclick="navigate('upload',null)">📝 ไปกรอกข้อมูล</button>
+        </div>
+      </div>`;
+    document.getElementById('aiInsightText').textContent = 'กรอกข้อมูลในหน้า Upload เพื่อเริ่มการคาดการณ์ด้วย AI';
+    const ga = document.getElementById('genAnim');
+    if(ga) ga.style.display='none';
+    return;
+  }
+
+  const forecasts = futureMonths.map((m,i)=>{
+    const seed = (baseCO2*1000 + i*77) | 0;
+    const r = ((seed*1103515245+12345)&0x7fffffff)/0x7fffffff;
+    const trend = (r-.4)*8;
+    return { month:m, val:(baseCO2*(1+trend/100)).toFixed(2), trend };
   });
-  document.getElementById('forecastGrid').innerHTML=forecasts.map(f=>`
+
+  document.getElementById('forecastGrid').innerHTML = forecasts.map(f=>`
     <div class="forecast-item">
       <div class="forecast-month">${f.month} 2024</div>
       <div class="forecast-val">${f.val}</div>
@@ -1091,81 +1212,211 @@ function initForecast(){
     </div>
   `).join('');
 
-  const genAnim=document.getElementById('genAnim');
-  if(genAnim) genAnim.style.display='flex';
-  document.getElementById('aiInsightText').textContent='กำลังวิเคราะห์แนวโน้ม...';
+  const ga = document.getElementById('genAnim');
+  if(ga) ga.style.display='flex';
+  document.getElementById('aiInsightText').textContent = 'กำลังวิเคราะห์แนวโน้ม...';
+
   setTimeout(()=>{
-    const ga=document.getElementById('genAnim');
-    if(ga) ga.style.display='none';
-    document.getElementById('aiInsightText').textContent=
-      `จากการวิเคราะห์แนวโน้ม 12 เดือน พบว่า Carbon Emission มีแนวโน้มลดลงในช่วง ก.ย.-ต.ค. เนื่องจากอุณหภูมิต่ำลงทำให้ใช้ไฟฟ้าแอร์น้อยลง แนะนำให้เร่ง Solar Panel ที่สาขา CPK เพื่อลด Scope 2 ได้อีก 18% ก่อนสิ้นปี 🌱`;
-  },2500);
+    const gaEl = document.getElementById('genAnim');
+    if(gaEl) gaEl.style.display='none';
+    const t2 = getTotals();
+    document.getElementById('aiInsightText').textContent =
+      `จากข้อมูล ${t2.entries} รายการที่กรอก Carbon Emission รวม ${t2.co2} tCO₂e — AI คาดการณ์แนวโน้มช่วง 3 เดือนข้างหน้า แนะนำติดตามการใช้ไฟฟ้าเป็นหลัก เพราะเป็นแหล่ง Scope 2 ที่ใหญ่ที่สุด 🌱`;
+  }, 2000);
 }
 
 // ══════════════ ANALYTICS CHARTS ══════════════
 function initAnalyticsCharts(){
-  const t=getTotals();
-  document.getElementById('m1').textContent=t.co2;
-  document.getElementById('m2').textContent=num(t.elec);
-  document.getElementById('m3').textContent=num(t.water);
-  document.getElementById('m4').textContent=num(t.fuel);
+  const t = getTotals();
+
+  // อัปเดต metric chips พร้อม has-data class
+  ['m1','m2','m3','m4'].forEach(id=>{ document.getElementById(id).className='metric-chip-val'; });
+  document.getElementById('m1').textContent = t.co2;
+  document.getElementById('m2').textContent = t.elec>0?num(t.elec):'0';
+  document.getElementById('m3').textContent = t.water>0?num(t.water):'0';
+  document.getElementById('m4').textContent = t.fuel>0?num(t.fuel):'0';
+  if(parseFloat(t.co2)>0) document.getElementById('m1').classList.add('has-data');
+  if(t.elec>0)  document.getElementById('m2').classList.add('has-data');
+  if(t.water>0) document.getElementById('m3').classList.add('has-data');
+  if(t.fuel>0)  document.getElementById('m4').classList.add('has-data');
+
   initForecast();
 
+  // ██ BUG FIX #8: Trend chart — ใช้ข้อมูลจาก MONTHLY_CARBON แทน random
   if(!charts.trend){
-    const ctx=document.getElementById('trendChart').getContext('2d');
-    charts.trend=new Chart(ctx,{type:'bar',data:{labels:DAILY_DATA.map(d=>''+d.day),datasets:[{label:'kWh',data:DAILY_DATA.map(d=>d.energy),backgroundColor:'rgba(22,163,74,.25)',borderColor:'#16a34a',borderWidth:1.5,borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{font:{size:9},color:'#9ca3af',maxTicksLimit:10}},y:{grid:{color:'rgba(0,0,0,.04)'},ticks:{font:{size:9},color:'#9ca3af'}}}}});
+    const ctx = document.getElementById('trendChart').getContext('2d');
+    // สร้าง daily data จาก monthly log จริง (หรือ 0 ถ้ายังไม่มี)
+    const dailyData = Array.from({length:30},(_,i)=>{
+      const dayTotal = MONTHLY_CARBON.reduce((s,v)=>s+v,0);
+      return +(dayTotal/30*((i+1)/30)).toFixed(3);
+    });
+    charts.trend = new Chart(ctx,{
+      type:'bar',
+      data:{
+        labels: Array.from({length:30},(_,i)=>`${i+1}`),
+        datasets:[{
+          label:'kWh (ประมาณ)',
+          data: hasAnyData()
+            ? dailyData
+            : Array(30).fill(0),
+          backgroundColor:'rgba(22,163,74,.25)',
+          borderColor:'#16a34a',
+          borderWidth:1.5,
+          borderRadius:4
+        }]
+      },
+      options:{
+        responsive:true,
+        maintainAspectRatio:false,
+        plugins:{legend:{display:false}},
+        scales:{
+          x:{grid:{display:false},ticks:{font:{size:9},color:'#9ca3af',maxTicksLimit:10}},
+          y:{grid:{color:'rgba(0,0,0,.04)'},ticks:{font:{size:9},color:'#9ca3af'},min:0}
+        }
+      }
+    });
   }
+
+  // ██ BUG FIX #9: Branch Bar — แสดง 0 ถ้าสาขาไม่มีข้อมูล
   if(!charts.branchBar){
-    const ctx=document.getElementById('branchBarChart').getContext('2d');
-    charts.branchBar=new Chart(ctx,{type:'bar',data:{labels:BRANCH_DATA.map(b=>b.id),datasets:[{label:'Score',data:BRANCH_DATA.map(b=>b.score),backgroundColor:BRANCH_DATA.map(b=>b.color+'88'),borderColor:BRANCH_DATA.map(b=>b.color),borderWidth:2,borderRadius:8}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{font:{size:11},color:'#374151'}},y:{grid:{color:'rgba(0,0,0,.04)'},ticks:{font:{size:10},color:'#9ca3af'},min:0,max:100}}}});
+    const ctx = document.getElementById('branchBarChart').getContext('2d');
+    charts.branchBar = new Chart(ctx,{
+      type:'bar',
+      data:{
+        labels: BRANCH_DATA.map(b=>b.id),
+        datasets:[{
+          label:'Score',
+          data: BRANCH_DATA.map(b=>b.score),
+          backgroundColor: BRANCH_DATA.map(b=>b.hasData?b.color+'88':'#e5e7eb'),
+          borderColor: BRANCH_DATA.map(b=>b.hasData?b.color:'#d1d5db'),
+          borderWidth:2,
+          borderRadius:8
+        }]
+      },
+      options:{
+        responsive:true,
+        maintainAspectRatio:false,
+        plugins:{legend:{display:false}},
+        scales:{
+          x:{grid:{display:false},ticks:{font:{size:11},color:'#374151'}},
+          y:{grid:{color:'rgba(0,0,0,.04)'},ticks:{font:{size:10},color:'#9ca3af'},min:0,max:100}
+        }
+      }
+    });
   }
+
+  // ██ BUG FIX #10: Donut — แสดง "ยังไม่มีข้อมูล" ถ้า total = 0
   if(!charts.donut){
-    const ctx=document.getElementById('donutChart').getContext('2d');
-    const e=+(t.elec*0.4716/1000).toFixed(1),w=+(t.water*0.00149).toFixed(1),f=+(t.fuel*2.31).toFixed(1);
-    charts.donut=new Chart(ctx,{type:'doughnut',data:{labels:['ไฟฟ้า','น้ำ','เชื้อเพลิง'],datasets:[{data:[e,w,f],backgroundColor:['#16a34a','#22d3ee','#f59e0b'],borderWidth:0,hoverOffset:8}]},options:{responsive:true,maintainAspectRatio:false,cutout:'68%',plugins:{legend:{position:'right',labels:{font:{size:11},color:'#374151',padding:16,usePointStyle:true}},tooltip:{callbacks:{label:v=>`${v.label}: ${v.raw} tCO₂e`}}}}});
+    const ctx = document.getElementById('donutChart').getContext('2d');
+    const totalCo2 = parseFloat(t.co2);
+    const e = +(t.elec*0.4716/1000).toFixed(2);
+    const w = +(t.water*0.00149).toFixed(2);
+    const f = +(t.fuel*2.31/1000).toFixed(2);
+    const hasValues = (e+w+f) > 0;
+    charts.donut = new Chart(ctx,{
+      type:'doughnut',
+      data:{
+        labels:['ไฟฟ้า','น้ำ','เชื้อเพลิง'],
+        datasets:[{
+          data: hasValues ? [e,w,f] : [1,1,1],
+          backgroundColor: hasValues ? ['#16a34a','#22d3ee','#f59e0b'] : ['#e5e7eb','#e5e7eb','#e5e7eb'],
+          borderWidth:0,
+          hoverOffset:8
+        }]
+      },
+      options:{
+        responsive:true,
+        maintainAspectRatio:false,
+        cutout:'68%',
+        plugins:{
+          legend:{
+            position:'right',
+            labels:{font:{size:11},color:'#374151',padding:16,usePointStyle:true}
+          },
+          tooltip:{
+            callbacks:{
+              label: v => hasValues ? `${v.label}: ${v.raw} tCO₂e` : 'ยังไม่มีข้อมูล'
+            }
+          }
+        }
+      }
+    });
   }
 }
 
 // ══════════════ RANKING ══════════════
 function renderRanking(mode){
-  let sorted=[...BRANCH_DATA];
-  if(mode==='score')  sorted.sort((a,b)=>b.score-a.score);
-  if(mode==='carbon') sorted.sort((a,b)=>a.co2-b.co2);
-  if(mode==='energy') sorted.sort((a,b)=>a.elec-b.elec);
-  const medals=['🥇','🥈','🥉'],cls=['gold','silver','bronze'];
-  const maxVal=mode==='score'?100:mode==='carbon'?Math.max(...sorted.map(b=>b.co2)):Math.max(...sorted.map(b=>b.elec));
-  document.getElementById('rankList').innerHTML=sorted.map((b,i)=>{
-    const val=mode==='score'?b.score:mode==='carbon'?b.co2:b.elec;
-    const unit=mode==='score'?'pts':mode==='carbon'?'tCO₂e':'kWh';
-    const pct=Math.round((mode==='carbon'||mode==='energy'?(maxVal-val)/maxVal:val/maxVal)*100);
-    return `<div class="rank-card" onclick="openBranchModal(${BRANCH_DATA.indexOf(b)})">
-      <div class="rank-num ${cls[i]||''}">${i<3?medals[i]:i+1}</div>
-      <div class="rank-info"><div class="rank-name">${b.icon} ${b.name}</div><div class="rank-sub">${b.nameEn}</div><div class="rank-bar-wrap"><div class="rank-bar-fill" style="width:${pct}%"></div></div></div>
-      <div class="rank-score"><div class="rank-score-val">${val}</div><div class="rank-score-lbl">${unit}</div></div>
-    </div>`;
-  }).join('');
+  let sorted = [...BRANCH_DATA];
+  // ██ BUG FIX #11: Ranking — สาขาที่มีข้อมูลขึ้นก่อน
+  sorted.sort((a,b)=>{
+    if(a.hasData && !b.hasData) return -1;
+    if(!a.hasData && b.hasData) return 1;
+    if(mode==='score')  return b.score - a.score;
+    if(mode==='carbon') return a.co2 - b.co2;
+    if(mode==='energy') return a.elec - b.elec;
+    return 0;
+  });
 
-  // ESG Radar — all 6 branches (destroy and rebuild when data changes)
+  const medals = ['🥇','🥈','🥉'];
+  const cls = ['gold','silver','bronze'];
+  const withData = sorted.filter(b=>b.hasData);
+  const maxVal = withData.length>0
+    ? (mode==='score' ? 100 : mode==='carbon' ? Math.max(...withData.map(b=>b.co2)) : Math.max(...withData.map(b=>b.elec)))
+    : 1;
+
+  if(!hasAnyData()){
+    document.getElementById('rankList').innerHTML = `
+      <div class="card">
+        <div class="empty-state">
+          <div class="empty-state-icon">🏆</div>
+          <div class="empty-state-title">ยังไม่มีข้อมูลจัดอันดับ</div>
+          <div class="empty-state-sub">กรอกข้อมูลสาขาเพื่อเริ่มการจัดอันดับ</div>
+          <button class="empty-state-btn" onclick="navigate('upload',null)">📝 ไปกรอกข้อมูล</button>
+        </div>
+      </div>`;
+  } else {
+    document.getElementById('rankList').innerHTML = sorted.map((b,i)=>{
+      const val = mode==='score'?b.score:mode==='carbon'?b.co2:b.elec;
+      const unit = mode==='score'?'pts':mode==='carbon'?'tCO₂e':'kWh';
+      const pct = b.hasData
+        ? Math.round((mode==='carbon'||mode==='energy'?(maxVal-val)/maxVal:val/maxVal)*100)
+        : 0;
+      const rankIdx = withData.indexOf(b);
+      return `<div class="rank-card" onclick="openBranchModal(${BRANCH_DATA.indexOf(b)})">
+        <div class="rank-num ${b.hasData?(cls[rankIdx]||''):''}">
+          ${b.hasData&&rankIdx<3?medals[rankIdx]:(b.hasData?rankIdx+1:'—')}
+        </div>
+        <div class="rank-info">
+          <div class="rank-name">${b.icon} ${b.name}</div>
+          <div class="rank-sub">${b.hasData?b.nameEn:'ยังไม่มีข้อมูล'}</div>
+          <div class="rank-bar-wrap"><div class="rank-bar-fill" style="width:${pct}%"></div></div>
+        </div>
+        <div class="rank-score">
+          <div class="rank-score-val" style="color:${b.hasData?'var(--g2)':'var(--text3)'}">${b.hasData?val:'—'}</div>
+          <div class="rank-score-lbl">${b.hasData?unit:''}</div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  // ESG Radar
   if(charts.radar){ charts.radar.destroy(); delete charts.radar; }
   setTimeout(()=>{
-    const ctx=document.getElementById('radarChart');
+    const ctx = document.getElementById('radarChart');
     if(!ctx) return;
-    charts.radar=new Chart(ctx.getContext('2d'),{
+    charts.radar = new Chart(ctx.getContext('2d'),{
       type:'radar',
       data:{
         labels:['Score','ประสิทธิภาพ','ลด Carbon','ค่าไฟ↓','น้ำ↓'],
-        datasets:BRANCH_DATA.map((b,i)=>({
-          label:b.id,
-          data:[
-            b.score,
-            Math.round(40+rng(i*11)()*60),
-            Math.round(40+rng(i*13)()*60),
-            Math.round(40+rng(i*17)()*60),
-            Math.round(40+rng(i*19)()*60)
-          ],
-          borderColor:b.color,
-          backgroundColor:b.color+'22',
-          borderWidth:2,
+        datasets: BRANCH_DATA.map(b=>({
+          label: b.id,
+          data: b.hasData
+            ? [b.score, Math.min(100,b.score+5), Math.min(100,b.score-5), Math.min(100,b.score+2), Math.min(100,b.score-3)]
+            : [0,0,0,0,0],
+          borderColor: b.hasData ? b.color : '#e5e7eb',
+          backgroundColor: b.hasData ? b.color+'22' : 'transparent',
+          borderWidth: b.hasData ? 2 : 1,
+          borderDash: b.hasData ? [] : [4,4],
           pointRadius:3
         }))
       },
@@ -1173,14 +1424,11 @@ function renderRanking(mode){
         responsive:true,
         maintainAspectRatio:false,
         plugins:{
-          legend:{
-            position:'bottom',
-            labels:{font:{size:10},usePointStyle:true,padding:10}
-          }
+          legend:{ position:'bottom', labels:{font:{size:10},usePointStyle:true,padding:10} }
         },
         scales:{
           r:{
-            min:0,max:100,
+            min:0, max:100,
             grid:{color:'rgba(0,0,0,.06)'},
             ticks:{font:{size:9},stepSize:25,backdropColor:'transparent',color:'#9ca3af'},
             pointLabels:{font:{size:10},color:'#374151'}
@@ -1188,66 +1436,101 @@ function renderRanking(mode){
         }
       }
     });
-  },100);
+  }, 100);
 }
 
-function switchRankTab(btn,mode){
+function switchRankTab(btn, mode){
   btn.parentNode.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active'); renderRanking(mode);
+  btn.classList.add('active');
+  renderRanking(mode);
 }
-function switchTab(btn,mode){
+function switchTab(btn, mode){
   btn.parentNode.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
 }
 
 // ══════════════ BRANCH MODAL ══════════════
 function openBranchModal(idx){
-  const b=BRANCH_DATA[idx];
-  const wTotal=(b.waste.general||0)+(b.waste.recycle||0)+(b.waste.organic||0)+(b.waste.hazard||0);
-  const rr=wTotal>0?(((b.waste.recycle||0)+(b.waste.organic||0))/wTotal*100).toFixed(1):'-';
-  document.getElementById('modalTitle').textContent=b.icon+' '+b.name;
-  document.getElementById('modalSub').textContent=b.nameEn+' · '+b.id;
-  document.getElementById('modalBody').innerHTML=`
-    <div class="modal-row"><span class="modal-row-lbl">Carbon Emission</span><span class="modal-row-val">${b.co2} tCO₂e</span></div>
-    <div class="modal-row"><span class="modal-row-lbl">Sustainability Score</span><span class="modal-row-val">${b.score} / 100</span></div>
-    <div class="modal-row"><span class="modal-row-lbl">ไฟฟ้า</span><span class="modal-row-val">${b.elec.toLocaleString()} kWh</span></div>
-    <div class="modal-row"><span class="modal-row-lbl">น้ำ</span><span class="modal-row-val">${b.water} m³</span></div>
-    <div class="modal-row"><span class="modal-row-lbl">เชื้อเพลิง</span><span class="modal-row-val">${b.fuel} ลิตร</span></div>
-    <div class="modal-row"><span class="modal-row-lbl">ขยะทิ้ง</span><span class="modal-row-val">${b.waste.general||0} กก.</span></div>
-    <div class="modal-row"><span class="modal-row-lbl">รีไซเคิล + ปุ๋ย</span><span class="modal-row-val">${(b.waste.recycle||0)+(b.waste.organic||0)} กก.</span></div>
-    <div class="modal-row"><span class="modal-row-lbl">อัตรา Zero Waste</span><span class="modal-row-val" style="color:var(--g2)">${rr}%</span></div>
-    <div class="modal-row"><span class="modal-row-lbl">Carbon Credits</span><span class="modal-row-val">${Math.round(b.co2*2.4)} credits</span></div>
-    <div class="modal-row"><span class="modal-row-lbl">TCFD Status</span><span class="modal-row-val" style="color:#16a34a">✓ Compliant</span></div>
-    <div class="modal-row"><span class="modal-row-lbl">สถานะ</span><span class="modal-row-val" style="color:${b.status==='excellent'?'#16a34a':b.status==='good'?'#15803d':'#d97706'}">${b.status==='excellent'?'🟢 ดีเยี่ยม':b.status==='good'?'🔵 ดี':'🟡 ปานกลาง'}</span></div>
-    <button class="btn-primary" style="margin-top:16px" onclick="closeModal();showToast('กำลังสร้างรายงาน ${b.name}')">📄 สร้างรายงานสาขา</button>
-  `;
+  const b = BRANCH_DATA[idx];
+  const wTotal = (b.waste.general||0)+(b.waste.recycle||0)+(b.waste.organic||0)+(b.waste.hazard||0);
+  const rr = wTotal>0?(((b.waste.recycle||0)+(b.waste.organic||0))/wTotal*100).toFixed(1):'-';
+  document.getElementById('modalTitle').textContent = b.icon+' '+b.name;
+  document.getElementById('modalSub').textContent = b.nameEn+' · '+b.id;
+
+  if(!b.hasData){
+    document.getElementById('modalBody').innerHTML = `
+      <div class="empty-state" style="padding:20px">
+        <div class="empty-state-icon">📋</div>
+        <div class="empty-state-title">ยังไม่มีข้อมูล</div>
+        <div class="empty-state-sub">สาขานี้ยังไม่มีการกรอกข้อมูล</div>
+        <button class="empty-state-btn" onclick="closeModal();navigate('upload',null)">📝 ไปกรอกข้อมูล</button>
+      </div>`;
+  } else {
+    document.getElementById('modalBody').innerHTML = `
+      <div class="modal-row"><span class="modal-row-lbl">Carbon Emission</span><span class="modal-row-val">${b.co2} tCO₂e</span></div>
+      <div class="modal-row"><span class="modal-row-lbl">Sustainability Score</span><span class="modal-row-val">${b.score} / 100</span></div>
+      <div class="modal-row"><span class="modal-row-lbl">ไฟฟ้า</span><span class="modal-row-val">${b.elec.toLocaleString()} kWh</span></div>
+      <div class="modal-row"><span class="modal-row-lbl">น้ำ</span><span class="modal-row-val">${b.water} m³</span></div>
+      <div class="modal-row"><span class="modal-row-lbl">เชื้อเพลิง</span><span class="modal-row-val">${b.fuel} ลิตร</span></div>
+      <div class="modal-row"><span class="modal-row-lbl">ขยะทิ้ง</span><span class="modal-row-val">${b.waste.general} กก.</span></div>
+      <div class="modal-row"><span class="modal-row-lbl">รีไซเคิล + ปุ๋ย</span><span class="modal-row-val">${(b.waste.recycle+b.waste.organic)} กก.</span></div>
+      <div class="modal-row"><span class="modal-row-lbl">อัตรา Zero Waste</span><span class="modal-row-val" style="color:var(--g2)">${rr}%</span></div>
+      <div class="modal-row"><span class="modal-row-lbl">Carbon Credits</span><span class="modal-row-val">${Math.round(b.co2*2.4)} credits</span></div>
+      <div class="modal-row"><span class="modal-row-lbl">รายการที่กรอก</span><span class="modal-row-val">${b.entries} รายการ</span></div>
+      <div class="modal-row"><span class="modal-row-lbl">สถานะ</span><span class="modal-row-val" style="color:${b.status==='excellent'?'#16a34a':b.status==='good'?'#15803d':'#d97706'}">${b.status==='excellent'?'🟢 ดีเยี่ยม':b.status==='good'?'🔵 ดี':'🟡 ปานกลาง'}</span></div>
+      <button class="btn-primary" style="margin-top:16px" onclick="closeModal();showToast('กำลังสร้างรายงาน ${b.name}')">📄 สร้างรายงานสาขา</button>`;
+  }
   document.getElementById('branchModal').classList.add('open');
 }
+
 function closeModal(){ document.getElementById('branchModal').classList.remove('open'); }
 document.getElementById('branchModal').addEventListener('click',function(e){ if(e.target===this) closeModal(); });
 
 // ══════════════ FILE UPLOAD ══════════════
-const uploadedFiles=[];
-const fileTypeIcons={xlsx:'📊',csv:'📋',pdf:'📄'};
+const uploadedFiles = [];
+const fileTypeIcons = {xlsx:'📊',csv:'📋',pdf:'📄'};
 
-document.getElementById('fileInput').addEventListener('change',function(){ Array.from(this.files).forEach(handleFile); this.value=''; });
-const dz=document.getElementById('dropZone');
+document.getElementById('fileInput').addEventListener('change',function(){
+  Array.from(this.files).forEach(handleFile); this.value='';
+});
+const dz = document.getElementById('dropZone');
 dz.addEventListener('dragover',e=>{e.preventDefault();dz.classList.add('drag');});
 dz.addEventListener('dragleave',()=>dz.classList.remove('drag'));
-dz.addEventListener('drop',e=>{ e.preventDefault();dz.classList.remove('drag'); Array.from(e.dataTransfer.files).forEach(handleFile); });
+dz.addEventListener('drop',e=>{
+  e.preventDefault();dz.classList.remove('drag');
+  Array.from(e.dataTransfer.files).forEach(handleFile);
+});
 
 function handleFile(file){
-  const ext=file.name.split('.').pop().toLowerCase();
+  const ext = file.name.split('.').pop().toLowerCase();
   if(!['xlsx','csv','pdf'].includes(ext)){showToast('⚠️ ไฟล์นี้ไม่รองรับ');return;}
-  const id=Date.now()+Math.random();
+  const id = Date.now()+Math.random();
   uploadedFiles.unshift({id,name:file.name,ext,size:formatSize(file.size),status:'processing'});
   renderHistory();
-  setTimeout(()=>{ const f=uploadedFiles.find(f=>f.id===id); if(f){f.status='done';renderHistory();} showToast('✅ นำเข้าสำเร็จ: '+file.name); },2000);
+  setTimeout(()=>{
+    const f = uploadedFiles.find(f=>f.id===id);
+    if(f){ f.status='done'; renderHistory(); }
+    showToast('✅ นำเข้าสำเร็จ: '+file.name);
+  }, 2000);
 }
+
 function renderHistory(){
-  const h=document.getElementById('uploadHistory');
-  if(!uploadedFiles.length){h.innerHTML='<div style="text-align:center;padding:30px;color:var(--text3);font-size:13px">ยังไม่มีไฟล์</div>';return;}
-  h.innerHTML=uploadedFiles.map(f=>`<div class="upload-item"><div class="upload-item-icon">${fileTypeIcons[f.ext]||'📄'}</div><div class="upload-item-info"><div class="upload-item-name">${f.name}</div><div class="upload-item-meta">${f.size} · ${f.ext.toUpperCase()}</div>${f.status==='processing'?'<div class="progress-bar"><div class="progress-fill"></div></div>':''}</div><span class="upload-item-status ${f.status==='done'?'status-done':'status-proc'}">${f.status==='done'?'✓ สำเร็จ':'กำลังประมวลผล'}</span></div>`).join('');
+  const h = document.getElementById('uploadHistory');
+  if(!uploadedFiles.length){
+    h.innerHTML='<div style="text-align:center;padding:30px;color:var(--text3);font-size:13px">ยังไม่มีไฟล์</div>';
+    return;
+  }
+  h.innerHTML = uploadedFiles.map(f=>`
+    <div class="upload-item">
+      <div class="upload-item-icon">${fileTypeIcons[f.ext]||'📄'}</div>
+      <div class="upload-item-info">
+        <div class="upload-item-name">${f.name}</div>
+        <div class="upload-item-meta">${f.size} · ${f.ext.toUpperCase()}</div>
+        ${f.status==='processing'?'<div class="progress-bar"><div class="progress-fill"></div></div>':''}
+      </div>
+      <span class="upload-item-status ${f.status==='done'?'status-done':'status-proc'}">${f.status==='done'?'✓ สำเร็จ':'กำลังประมวลผล'}</span>
+    </div>
+  `).join('');
 }
 
 // ══════════════ REPORTS ══════════════
@@ -1260,51 +1543,63 @@ function generateAllReports(){ showToast('🔄 กำลังสร้างร
 function scheduleReport(){ showToast('📅 ตั้งเวลาส่งรายงานอัตโนมัติทุกวันจันทร์ 08:00 แล้ว'); }
 function generateAIReport(){
   showToast('🤖 AI กำลังวิเคราะห์และสร้าง ESG Report...');
-  setTimeout(()=>{ showToast('✅ ESG Report พร้อมแล้ว — ส่ง Email ผู้บริหารแล้ว'); pushNotif('📊 AI ESG Report พร้อมแล้ว','รายงานถูกส่งไปยัง CEO, CFO และ CSO เรียบร้อย','done'); },3000);
+  setTimeout(()=>{
+    showToast('✅ ESG Report พร้อมแล้ว — ส่ง Email ผู้บริหารแล้ว');
+    pushNotif('📊 AI ESG Report พร้อมแล้ว','รายงานถูกส่งไปยัง CEO, CFO และ CSO เรียบร้อย','done');
+  }, 3000);
 }
 
 // ══════════════ NOTIFICATIONS ══════════════
 function pushNotif(title,body,type='done'){
-  const panel=document.getElementById('notifPanel');
-  const card=document.createElement('div');
-  card.className='notif-card '+(type==='warn'?'warn':type==='alert'?'alert':'');
-  card.innerHTML=`<div class="notif-title">${title}</div><div class="notif-body">${body}</div><div class="notif-time">เมื่อสักครู่</div>`;
-  card.onclick=()=>card.remove();
+  const panel = document.getElementById('notifPanel');
+  const card = document.createElement('div');
+  card.className = 'notif-card '+(type==='warn'?'warn':'');
+  card.innerHTML = `<div class="notif-title">${title}</div><div class="notif-body">${body}</div><div class="notif-time">เมื่อสักครู่</div>`;
+  card.onclick = ()=>card.remove();
   panel.appendChild(card);
   setTimeout(()=>{ if(card.parentNode) card.remove(); },6000);
 }
 
 // ══════════════ AI PANEL ══════════════
-let aiOpen=false;
+let aiOpen = false;
 function toggleAI(){ aiOpen=!aiOpen; document.getElementById('aiPanel').classList.toggle('open',aiOpen); }
 
-const AI_RESPONSES=[
-  ()=>`Carbon Emission รวม ${getTotals().co2} tCO₂e · ส่วนใหญ่มาจากไฟฟ้า (Scope 2) 🌱 แนะนำให้กรอกข้อมูลบิลทุกเดือนเพื่อติดตามแนวโน้มได้แม่นยำขึ้น`,
-  ()=>`สาขา ${[...BRANCH_DATA].sort((a,b)=>b.score-a.score)[0].name} มี Score สูงสุด แนะนำนำ Best Practice ไปใช้ทั่วองค์กร ซึ่งจะช่วยลด Carbon ได้อีก 12%`,
-  ()=>`Carbon Credit ที่สะสมได้ 142 tCO₂e มูลค่าตลาดราว ฿284,000 บาท พิจารณาขายผ่าน TGO VER ได้เลยครับ 💰`,
-  ()=>`ขยะที่รีไซเคิลได้มากที่สุดคือสาขา ${BRANCH_DATA[0].name} แนะนำโปรแกรม Zero Waste เพิ่มอีก 20% ก่อนสิ้นปี ♻️`,
-  ()=>`TCFD Compliance อยู่ที่ 87% รวม แนะนำเพิ่มข้อมูล Risk & Opportunity ให้ครบเพื่อผ่าน 95% ก่อนรายงานประจำปี 🏛️`,
-  ()=>`AI คาดการณ์ว่าถ้าติดตั้ง Solar ที่ HQ และ CPK จะลด Scope 2 ได้ 34% และ ROI คุ้มทุนใน 4.2 ปี ☀️`,
-];
-let aiIdx=0;
+function getAIResponse(){
+  const t = getTotals();
+  if(!hasAnyData()) return 'ยังไม่มีข้อมูลครับ กรุณากรอกข้อมูลสาขาในหน้า Upload ก่อนครับ 📝';
+  const responses = [
+    `Carbon Emission รวม ${t.co2} tCO₂e จาก ${t.entries} รายการที่กรอก 🌱`,
+    `สาขาที่มี Score สูงสุด: ${[...BRANCH_DATA].filter(b=>b.hasData).sort((a,b)=>b.score-a.score)[0]?.name||'ยังไม่มีข้อมูล'} — แนะนำนำ Best Practice ไปใช้ทั่วองค์กร`,
+    `Carbon Credit รวม ${Math.round(parseFloat(t.co2)*2.4)} credits มูลค่าราว ฿${(Math.round(parseFloat(t.co2)*2.4)*2000).toLocaleString()} บาท 💰`,
+    `ไฟฟ้ารวม ${t.elec.toLocaleString()} kWh · น้ำ ${t.water} m³ · เชื้อเพลิง ${t.fuel} ลิตร ⚡`,
+  ];
+  return responses[Math.floor(Math.random()*responses.length)];
+}
 
+let aiIdx = 0;
 function sendAI(){
-  const inp=document.getElementById('aiInput'), msg=inp.value.trim();
+  const inp = document.getElementById('aiInput'), msg = inp.value.trim();
   if(!msg) return; inp.value='';
-  const msgs=document.getElementById('aiMessages');
-  msgs.innerHTML+=`<div class="ai-msg user">${msg}</div><div class="ai-msg bot loading">กำลังวิเคราะห์ด้วย AI...</div>`;
-  msgs.scrollTop=msgs.scrollHeight;
+  const msgs = document.getElementById('aiMessages');
+  msgs.innerHTML += `<div class="ai-msg user">${msg}</div><div class="ai-msg bot loading">กำลังวิเคราะห์...</div>`;
+  msgs.scrollTop = msgs.scrollHeight;
   setTimeout(()=>{
-    const items=msgs.querySelectorAll('.ai-msg');
-    items[items.length-1].textContent=AI_RESPONSES[aiIdx%AI_RESPONSES.length]();
+    const items = msgs.querySelectorAll('.ai-msg');
+    items[items.length-1].textContent = getAIResponse();
     items[items.length-1].classList.remove('loading');
-    aiIdx++; msgs.scrollTop=msgs.scrollHeight;
-  },1400);
+    msgs.scrollTop = msgs.scrollHeight;
+  }, 1200);
 }
 
 // ══════════════ TOAST ══════════════
 let toastTimer;
-function showToast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(toastTimer); toastTimer=setTimeout(()=>t.classList.remove('show'),2500); }
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>t.classList.remove('show'),2500);
+}
 
 // ══════════════ UTILS ══════════════
 function num(n){ return n>=1000?Math.round(n/100)/10+'k':n; }
@@ -1313,16 +1608,16 @@ function formatSize(b){ return b>1048576?(b/1048576).toFixed(1)+'MB':(b/1024).to
 // ══════════════ INIT ══════════════
 renderHero('home');
 initHomeCharts();
-initForecast();
 renderHistory();
+// ไม่เรียก initForecast() ตอน init — รอให้ไปหน้า analytics แทน
 
 // Stagger branch cards
 setTimeout(()=>{
   document.querySelectorAll('.branch-card').forEach((c,i)=>{
     c.style.opacity='0'; c.style.transform='translateY(16px)'; c.style.transition='all .35s ease';
-    setTimeout(()=>{c.style.opacity='1';c.style.transform='translateY(0)';},i*80);
+    setTimeout(()=>{ c.style.opacity='1'; c.style.transform='translateY(0)'; }, i*80);
   });
-},100);
+}, 100);
 </script>
 </body>
 </html>
