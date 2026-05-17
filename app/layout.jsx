@@ -1,3 +1,4 @@
+import "./globals.css";
 export const metadata = {
   title: "Packing Next",
   description: "Packing System",
