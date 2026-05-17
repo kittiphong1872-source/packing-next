@@ -1,3 +1,21 @@
+"use client";
+
+import { useState, useEffect, useRef } from "react";
+
+const MOCK_ORDERS = [
+  {
+    id: "HC-20240517-001",
+    customer: "คุณสมชาย ใจดี",
+    items: [
+      { sku: "HC-ESPRESSO-250", name: "เมล็ดกาแฟเอสเปรสโซ่ 250g", qty: 2, packed: 0 },
+      { sku: "HC-DRIP-100", name: "กาแฟดริป 100g", qty: 1, packed: 0 }
+    ],
+    priority: "ด่วน",
+    status: "รอแพ็ค",
+    channel: "Shopee",
+    created: "08:12"
+  }
+];
 {
   "name": "packing-next",
   "version": "1.0.0",
