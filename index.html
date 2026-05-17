@@ -166,7 +166,6 @@
   .form-card-sub { font-size:11px;color:var(--text3);margin-bottom:14px; }
   .form-row { display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px; }
   .form-row.full { grid-template-columns:1fr; }
-  .form-row.three { grid-template-columns:1fr 1fr 1fr; }
   .form-group { display:flex;flex-direction:column;gap:4px; }
   .form-label { font-size:10px;font-weight:600;color:var(--text3);letter-spacing:.4px; }
   .form-input {
@@ -184,6 +183,84 @@
   }
   .form-select:focus { border-color:var(--g4); }
   .form-unit { font-size:10px;color:var(--text3);margin-top:2px; }
+
+  /* ══ MATERIAL DROPDOWN SYSTEM ══ */
+  .mat-picker-wrap {
+    border:1.5px solid var(--border);border-radius:12px;overflow:hidden;
+    background:var(--bg);
+  }
+  .mat-picker-header {
+    display:flex;align-items:center;gap:10px;padding:10px 12px;
+    background:var(--g10);border-bottom:1.5px solid var(--border);
+    flex-wrap:wrap; gap:8px;
+  }
+  .mat-cat-select {
+    flex:1;min-width:0;padding:8px 32px 8px 12px;border:1.5px solid var(--border);
+    border-radius:9px;font-family:var(--font);font-size:12px;color:var(--text);
+    background:#fff;outline:none;cursor:pointer;appearance:none;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='%236b7280'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+    background-repeat:no-repeat;background-position:right 8px center;
+  }
+  .mat-item-select {
+    flex:1.5;min-width:0;padding:8px 32px 8px 12px;border:1.5px solid var(--border);
+    border-radius:9px;font-family:var(--font);font-size:12px;color:var(--text);
+    background:#fff;outline:none;cursor:pointer;appearance:none;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='%236b7280'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+    background-repeat:no-repeat;background-position:right 8px center;
+  }
+  .mat-qty-row {
+    display:flex;align-items:center;gap:8px;padding:0 12px;margin-bottom:0;
+  }
+  .mat-qty-input {
+    width:90px;padding:8px 10px;border:1.5px solid var(--border);border-radius:9px;
+    font-family:var(--mono);font-size:13px;color:var(--text);background:#fff;
+    outline:none;text-align:right;transition:border-color .2s;
+  }
+  .mat-qty-input:focus { border-color:var(--g4); }
+  .mat-unit-tag {
+    font-size:11px;color:var(--text3);white-space:nowrap;
+  }
+  .mat-add-btn {
+    padding:8px 16px;background:var(--g2);color:#fff;border:none;border-radius:9px;
+    font-family:var(--font);font-size:12px;font-weight:700;cursor:pointer;
+    transition:all .2s;white-space:nowrap;
+  }
+  .mat-add-btn:hover { background:var(--g3); }
+
+  .mat-picker-body { padding:12px; }
+
+  /* Added items list */
+  .mat-list { display:flex;flex-direction:column;gap:6px;margin-top:0; }
+  .mat-list-empty {
+    text-align:center;padding:20px;color:var(--text3);font-size:12px;
+    border:1.5px dashed var(--border);border-radius:10px;
+  }
+  .mat-list-item {
+    display:flex;align-items:center;gap:8px;
+    padding:9px 12px;background:var(--g10);border-radius:10px;
+    border:1px solid var(--border);animation:fadeUp .2s ease;
+  }
+  .mat-list-cat {
+    font-size:9px;font-weight:600;padding:2px 7px;border-radius:6px;
+    background:var(--g9);color:var(--g2);white-space:nowrap;letter-spacing:.4px;
+    border:1px solid var(--border);
+  }
+  .mat-list-name { flex:1;font-size:12px;font-weight:600;color:var(--text);min-width:0; }
+  .mat-list-qty { font-family:var(--mono);font-size:12px;font-weight:600;color:var(--g2);white-space:nowrap; }
+  .mat-list-del {
+    width:24px;height:24px;border:none;background:rgba(239,68,68,.1);border-radius:6px;
+    color:#ef4444;font-size:13px;cursor:pointer;flex-shrink:0;
+    display:flex;align-items:center;justify-content:center;transition:all .2s;
+  }
+  .mat-list-del:hover { background:rgba(239,68,68,.2); }
+
+  .mat-summary-bar {
+    display:flex;align-items:center;justify-content:space-between;
+    padding:8px 12px;background:linear-gradient(90deg,var(--g1),var(--g3));
+    border-radius:0 0 10px 10px;
+  }
+  .mat-summary-text { font-size:11px;color:rgba(255,255,255,.8); }
+  .mat-summary-count { font-size:13px;font-weight:700;color:#fff; }
 
   .waste-section { margin-top:6px; }
   .waste-type-label {
@@ -270,10 +347,7 @@
   .btn-outline:hover { background:var(--g10); }
 
   /* AI PREDICTION */
-  .predict-card {
-    background:var(--card);border-radius:var(--radius);padding:16px;
-    border:1px solid var(--border);box-shadow:var(--shadow);margin-bottom:12px;
-  }
+  .predict-card { background:var(--card);border-radius:var(--radius);padding:16px;border:1px solid var(--border);box-shadow:var(--shadow);margin-bottom:12px; }
   .predict-header { display:flex;align-items:center;gap:8px;margin-bottom:12px; }
   .predict-header-icon { font-size:20px; }
   .predict-header-text { font-size:13px;font-weight:700;color:var(--text); }
@@ -286,11 +360,7 @@
   .forecast-trend { font-size:9px;margin-top:2px;font-weight:600; }
   .trend-up { color:#ef4444; }
   .trend-down { color:#16a34a; }
-  .ai-insight-box {
-    background:linear-gradient(135deg,rgba(124,58,237,.08),rgba(79,70,229,.06));
-    border:1px solid rgba(124,58,237,.2);
-    border-radius:12px;padding:12px;margin-top:10px;
-  }
+  .ai-insight-box { background:linear-gradient(135deg,rgba(124,58,237,.08),rgba(79,70,229,.06));border:1px solid rgba(124,58,237,.2);border-radius:12px;padding:12px;margin-top:10px; }
   .ai-insight-title { font-size:11px;font-weight:600;color:#7c3aed;margin-bottom:6px;display:flex;align-items:center;gap:6px; }
   .ai-insight-text { font-size:11px;line-height:1.6;color:var(--text3); }
   .generating-anim { display:flex;gap:4px;align-items:center; }
@@ -299,11 +369,7 @@
   .dot-anim:nth-child(3) { animation-delay:.4s; }
 
   /* ESG REPORT */
-  .auto-report-card {
-    background:linear-gradient(135deg,#0f4c2a,#166534);
-    border-radius:var(--radius);padding:18px;margin-bottom:12px;
-    position:relative;overflow:hidden;
-  }
+  .auto-report-card { background:linear-gradient(135deg,#0f4c2a,#166534);border-radius:var(--radius);padding:18px;margin-bottom:12px;position:relative;overflow:hidden; }
   .auto-report-card::after { content:'📊';position:absolute;right:-8px;bottom:-12px;font-size:70px;opacity:.1; }
   .auto-report-title { font-size:15px;font-weight:700;color:#fff;margin-bottom:4px; }
   .auto-report-sub { font-size:11px;color:rgba(255,255,255,.65);margin-bottom:14px; }
@@ -319,11 +385,7 @@
   .tcfd-score.amber { color:#d97706; }
 
   /* CARBON CREDIT */
-  .credit-hero {
-    background:linear-gradient(135deg,#1e3a5f,#1d4ed8);
-    border-radius:var(--radius);padding:18px;margin-bottom:12px;
-    position:relative;overflow:hidden;
-  }
+  .credit-hero { background:linear-gradient(135deg,#1e3a5f,#1d4ed8);border-radius:var(--radius);padding:18px;margin-bottom:12px;position:relative;overflow:hidden; }
   .credit-hero::before { content:'';position:absolute;top:-30px;right:-30px;width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,.05); }
   .credit-label { font-size:10px;font-weight:500;color:rgba(255,255,255,.6);letter-spacing:1.5px;text-transform:uppercase; }
   .credit-val { font-size:40px;font-weight:800;color:#fff;margin:4px 0; }
@@ -421,14 +483,10 @@
 <!-- ════ PAGE: HOME ════ -->
 <div class="page active" id="page-home">
   <div style="height:40px"></div>
-
-  <!-- Branch grid -->
   <div class="section">
     <div class="section-title">สาขาทั้งหมด</div>
     <div class="branch-grid" id="branchGrid"></div>
   </div>
-
-  <!-- Monthly chart -->
   <div class="section">
     <div class="section-title">Carbon รายเดือน</div>
     <div class="chart-card">
@@ -437,8 +495,6 @@
       <div class="chart-wrap"><canvas id="carbonMonthlyChart"></canvas></div>
     </div>
   </div>
-
-  <!-- KPIs -->
   <div class="section">
     <div class="section-title">การใช้ทรัพยากรรวม</div>
     <div class="kpi-row">
@@ -447,7 +503,6 @@
       <div class="kpi-card"><div class="kpi-icon">⛽</div><div class="kpi-val" id="kpiFuel">0</div><div class="kpi-unit">L</div><div class="kpi-lbl">เชื้อเพลิง</div></div>
     </div>
   </div>
-
   <div class="section">
     <div class="about-box">
       <div class="about-title">🌱 Zero Waste & Sustainability</div>
@@ -460,7 +515,6 @@
 <div class="page" id="page-upload">
   <div style="height:40px"></div>
 
-  <!-- FILE UPLOAD ZONE -->
   <div class="section">
     <div class="section-title">อัปโหลดไฟล์</div>
     <div class="upload-zone" id="dropZone">
@@ -509,7 +563,6 @@
     <div class="form-card">
       <div class="form-card-title">⚡ ค่าสาธารณูปโภค</div>
       <div class="form-card-sub">กรอกข้อมูลจากบิลค่าน้ำ ค่าไฟ และเชื้อเพลิง</div>
-
       <div class="form-row">
         <div class="form-group">
           <label class="form-label">ค่าไฟฟ้า (kWh)</label>
@@ -522,7 +575,6 @@
           <span class="form-unit">ยอดรวมในใบแจ้งหนี้</span>
         </div>
       </div>
-
       <div class="form-row">
         <div class="form-group">
           <label class="form-label">ค่าน้ำประปา (m³)</label>
@@ -535,7 +587,6 @@
           <span class="form-unit">ยอดรวมในใบแจ้งหนี้</span>
         </div>
       </div>
-
       <div class="form-row">
         <div class="form-group">
           <label class="form-label">เชื้อเพลิง (ลิตร)</label>
@@ -554,39 +605,45 @@
       </div>
     </div>
 
-    <!-- ③ วัสดุสิ้นเปลือง -->
+    <!-- ③ วัสดุสิ้นเปลือง — DROPDOWN SYSTEM -->
     <div class="form-card">
       <div class="form-card-title">📦 รายการเบิกใช้วัสดุ</div>
-      <div class="form-card-sub">บันทึกวัสดุที่เบิกใช้ในเดือนนี้</div>
+      <div class="form-card-sub">เลือกหมวดหมู่ → เลือกรายการ → กรอกจำนวน → กด เพิ่ม (90 รายการ)</div>
 
-      <div class="form-row">
-        <div class="form-group">
-          <label class="form-label">แก้วกระดาษ (ใบ)</label>
-          <input class="form-input" type="number" id="f-cup-paper" placeholder="0" min="0" />
+      <div class="mat-picker-wrap">
+        <!-- Row 1: Category + Item selects -->
+        <div class="mat-picker-header">
+          <select class="mat-cat-select" id="matCat" onchange="updateMatItems()">
+            <option value="">— เลือกหมวด —</option>
+            <option value="cafe">☕ วัสดุร้านกาแฟ</option>
+            <option value="office">🖊️ เครื่องเขียน/สำนักงาน</option>
+            <option value="clean">🧹 ทำความสะอาด</option>
+            <option value="roast">🔥 โรงคั่วกาแฟ</option>
+            <option value="pack">📦 แพ็คสินค้า/คลังสินค้า</option>
+            <option value="general">🔧 อุปกรณ์ทั่วไปองค์กร</option>
+          </select>
+          <select class="mat-item-select" id="matItem" onchange="updateMatUnit()">
+            <option value="">— เลือกรายการ —</option>
+          </select>
         </div>
-        <div class="form-group">
-          <label class="form-label">แก้วพลาสติก (ใบ)</label>
-          <input class="form-input" type="number" id="f-cup-plastic" placeholder="0" min="0" />
+        <!-- Row 2: Qty + Unit + Add -->
+        <div class="mat-picker-header" style="border-top:none;padding-top:0">
+          <input class="mat-qty-input" type="number" id="matQty" placeholder="0" min="0" />
+          <span class="mat-unit-tag" id="matUnitLabel">—</span>
+          <button class="mat-add-btn" onclick="addMaterial()">+ เพิ่มรายการ</button>
         </div>
-      </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label class="form-label">หลอด (ชิ้น)</label>
-          <input class="form-input" type="number" id="f-straw" placeholder="0" min="0" />
+
+        <!-- List of added items -->
+        <div class="mat-picker-body">
+          <div class="mat-list" id="matList">
+            <div class="mat-list-empty">ยังไม่มีรายการ — เลือกและกด "เพิ่มรายการ"</div>
+          </div>
         </div>
-        <div class="form-group">
-          <label class="form-label">ถุงพลาสติก (ใบ)</label>
-          <input class="form-input" type="number" id="f-bag" placeholder="0" min="0" />
-        </div>
-      </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label class="form-label">กระดาษ A4 (รีม)</label>
-          <input class="form-input" type="number" id="f-paper" placeholder="0" min="0" />
-        </div>
-        <div class="form-group">
-          <label class="form-label">วัสดุอื่นๆ (กก.)</label>
-          <input class="form-input" type="number" id="f-other-mat" placeholder="0" min="0" />
+
+        <!-- Summary bar -->
+        <div class="mat-summary-bar">
+          <span class="mat-summary-text">รายการที่เพิ่มแล้ว</span>
+          <span class="mat-summary-count" id="matCount">0 รายการ</span>
         </div>
       </div>
     </div>
@@ -595,7 +652,6 @@
     <div class="form-card">
       <div class="form-card-title">♻️ ปริมาณขยะ</div>
       <div class="form-card-sub">บันทึกขยะแต่ละประเภทที่เกิดขึ้นในเดือนนี้ (กิโลกรัม)</div>
-
       <div class="waste-section">
         <div class="waste-type-label">🗑️ ขยะทั่วไป (ทิ้ง)</div>
         <div class="waste-grid">
@@ -603,21 +659,18 @@
           <div class="waste-item"><div class="waste-label">กระดาษ</div><input class="waste-input" type="number" id="w-paper" placeholder="0" min="0" /></div>
           <div class="waste-item"><div class="waste-label">พลาสติก</div><input class="waste-input" type="number" id="w-plastic" placeholder="0" min="0" /></div>
         </div>
-
         <div class="waste-type-label">♻️ รีไซเคิล</div>
         <div class="waste-grid">
           <div class="waste-item"><div class="waste-label">กระดาษ</div><input class="waste-input" type="number" id="wr-paper" placeholder="0" min="0" /></div>
           <div class="waste-item"><div class="waste-label">พลาสติก/แก้ว</div><input class="waste-input" type="number" id="wr-plastic" placeholder="0" min="0" /></div>
           <div class="waste-item"><div class="waste-label">โลหะ/อื่นๆ</div><input class="waste-input" type="number" id="wr-metal" placeholder="0" min="0" /></div>
         </div>
-
         <div class="waste-type-label">🌱 ขยะอินทรีย์ (ทำปุ๋ย)</div>
         <div class="waste-grid">
           <div class="waste-item"><div class="waste-label">กากกาแฟ</div><input class="waste-input" type="number" id="wo-coffee" placeholder="0" min="0" /></div>
           <div class="waste-item"><div class="waste-label">เศษอาหาร</div><input class="waste-input" type="number" id="wo-food" placeholder="0" min="0" /></div>
           <div class="waste-item"><div class="waste-label">อื่นๆ</div><input class="waste-input" type="number" id="wo-other" placeholder="0" min="0" /></div>
         </div>
-
         <div class="waste-type-label">⚠️ ขยะอันตราย / ฝังกลบ</div>
         <div class="waste-grid">
           <div class="waste-item"><div class="waste-label">สารเคมี</div><input class="waste-input" type="number" id="wh-chem" placeholder="0" min="0" /></div>
@@ -646,8 +699,6 @@
 <!-- ════ PAGE: ANALYTICS ════ -->
 <div class="page" id="page-analytics">
   <div style="height:40px"></div>
-
-  <!-- AI Prediction Section -->
   <div class="section">
     <div class="section-title">AI Forecast · คาดการณ์</div>
     <div class="predict-card">
@@ -666,7 +717,6 @@
       </div>
     </div>
   </div>
-
   <div class="section">
     <div class="section-title">วิเคราะห์ข้อมูล</div>
     <div class="tab-row">
@@ -687,7 +737,6 @@
       <div class="chart-wrap"><canvas id="trendChart"></canvas></div>
     </div>
   </div>
-
   <div class="section">
     <div class="section-title">เปรียบเทียบสาขา</div>
     <div class="chart-card">
@@ -696,7 +745,6 @@
       <div class="chart-wrap"><canvas id="branchBarChart"></canvas></div>
     </div>
   </div>
-
   <div class="section">
     <div class="section-title">Carbon Breakdown</div>
     <div class="chart-card">
@@ -732,7 +780,6 @@
 <!-- ════ PAGE: REPORTS ════ -->
 <div class="page" id="page-reports">
   <div style="height:40px"></div>
-
   <div class="section">
     <div class="section-title">รายงานอัตโนมัติ · AI</div>
     <div class="auto-report-card">
@@ -740,7 +787,6 @@
       <div class="auto-report-sub">AI วิเคราะห์ข้อมูลทั้งหมดและสร้างรายงานพร้อมส่งผู้บริหาร</div>
       <button class="auto-report-btn" onclick="generateAIReport()">✨ สร้างรายงานทันที</button>
     </div>
-
     <div class="section-title" style="margin-top:20px">TCFD Framework</div>
     <div class="tcfd-grid">
       <div class="tcfd-item"><div class="tcfd-icon">🏛️</div><div class="tcfd-title">Governance</div><div class="tcfd-desc">การกำกับดูแลด้านสภาพภูมิอากาศ</div><div class="tcfd-score green">✓ 92%</div></div>
@@ -749,7 +795,6 @@
       <div class="tcfd-item"><div class="tcfd-icon">📏</div><div class="tcfd-title">Metrics</div><div class="tcfd-desc">ตัวชี้วัดและเป้าหมาย Net Zero</div><div class="tcfd-score green">✓ 95%</div></div>
     </div>
   </div>
-
   <div class="section">
     <div class="section-title">Carbon Credit Platform</div>
     <div class="credit-hero">
@@ -777,7 +822,6 @@
       </div>
     </div>
   </div>
-
   <div class="section">
     <div class="section-title">รายงานผู้บริหาร</div>
     <div class="report-card" onclick="downloadReport('esg')"><div class="report-icon">📊</div><div class="report-info"><div class="report-title">Executive ESG Report</div><div class="report-desc">สรุปผลการดำเนินงาน ESG ประจำเดือน พร้อม KPI และ Carbon Summary</div><span class="report-badge">PDF · Excel</span></div><div class="report-dl">⬇️</div></div>
@@ -788,7 +832,6 @@
     <button class="btn-primary mt-8" onclick="generateAllReports()"><span>🔄</span> สร้างรายงานทั้งหมด</button>
     <button class="btn-outline" onclick="scheduleReport()"><span>📅</span> ตั้งเวลาส่งรายงานอัตโนมัติ</button>
   </div>
-
   <div class="section">
     <div class="section-title">Future Roadmap</div>
     <div class="card">
@@ -838,13 +881,229 @@
   </div>
 </div>
 
-<!-- NOTIFICATION PANEL -->
 <div class="notif-panel" id="notifPanel"></div>
-
-<!-- TOAST -->
 <div class="toast" id="toast"></div>
 
 <script>
+// ══════════════ MATERIAL CATALOG (90 items) ══════════════
+const MAT_CATALOG = {
+  cafe: {
+    label: '☕ วัสดุร้านกาแฟ',
+    items: [
+      { name:'แก้วกระดาษ',        unit:'ใบ' },
+      { name:'แก้วพลาสติกใส',      unit:'ใบ' },
+      { name:'แก้วพลาสติกสี',      unit:'ใบ' },
+      { name:'หลอดดูดพลาสติก',     unit:'ชิ้น' },
+      { name:'หลอดดูดกระดาษ',      unit:'ชิ้น' },
+      { name:'ฝาแก้วแบน',          unit:'ชิ้น' },
+      { name:'ฝาแก้วโดม',          unit:'ชิ้น' },
+      { name:'ฝาแก้วมีรู',         unit:'ชิ้น' },
+      { name:'ถุงพลาสติกหูหิ้ว',   unit:'ใบ' },
+      { name:'ถุงกระดาษ',          unit:'ใบ' },
+      { name:'ซองน้ำตาล',          unit:'ชิ้น' },
+      { name:'ซองครีมเทียม',       unit:'ชิ้น' },
+      { name:'ผ้าเช็ดมือ (ทิชชู)', unit:'แพ็ค' },
+      { name:'กล่องกระดาษใส่ขนม',  unit:'ใบ' },
+      { name:'ไม้คนกาแฟ',          unit:'ชิ้น' },
+      { name:'ผ้ากรองกาแฟ',        unit:'แผ่น' },
+      { name:'แคปซูลกาแฟ',         unit:'กล่อง' },
+      { name:'ผงกาแฟ',             unit:'กิโลกรัม' },
+    ]
+  },
+  office: {
+    label: '🖊️ เครื่องเขียน/สำนักงาน',
+    items: [
+      { name:'กระดาษ A4',          unit:'รีม' },
+      { name:'กระดาษ A3',          unit:'รีม' },
+      { name:'ปากกาลูกลื่น',       unit:'ด้าม' },
+      { name:'ดินสอ',              unit:'แท่ง' },
+      { name:'ปากกาเมจิก',         unit:'ด้าม' },
+      { name:'แฟ้มเอกสาร',         unit:'อัน' },
+      { name:'แฟ้มซอง',            unit:'อัน' },
+      { name:'คลิปดำ',             unit:'กล่อง' },
+      { name:'คลิปหนีบกระดาษ',     unit:'กล่อง' },
+      { name:'สติ๊กเกอร์ Post-it',  unit:'แพ็ค' },
+      { name:'เทปใสเล็ก',          unit:'ม้วน' },
+      { name:'กาวแท่ง',            unit:'แท่ง' },
+      { name:'กรรไกร',             unit:'อัน' },
+      { name:'ลวดเย็บกระดาษ',      unit:'กล่อง' },
+      { name:'ตลับหมึก Printer',   unit:'ตลับ' },
+      { name:'หมึกเติม Printer',   unit:'ขวด' },
+      { name:'แฟ้ม Ring binder',   unit:'อัน' },
+      { name:'ปฏิทินตั้งโต๊ะ',    unit:'อัน' },
+    ]
+  },
+  clean: {
+    label: '🧹 วัสดุทำความสะอาด',
+    items: [
+      { name:'น้ำยาล้างจาน',       unit:'ขวด' },
+      { name:'น้ำยาถูพื้น',        unit:'ขวด' },
+      { name:'น้ำยาฆ่าเชื้อ',      unit:'ขวด' },
+      { name:'ผงซักฟอก',           unit:'ถุง' },
+      { name:'น้ำยาปรับผ้านุ่ม',   unit:'ขวด' },
+      { name:'สก็อตไบรท์',         unit:'แผ่น' },
+      { name:'ฟองน้ำล้างจาน',      unit:'แผ่น' },
+      { name:'ผ้าไมโครไฟเบอร์',    unit:'ผืน' },
+      { name:'ถุงขยะดำ',           unit:'แพ็ค' },
+      { name:'ถุงขยะสี',           unit:'แพ็ค' },
+      { name:'กระดาษทิชชู ม้วนใหญ่',unit:'ม้วน' },
+      { name:'กระดาษเช็ดมือ',      unit:'แพ็ค' },
+      { name:'สบู่ล้างมือ',        unit:'ขวด' },
+      { name:'แอลกอฮอล์เจล',       unit:'ขวด' },
+      { name:'แปรงขัดห้องน้ำ',     unit:'อัน' },
+      { name:'น้ำยาขัดสุขภัณฑ์',   unit:'ขวด' },
+      { name:'น้ำหอมปรับอากาศ',    unit:'กระป๋อง' },
+    ]
+  },
+  roast: {
+    label: '🔥 โรงคั่วกาแฟ',
+    items: [
+      { name:'เมล็ดกาแฟดิบ',       unit:'กิโลกรัม' },
+      { name:'ถุงบรรจุเมล็ดกาแฟ',  unit:'ใบ' },
+      { name:'ซิปล็อคกาแฟ',        unit:'ใบ' },
+      { name:'วาล์วระบายแก๊ส',     unit:'ชิ้น' },
+      { name:'ป้ายสินค้า',          unit:'แผ่น' },
+      { name:'กล่องบรรจุภัณฑ์กาแฟ',unit:'ใบ' },
+      { name:'ถุงอลูมิเนียมฟอยล์',  unit:'ใบ' },
+      { name:'กระป๋องกาแฟ',        unit:'ใบ' },
+      { name:'ซีลฝา',              unit:'ชิ้น' },
+      { name:'ฉลากสินค้า',         unit:'ม้วน' },
+      { name:'น้ำมันหล่อลื่นเครื่อง',unit:'ขวด' },
+      { name:'ผ้ากรองคั่ว',        unit:'แผ่น' },
+    ]
+  },
+  pack: {
+    label: '📦 แพ็คสินค้า/คลังสินค้า',
+    items: [
+      { name:'แอร์บับเบิล (กันกระแทก)', unit:'ม้วน' },
+      { name:'กล่องพัสดุ เบอร์ S',  unit:'ใบ' },
+      { name:'กล่องพัสดุ เบอร์ M',  unit:'ใบ' },
+      { name:'กล่องพัสดุ เบอร์ L',  unit:'ใบ' },
+      { name:'ซองไปรษณีย์พลาสติก',  unit:'ใบ' },
+      { name:'ซองกันกระแทก',        unit:'ใบ' },
+      { name:'เทปปิดกล่อง',         unit:'ม้วน' },
+      { name:'เทปใสขนาดใหญ่',       unit:'ม้วน' },
+      { name:'ฟิล์มยืดพันพาเลท',    unit:'ม้วน' },
+      { name:'เชือกฟาง',            unit:'ม้วน' },
+      { name:'เคเบิ้ลไทร์',         unit:'ถุง' },
+      { name:'สติ๊กเกอร์ Fragile',  unit:'ม้วน' },
+      { name:'สติ๊กเกอร์ส่งด่วน',   unit:'ม้วน' },
+      { name:'สติ๊กเกอร์โลโก้บริษัท',unit:'ม้วน' },
+      { name:'เครื่องยิงเทป',       unit:'อัน' },
+      { name:'คัตเตอร์งานคลัง',     unit:'อัน' },
+      { name:'ถุงซิปล็อค',          unit:'แพ็ค' },
+      { name:'ถุงคราฟท์',           unit:'แพ็ค' },
+      { name:'ถุงกระดาษ',           unit:'แพ็ค' },
+      { name:'ถุงพลาสติกใส',        unit:'กิโลกรัม' },
+      { name:'ป้ายแท็กสินค้า',      unit:'แพ็ค' },
+      { name:'เครื่องชั่งสินค้า',   unit:'เครื่อง' },
+      { name:'กระดาษใบปะหน้า',      unit:'รีม' },
+      { name:'หมึกเครื่องปริ้นใบปะหน้า', unit:'ตลับ' },
+    ]
+  },
+  general: {
+    label: '🔧 อุปกรณ์ทั่วไปองค์กร',
+    items: [
+      { name:'หลอดไฟ',             unit:'หลอด' },
+      { name:'ถ่าน AA',             unit:'ก้อน' },
+      { name:'ถ่าน AAA',            unit:'ก้อน' },
+      { name:'ปลั๊กไฟ',            unit:'อัน' },
+      { name:'สายไฟต่อพ่วง',       unit:'เส้น' },
+      { name:'พัดลม',              unit:'เครื่อง' },
+      { name:'อุปกรณ์ปฐมพยาบาล',   unit:'ชุด' },
+      { name:'หน้ากากอนามัย',       unit:'กล่อง' },
+      { name:'หมวกคลุมผม',         unit:'แพ็ค' },
+      { name:'ผ้ากันเปื้อน',       unit:'ตัว' },
+      { name:'รองเท้าบูท',         unit:'คู่' },
+      { name:'ถุงมือยาง',          unit:'กล่อง' },
+      { name:'ไม้กวาด',            unit:'อัน' },
+      { name:'ที่โกยผง',           unit:'อัน' },
+      { name:'ไม้ม็อบ',            unit:'อัน' },
+    ]
+  }
+};
+
+// ══════════════ MATERIAL PICKER STATE ══════════════
+let materialEntries = []; // { cat, catLabel, name, qty, unit }
+
+function updateMatItems() {
+  const cat = document.getElementById('matCat').value;
+  const itemSel = document.getElementById('matItem');
+  itemSel.innerHTML = '<option value="">— เลือกรายการ —</option>';
+  document.getElementById('matUnitLabel').textContent = '—';
+  document.getElementById('matQty').value = '';
+  if (!cat || !MAT_CATALOG[cat]) return;
+  MAT_CATALOG[cat].items.forEach((item, i) => {
+    const opt = document.createElement('option');
+    opt.value = i;
+    opt.textContent = item.name;
+    opt.dataset.unit = item.unit;
+    itemSel.appendChild(opt);
+  });
+}
+
+function updateMatUnit() {
+  const cat = document.getElementById('matCat').value;
+  const itemIdx = document.getElementById('matItem').value;
+  if (!cat || itemIdx === '') {
+    document.getElementById('matUnitLabel').textContent = '—';
+    return;
+  }
+  const unit = MAT_CATALOG[cat].items[parseInt(itemIdx)].unit;
+  document.getElementById('matUnitLabel').textContent = unit;
+  document.getElementById('matQty').focus();
+}
+
+function addMaterial() {
+  const cat = document.getElementById('matCat').value;
+  const itemIdx = document.getElementById('matItem').value;
+  const qty = parseFloat(document.getElementById('matQty').value);
+
+  if (!cat) { showToast('⚠️ เลือกหมวดหมู่ก่อน'); return; }
+  if (itemIdx === '') { showToast('⚠️ เลือกรายการก่อน'); return; }
+  if (!qty || qty <= 0) { showToast('⚠️ กรอกจำนวนให้ถูกต้อง'); return; }
+
+  const item = MAT_CATALOG[cat].items[parseInt(itemIdx)];
+  const catLabel = MAT_CATALOG[cat].label.replace(/^[^ ]+ /, ''); // strip emoji prefix for short display
+
+  // Check if already exists → update qty
+  const existing = materialEntries.find(e => e.cat === cat && e.name === item.name);
+  if (existing) {
+    existing.qty += qty;
+  } else {
+    materialEntries.push({ cat, catLabel, name: item.name, qty, unit: item.unit });
+  }
+
+  renderMatList();
+  document.getElementById('matQty').value = '';
+  document.getElementById('matQty').focus();
+}
+
+function removeMaterial(idx) {
+  materialEntries.splice(idx, 1);
+  renderMatList();
+}
+
+function renderMatList() {
+  const list = document.getElementById('matList');
+  const count = document.getElementById('matCount');
+  count.textContent = materialEntries.length + ' รายการ';
+
+  if (materialEntries.length === 0) {
+    list.innerHTML = '<div class="mat-list-empty">ยังไม่มีรายการ — เลือกและกด "เพิ่มรายการ"</div>';
+    return;
+  }
+
+  list.innerHTML = materialEntries.map((e, i) => `
+    <div class="mat-list-item">
+      <span class="mat-list-cat">${e.catLabel}</span>
+      <span class="mat-list-name">${e.name}</span>
+      <span class="mat-list-qty">${e.qty} ${e.unit}</span>
+      <button class="mat-list-del" onclick="removeMaterial(${i})">✕</button>
+    </div>
+  `).join('');
+}
+
 // ══════════════ DATA ══════════════
 const BRANCHES = [
   { id:"HQ",  name:"สำนักงานใหญ่",  nameEn:"Headquarters",  icon:"🏢", color:"#166534" },
@@ -855,29 +1114,15 @@ const BRANCHES = [
   { id:"RTK", name:"สาขาราติก้า",   nameEn:"Ratica",        icon:"🫘", color:"#0f766e" },
 ];
 
-// ══ BUG FIX #1: ข้อมูลเริ่มต้นทุกค่าเป็น 0 / false ══
-// ไม่มี dummy random data — ค่าทุกตัวเริ่มที่ 0 ทั้งหมด
 let BRANCH_DATA = BRANCHES.map(b => ({
   ...b,
-  elec: 0,
-  water: 0,
-  fuel: 0,
-  co2: 0,
-  score: 0,
-  entries: 0,
-  hasData: false,   // <-- flag บอกว่ายังไม่มีข้อมูล
-  waste: { general:0, recycle:0, organic:0, hazard:0 },
-  status: 'none'
+  elec:0, water:0, fuel:0, co2:0, score:0, entries:0, hasData:false,
+  waste:{ general:0, recycle:0, organic:0, hazard:0 },
+  status:'none'
 }));
 
-// Monthly log: เก็บข้อมูลที่กรอกเข้ามาจริงๆ
-// key: "branchId_YYYY-MM" → { elec, water, fuel, co2, waste }
 const MONTHLY_LOG = {};
-
-// ██ BUG FIX #2: chart carbon monthly เริ่มเป็น 0 ทุกเดือน
 const MONTHS = ["ม.ค.","ก.พ.","มี.ค.","เม.ย.","พ.ค.","มิ.ย.","ก.ค.","ส.ค.","ก.ย.","ต.ค.","พ.ย.","ธ.ค."];
-
-// Monthly carbon summary (index 0–11 = ม.ค.–ธ.ค.) — เริ่มที่ 0
 let MONTHLY_CARBON = Array(12).fill(0);
 
 function getTotals(){
@@ -889,10 +1134,7 @@ function getTotals(){
     entries: BRANCH_DATA.reduce((s,b)=>s+b.entries,0),
   };
 }
-
-function hasAnyData(){
-  return BRANCH_DATA.some(b=>b.hasData);
-}
+function hasAnyData(){ return BRANCH_DATA.some(b=>b.hasData); }
 
 // ══════════════ HERO ══════════════
 function renderHero(page){
@@ -917,7 +1159,7 @@ function renderHero(page){
       </div>
       <button class="btn-upload" onclick="navigate('upload',null)">📝 กรอก / อัปโหลดข้อมูลสาขา</button>
     </div>`,
-    upload:`<div class="hero-card" style="padding:14px 18px"><div class="hero-label">Data Entry & File Import</div><div style="display:flex;align-items:center;gap:12px;margin-top:4px"><span style="font-size:32px">📝</span><div><div style="color:#fff;font-size:17px;font-weight:700">กรอกข้อมูล / นำเข้าไฟล์</div><div style="color:rgba(255,255,255,.65);font-size:11px">กรอกบิล · ขยะ · วัสดุ หรืออัปโหลด Excel/CSV</div></div></div></div>`,
+    upload:`<div class="hero-card" style="padding:14px 18px"><div class="hero-label">Data Entry & File Import</div><div style="display:flex;align-items:center;gap:12px;margin-top:4px"><span style="font-size:32px">📝</span><div><div style="color:#fff;font-size:17px;font-weight:700">กรอกข้อมูล / นำเข้าไฟล์</div><div style="color:rgba(255,255,255,.65);font-size:11px">กรอกบิล · ขยะ · วัสดุ (90 รายการ) หรืออัปโหลด Excel/CSV</div></div></div></div>`,
     analytics:`<div class="hero-card" style="padding:14px 18px"><div class="hero-label">Analytics + AI Forecast</div><div style="display:flex;align-items:center;gap:12px;margin-top:4px"><span style="font-size:32px">📊</span><div><div style="color:#fff;font-size:17px;font-weight:700">วิเคราะห์ + คาดการณ์ด้วย AI</div><div style="color:rgba(255,255,255,.65);font-size:11px">Trend · Forecast · ESG Insight</div></div></div></div>`,
     ranking:`<div class="hero-card" style="padding:14px 18px"><div class="hero-label">Branch Ranking</div><div style="display:flex;align-items:center;gap:12px;margin-top:4px"><span style="font-size:32px">🏆</span><div><div style="color:#fff;font-size:17px;font-weight:700">จัดอันดับสาขา</div><div style="color:rgba(255,255,255,.65);font-size:11px">Sustainability · Carbon · Energy</div></div></div></div>`,
     reports:`<div class="hero-card" style="padding:14px 18px"><div class="hero-label">AI Reports · TCFD · Carbon Credit</div><div style="display:flex;align-items:center;gap:12px;margin-top:4px"><span style="font-size:32px">📄</span><div><div style="color:#fff;font-size:17px;font-weight:700">รายงานอัตโนมัติ + ESG Platform</div><div style="color:rgba(255,255,255,.65);font-size:11px">AI Report · TCFD · Carbon Credit</div></div></div></div>`,
@@ -948,7 +1190,6 @@ function navigate(page, btn){
 function initHomeCharts(){
   renderBranchCards();
   updateKPIs();
-
   if(charts.carbonMonthly) charts.carbonMonthly.destroy();
   const ctx = document.getElementById('carbonMonthlyChart').getContext('2d');
   charts.carbonMonthly = new Chart(ctx, {
@@ -969,12 +1210,8 @@ function initHomeCharts(){
       }]
     },
     options:{
-      responsive:true,
-      maintainAspectRatio:false,
-      plugins:{
-        legend:{display:false},
-        tooltip:{callbacks:{label:v=>v.raw+' tCO₂e'}}
-      },
+      responsive:true, maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:v=>v.raw+' tCO₂e'}}},
       scales:{
         x:{grid:{display:false},ticks:{font:{size:10},color:'#9ca3af'}},
         y:{grid:{color:'rgba(0,0,0,.04)'},ticks:{font:{size:10},color:'#9ca3af'},min:0}
@@ -985,18 +1222,15 @@ function initHomeCharts(){
 
 function updateKPIs(){
   const t = getTotals();
-  // ██ BUG FIX #3: ใช้ class has-data ควบคุมสีข้อความ
   const elecEl = document.getElementById('kpiElec');
   const waterEl = document.getElementById('kpiWater');
   const fuelEl = document.getElementById('kpiFuel');
-
-  elecEl.textContent = t.elec > 0 ? num(t.elec) : '0';
+  elecEl.textContent  = t.elec  > 0 ? num(t.elec)  : '0';
   waterEl.textContent = t.water > 0 ? num(t.water) : '0';
-  fuelEl.textContent = t.fuel > 0 ? num(t.fuel) : '0';
-
-  elecEl.className = 'kpi-val' + (t.elec>0?' has-data':'');
-  waterEl.className = 'kpi-val' + (t.water>0?' has-data':'');
-  fuelEl.className = 'kpi-val' + (t.fuel>0?' has-data':'');
+  fuelEl.textContent  = t.fuel  > 0 ? num(t.fuel)  : '0';
+  elecEl.className  = 'kpi-val' + (t.elec>0  ? ' has-data' : '');
+  waterEl.className = 'kpi-val' + (t.water>0 ? ' has-data' : '');
+  fuelEl.className  = 'kpi-val' + (t.fuel>0  ? ' has-data' : '');
 }
 
 function renderBranchCards(){
@@ -1023,30 +1257,27 @@ function renderBranchCards(){
 function analyzeManualData(){
   const btn = document.getElementById('btnAnalyze');
   const branchId = document.getElementById('f-branch').value;
-  const monthVal = document.getElementById('f-month').value; // "YYYY-MM"
-  const elec = parseFloat(document.getElementById('f-elec').value) || 0;
+  const monthVal = document.getElementById('f-month').value;
+  const elec  = parseFloat(document.getElementById('f-elec').value)  || 0;
   const water = parseFloat(document.getElementById('f-water').value) || 0;
-  const fuel = parseFloat(document.getElementById('f-fuel').value) || 0;
+  const fuel  = parseFloat(document.getElementById('f-fuel').value)  || 0;
 
-  if(!elec && !water && !fuel){
+  if(!elec && !water && !fuel && materialEntries.length === 0){
     showToast('⚠️ กรุณากรอกข้อมูลอย่างน้อย 1 รายการ');
     return;
   }
 
-  // Loading state
   btn.innerHTML = '<span class="spin-icon">⏳</span> กำลังคำนวณ Carbon...';
   btn.disabled = true;
 
   setTimeout(()=>{
-    // คำนวณ Carbon
-    const co2Elec = +(elec * 0.4716 / 1000).toFixed(4);
+    const co2Elec  = +(elec * 0.4716 / 1000).toFixed(4);
     const co2Water = +(water * 0.00149).toFixed(4);
     const fuelType = document.getElementById('f-fuel-type').value;
     const fuelFactor = {diesel:2.67, gasoline:2.31, lpg:2.98, cng:2.15}[fuelType] || 2.31;
-    const co2Fuel = +(fuel * fuelFactor / 1000).toFixed(4);
+    const co2Fuel  = +(fuel * fuelFactor / 1000).toFixed(4);
     const co2Total = +(co2Elec + co2Water + co2Fuel).toFixed(4);
 
-    // Waste totals
     const wGen = (parseFloat(document.getElementById('w-food').value)||0)
                + (parseFloat(document.getElementById('w-paper').value)||0)
                + (parseFloat(document.getElementById('w-plastic').value)||0);
@@ -1062,7 +1293,6 @@ function analyzeManualData(){
     const wTotal = wGen + wRec + wOrg + wHaz;
     const recycleRate = wTotal > 0 ? ((wRec+wOrg)/wTotal*100).toFixed(1) : 0;
 
-    // ██ BUG FIX #4: อัปเดต BRANCH_DATA สะสม (ไม่ replace ทั้งหมด — บวกทับ)
     const bIdx = BRANCH_DATA.findIndex(b=>b.id===branchId);
     if(bIdx >= 0){
       const b = BRANCH_DATA[bIdx];
@@ -1076,20 +1306,15 @@ function analyzeManualData(){
       b.waste.recycle += wRec;
       b.waste.organic += wOrg;
       b.waste.hazard  += wHaz;
-
-      // คำนวณ score จากข้อมูลจริง
-      // score = recycleRate ถ่วงน้ำหนัก + ปรับตาม co2 ต่อรายการ
       const co2PerEntry = b.co2 / b.entries;
       const baseScore = Math.min(100, Math.round(50 + parseFloat(recycleRate)*0.5 - co2PerEntry*10));
       b.score = Math.max(1, Math.min(100, baseScore));
       b.status = b.score>=85?"excellent":b.score>=70?"good":"fair";
     }
 
-    // ██ BUG FIX #5: บันทึก Monthly Carbon Log แยกตามเดือน
     const monthIndex = monthVal ? (parseInt(monthVal.split('-')[1]) - 1) : new Date().getMonth();
     MONTHLY_CARBON[monthIndex] = +(MONTHLY_CARBON[monthIndex] + co2Total).toFixed(4);
 
-    // Log รายเดือน
     const logKey = `${branchId}_${monthVal}`;
     if(!MONTHLY_LOG[logKey]) MONTHLY_LOG[logKey] = {elec:0,water:0,fuel:0,co2:0};
     MONTHLY_LOG[logKey].elec  += elec;
@@ -1097,7 +1322,16 @@ function analyzeManualData(){
     MONTHLY_LOG[logKey].fuel  += fuel;
     MONTHLY_LOG[logKey].co2   = +(MONTHLY_LOG[logKey].co2 + co2Total).toFixed(4);
 
-    // แสดงผล
+    // Build material summary for result display
+    const matSummaryHtml = materialEntries.length > 0
+      ? `<div style="margin-top:8px;padding:10px;background:#f0f9ff;border-radius:10px;border:1px solid #bae6fd">
+          <div style="font-size:11px;font-weight:600;color:#0369a1;margin-bottom:6px">📦 วัสดุที่เบิกใช้ (${materialEntries.length} รายการ)</div>
+          <div style="font-size:11px;color:#0c4a6e;line-height:1.8">
+            ${materialEntries.map(e=>`<span style="display:inline-flex;align-items:center;gap:4px;margin-right:8px"><b>${e.name}</b>: ${e.qty} ${e.unit}</span>`).join('')}
+          </div>
+        </div>`
+      : '';
+
     const resultEl = document.getElementById('analyzeResult');
     const branchName = BRANCHES.find(b=>b.id===branchId)?.name || branchId;
     resultEl.style.display = 'block';
@@ -1106,7 +1340,7 @@ function analyzeManualData(){
         <div class="form-result-banner-icon">✅</div>
         <div class="form-result-banner-text">
           <h4>บันทึกสำเร็จ — ${branchName} · ${monthVal||'—'}</h4>
-          <p>Carbon: ${co2Total} tCO₂e · ขยะรีไซเคิล: ${recycleRate}% · ข้อมูลอัปเดตทุกหน้าแล้ว</p>
+          <p>Carbon: ${co2Total} tCO₂e · ขยะรีไซเคิล: ${recycleRate}% · วัสดุ: ${materialEntries.length} รายการ</p>
         </div>
       </div>
       <div class="card mt-8" style="margin-top:10px">
@@ -1133,27 +1367,29 @@ function analyzeManualData(){
           </div>
         </div>
         ${wTotal>0?`<div style="margin-top:8px;padding:10px;background:#fef9c3;border-radius:10px;border:1px solid #fde68a">
-          <div style="font-size:11px;font-weight:600;color:#92400e;margin-bottom:4px">📦 สรุปขยะ</div>
+          <div style="font-size:11px;font-weight:600;color:#92400e;margin-bottom:4px">♻️ สรุปขยะ</div>
           <div style="font-size:11px;color:#78350f;line-height:1.7">
             ทิ้ง: <b>${wGen} กก.</b> · รีไซเคิล: <b>${wRec} กก.</b> · ปุ๋ย: <b>${wOrg} กก.</b> · อันตราย: <b>${wHaz} กก.</b><br>
             รวม: <b>${wTotal.toFixed(1)} กก.</b> · Zero Waste Rate: <b>${recycleRate}%</b>
           </div>
         </div>`:''}
+        ${matSummaryHtml}
       </div>
     `;
 
-    // Refresh ทุกหน้า
+    // Clear material entries after save
+    materialEntries = [];
+    renderMatList();
+
     renderBranchCards();
     updateKPIs();
     renderHero(currentPage);
 
-    // อัปเดต carbon monthly chart
     if(charts.carbonMonthly){
       charts.carbonMonthly.data.datasets[0].data = [...MONTHLY_CARBON];
       charts.carbonMonthly.update();
     }
 
-    // อัปเดต Carbon Credit
     const totalCo2 = parseFloat(getTotals().co2);
     const credits = Math.round(totalCo2 * 2.4);
     const credEl = document.getElementById('totalCredits');
@@ -1161,7 +1397,6 @@ function analyzeManualData(){
     if(credEl) credEl.innerHTML = credits + ' <span style="font-size:16px;opacity:.7">tCO₂e</span>';
     if(credValEl) credValEl.textContent = (credits * 2000).toLocaleString();
 
-    // ██ BUG FIX #6: destroy charts analytics เพื่อ re-render ด้วยข้อมูลใหม่
     ['trend','branchBar','donut','radar'].forEach(k=>{
       if(charts[k]){ charts[k].destroy(); delete charts[k]; }
     });
@@ -1179,7 +1414,6 @@ function initForecast(){
   const t = getTotals();
   const baseCO2 = parseFloat(t.co2);
 
-  // ██ BUG FIX #7: ถ้าไม่มีข้อมูล แสดง empty state แทน forecast
   if(!hasAnyData()){
     document.getElementById('forecastGrid').innerHTML = `
       <div style="grid-column:1/-1">
@@ -1228,8 +1462,6 @@ function initForecast(){
 // ══════════════ ANALYTICS CHARTS ══════════════
 function initAnalyticsCharts(){
   const t = getTotals();
-
-  // อัปเดต metric chips พร้อม has-data class
   ['m1','m2','m3','m4'].forEach(id=>{ document.getElementById(id).className='metric-chip-val'; });
   document.getElementById('m1').textContent = t.co2;
   document.getElementById('m2').textContent = t.elec>0?num(t.elec):'0';
@@ -1242,23 +1474,17 @@ function initAnalyticsCharts(){
 
   initForecast();
 
-  // ██ BUG FIX #8: Trend chart — ใช้ข้อมูลจาก MONTHLY_CARBON แทน random
   if(!charts.trend){
     const ctx = document.getElementById('trendChart').getContext('2d');
-    // สร้าง daily data จาก monthly log จริง (หรือ 0 ถ้ายังไม่มี)
-    const dailyData = Array.from({length:30},(_,i)=>{
-      const dayTotal = MONTHLY_CARBON.reduce((s,v)=>s+v,0);
-      return +(dayTotal/30*((i+1)/30)).toFixed(3);
-    });
+    const dayTotal = MONTHLY_CARBON.reduce((s,v)=>s+v,0);
+    const dailyData = Array.from({length:30},(_,i)=>+(dayTotal/30*((i+1)/30)).toFixed(3));
     charts.trend = new Chart(ctx,{
       type:'bar',
       data:{
         labels: Array.from({length:30},(_,i)=>`${i+1}`),
         datasets:[{
           label:'kWh (ประมาณ)',
-          data: hasAnyData()
-            ? dailyData
-            : Array(30).fill(0),
+          data: hasAnyData() ? dailyData : Array(30).fill(0),
           backgroundColor:'rgba(22,163,74,.25)',
           borderColor:'#16a34a',
           borderWidth:1.5,
@@ -1266,8 +1492,7 @@ function initAnalyticsCharts(){
         }]
       },
       options:{
-        responsive:true,
-        maintainAspectRatio:false,
+        responsive:true, maintainAspectRatio:false,
         plugins:{legend:{display:false}},
         scales:{
           x:{grid:{display:false},ticks:{font:{size:9},color:'#9ca3af',maxTicksLimit:10}},
@@ -1277,7 +1502,6 @@ function initAnalyticsCharts(){
     });
   }
 
-  // ██ BUG FIX #9: Branch Bar — แสดง 0 ถ้าสาขาไม่มีข้อมูล
   if(!charts.branchBar){
     const ctx = document.getElementById('branchBarChart').getContext('2d');
     charts.branchBar = new Chart(ctx,{
@@ -1289,13 +1513,11 @@ function initAnalyticsCharts(){
           data: BRANCH_DATA.map(b=>b.score),
           backgroundColor: BRANCH_DATA.map(b=>b.hasData?b.color+'88':'#e5e7eb'),
           borderColor: BRANCH_DATA.map(b=>b.hasData?b.color:'#d1d5db'),
-          borderWidth:2,
-          borderRadius:8
+          borderWidth:2, borderRadius:8
         }]
       },
       options:{
-        responsive:true,
-        maintainAspectRatio:false,
+        responsive:true, maintainAspectRatio:false,
         plugins:{legend:{display:false}},
         scales:{
           x:{grid:{display:false},ticks:{font:{size:11},color:'#374151'}},
@@ -1305,10 +1527,8 @@ function initAnalyticsCharts(){
     });
   }
 
-  // ██ BUG FIX #10: Donut — แสดง "ยังไม่มีข้อมูล" ถ้า total = 0
   if(!charts.donut){
     const ctx = document.getElementById('donutChart').getContext('2d');
-    const totalCo2 = parseFloat(t.co2);
     const e = +(t.elec*0.4716/1000).toFixed(2);
     const w = +(t.water*0.00149).toFixed(2);
     const f = +(t.fuel*2.31/1000).toFixed(2);
@@ -1320,24 +1540,14 @@ function initAnalyticsCharts(){
         datasets:[{
           data: hasValues ? [e,w,f] : [1,1,1],
           backgroundColor: hasValues ? ['#16a34a','#22d3ee','#f59e0b'] : ['#e5e7eb','#e5e7eb','#e5e7eb'],
-          borderWidth:0,
-          hoverOffset:8
+          borderWidth:0, hoverOffset:8
         }]
       },
       options:{
-        responsive:true,
-        maintainAspectRatio:false,
-        cutout:'68%',
+        responsive:true, maintainAspectRatio:false, cutout:'68%',
         plugins:{
-          legend:{
-            position:'right',
-            labels:{font:{size:11},color:'#374151',padding:16,usePointStyle:true}
-          },
-          tooltip:{
-            callbacks:{
-              label: v => hasValues ? `${v.label}: ${v.raw} tCO₂e` : 'ยังไม่มีข้อมูล'
-            }
-          }
+          legend:{position:'right',labels:{font:{size:11},color:'#374151',padding:16,usePointStyle:true}},
+          tooltip:{callbacks:{label:v=>hasValues?`${v.label}: ${v.raw} tCO₂e`:'ยังไม่มีข้อมูล'}}
         }
       }
     });
@@ -1347,7 +1557,6 @@ function initAnalyticsCharts(){
 // ══════════════ RANKING ══════════════
 function renderRanking(mode){
   let sorted = [...BRANCH_DATA];
-  // ██ BUG FIX #11: Ranking — สาขาที่มีข้อมูลขึ้นก่อน
   sorted.sort((a,b)=>{
     if(a.hasData && !b.hasData) return -1;
     if(!a.hasData && b.hasData) return 1;
@@ -1399,7 +1608,6 @@ function renderRanking(mode){
     }).join('');
   }
 
-  // ESG Radar
   if(charts.radar){ charts.radar.destroy(); delete charts.radar; }
   setTimeout(()=>{
     const ctx = document.getElementById('radarChart');
@@ -1421,11 +1629,8 @@ function renderRanking(mode){
         }))
       },
       options:{
-        responsive:true,
-        maintainAspectRatio:false,
-        plugins:{
-          legend:{ position:'bottom', labels:{font:{size:10},usePointStyle:true,padding:10} }
-        },
+        responsive:true, maintainAspectRatio:false,
+        plugins:{legend:{position:'bottom',labels:{font:{size:10},usePointStyle:true,padding:10}}},
         scales:{
           r:{
             min:0, max:100,
@@ -1576,7 +1781,6 @@ function getAIResponse(){
   return responses[Math.floor(Math.random()*responses.length)];
 }
 
-let aiIdx = 0;
 function sendAI(){
   const inp = document.getElementById('aiInput'), msg = inp.value.trim();
   if(!msg) return; inp.value='';
@@ -1609,9 +1813,7 @@ function formatSize(b){ return b>1048576?(b/1048576).toFixed(1)+'MB':(b/1024).to
 renderHero('home');
 initHomeCharts();
 renderHistory();
-// ไม่เรียก initForecast() ตอน init — รอให้ไปหน้า analytics แทน
 
-// Stagger branch cards
 setTimeout(()=>{
   document.querySelectorAll('.branch-card').forEach((c,i)=>{
     c.style.opacity='0'; c.style.transform='translateY(16px)'; c.style.transition='all .35s ease';
