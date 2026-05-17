@@ -1,6 +1,11 @@
+export const metadata = {
+  title: "Packing Next",
+  description: "Packing System",
+};
+
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
+    <html lang="th">
       <body>{children}</body>
     </html>
   );
