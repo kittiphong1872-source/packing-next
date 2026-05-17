@@ -1,511 +1,1211 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 
-const MOCK_ORDERS = [
-  { id: "HC-20240517-001", customer: "คุณสมชาย ใจดี", items: [{ sku: "HC-ESPRESSO-250", name: "เมล็ดกาแฟเอสเปรสโซ่ 250g", qty: 2, packed: 0 }, { sku: "HC-DRIP-100", name: "กาแฟดริป 100g", qty: 1, packed: 0 }], priority: "ด่วน", status: "รอแพ็ค", channel: "Shopee", created: "08:12" },
-  { id: "HC-20240517-002", customer: "คุณมาลี รักกาแฟ", items: [{ sku: "HC-LATTE-500", name: "กาแฟลาเต้ 500g", qty: 1, packed: 0 }], priority: "ปกติ", status: "รอแพ็ค", channel: "Lazada", created: "08:45" },
-  { id: "HC-20240517-003", customer: "คุณวิชัย กาแฟหอม", items: [{ sku: "HC-COLD-BREW-250", name: "Cold Brew เข้มข้น 250ml", qty: 3, packed: 0 }, { sku: "HC-SUGAR-FREE", name: "กาแฟไม่มีน้ำตาล 200g", qty: 2, packed: 0 }], priority: "ด่วนมาก", status: "รอแพ็ค", channel: "TikTok Shop", created: "09:02" },
-  { id: "HC-20240517-004", customer: "คุณนภา เช้าตรู่", items: [{ sku: "HC-ESPRESSO-250", name: "เมล็ดกาแฟเอสเปรสโซ่ 250g", qty: 1, packed: 0 }], priority: "ปกติ", status: "รอแพ็ค", channel: "Line", created: "09:15" },
-  { id: "HC-20240517-005", customer: "คุณเกียรติ อาราเบีย", items: [{ sku: "HC-ARABICA-1KG", name: "อาราบิก้า 1kg", qty: 2, packed: 0 }, { sku: "HC-FILTER-50", name: "กระดาษกรอง 50 แผ่น", qty: 1, packed: 0 }], priority: "ด่วน", status: "รอแพ็ค", channel: "Shopee", created: "09:30" },
-];
-
-const MOCK_SKU_DB = {
-  "HC-ESPRESSO-250": { name: "เมล็ดกาแฟเอสเปรสโซ่ 250g", stock: 48, unit: "ถุง" },
-  "HC-DRIP-100": { name: "กาแฟดริป 100g", stock: 5, unit: "กล่อง" },
-  "HC-LATTE-500": { name: "กาแฟลาเต้ 500g", stock: 22, unit: "ถุง" },
-  "HC-COLD-BREW-250": { name: "Cold Brew เข้มข้น 250ml", stock: 3, unit: "ขวด" },
-  "HC-SUGAR-FREE": { name: "กาแฟไม่มีน้ำตาล 200g", stock: 31, unit: "ถุง" },
-  "HC-ARABICA-1KG": { name: "อาราบิก้า 1kg", stock: 15, unit: "ถุง" },
-  "HC-FILTER-50": { name: "กระดาษกรอง 50 แผ่น", stock: 2, unit: "ชุด" },
+// ─── Material Catalog (90 items) ──────────────────────────────────────────────
+const MAT_CATALOG = {
+  cafe: {
+    label: "☕ วัสดุร้านกาแฟ",
+    items: [
+      { name: "แก้วกระดาษ", unit: "ใบ" }, { name: "แก้วพลาสติกใส", unit: "ใบ" },
+      { name: "แก้วพลาสติกสี", unit: "ใบ" }, { name: "หลอดดูดพลาสติก", unit: "ชิ้น" },
+      { name: "หลอดดูดกระดาษ", unit: "ชิ้น" }, { name: "ฝาแก้วแบน", unit: "ชิ้น" },
+      { name: "ฝาแก้วโดม", unit: "ชิ้น" }, { name: "ฝาแก้วมีรู", unit: "ชิ้น" },
+      { name: "ถุงพลาสติกหูหิ้ว", unit: "ใบ" }, { name: "ถุงกระดาษ", unit: "ใบ" },
+      { name: "ซองน้ำตาล", unit: "ชิ้น" }, { name: "ซองครีมเทียม", unit: "ชิ้น" },
+      { name: "ผ้าเช็ดมือ (ทิชชู)", unit: "แพ็ค" }, { name: "กล่องกระดาษใส่ขนม", unit: "ใบ" },
+      { name: "ไม้คนกาแฟ", unit: "ชิ้น" }, { name: "ผ้ากรองกาแฟ", unit: "แผ่น" },
+      { name: "แคปซูลกาแฟ", unit: "กล่อง" }, { name: "ผงกาแฟ", unit: "กิโลกรัม" },
+    ],
+  },
+  office: {
+    label: "🖊️ เครื่องเขียน/สำนักงาน",
+    items: [
+      { name: "กระดาษ A4", unit: "รีม" }, { name: "กระดาษ A3", unit: "รีม" },
+      { name: "ปากกาลูกลื่น", unit: "ด้าม" }, { name: "ดินสอ", unit: "แท่ง" },
+      { name: "ปากกาเมจิก", unit: "ด้าม" }, { name: "แฟ้มเอกสาร", unit: "อัน" },
+      { name: "แฟ้มซอง", unit: "อัน" }, { name: "คลิปดำ", unit: "กล่อง" },
+      { name: "คลิปหนีบกระดาษ", unit: "กล่อง" }, { name: "สติ๊กเกอร์ Post-it", unit: "แพ็ค" },
+      { name: "เทปใสเล็ก", unit: "ม้วน" }, { name: "กาวแท่ง", unit: "แท่ง" },
+      { name: "กรรไกร", unit: "อัน" }, { name: "ลวดเย็บกระดาษ", unit: "กล่อง" },
+      { name: "ตลับหมึก Printer", unit: "ตลับ" }, { name: "หมึกเติม Printer", unit: "ขวด" },
+      { name: "แฟ้ม Ring binder", unit: "อัน" }, { name: "ปฏิทินตั้งโต๊ะ", unit: "อัน" },
+    ],
+  },
+  clean: {
+    label: "🧹 วัสดุทำความสะอาด",
+    items: [
+      { name: "น้ำยาล้างจาน", unit: "ขวด" }, { name: "น้ำยาถูพื้น", unit: "ขวด" },
+      { name: "น้ำยาฆ่าเชื้อ", unit: "ขวด" }, { name: "ผงซักฟอก", unit: "ถุง" },
+      { name: "น้ำยาปรับผ้านุ่ม", unit: "ขวด" }, { name: "สก็อตไบรท์", unit: "แผ่น" },
+      { name: "ฟองน้ำล้างจาน", unit: "แผ่น" }, { name: "ผ้าไมโครไฟเบอร์", unit: "ผืน" },
+      { name: "ถุงขยะดำ", unit: "แพ็ค" }, { name: "ถุงขยะสี", unit: "แพ็ค" },
+      { name: "กระดาษทิชชู ม้วนใหญ่", unit: "ม้วน" }, { name: "กระดาษเช็ดมือ", unit: "แพ็ค" },
+      { name: "สบู่ล้างมือ", unit: "ขวด" }, { name: "แอลกอฮอล์เจล", unit: "ขวด" },
+      { name: "แปรงขัดห้องน้ำ", unit: "อัน" }, { name: "น้ำยาขัดสุขภัณฑ์", unit: "ขวด" },
+      { name: "น้ำหอมปรับอากาศ", unit: "กระป๋อง" },
+    ],
+  },
+  roast: {
+    label: "🔥 โรงคั่วกาแฟ",
+    items: [
+      { name: "เมล็ดกาแฟดิบ", unit: "กิโลกรัม" }, { name: "ถุงบรรจุเมล็ดกาแฟ", unit: "ใบ" },
+      { name: "ซิปล็อคกาแฟ", unit: "ใบ" }, { name: "วาล์วระบายแก๊ส", unit: "ชิ้น" },
+      { name: "ป้ายสินค้า", unit: "แผ่น" }, { name: "กล่องบรรจุภัณฑ์กาแฟ", unit: "ใบ" },
+      { name: "ถุงอลูมิเนียมฟอยล์", unit: "ใบ" }, { name: "กระป๋องกาแฟ", unit: "ใบ" },
+      { name: "ซีลฝา", unit: "ชิ้น" }, { name: "ฉลากสินค้า", unit: "ม้วน" },
+      { name: "น้ำมันหล่อลื่นเครื่อง", unit: "ขวด" }, { name: "ผ้ากรองคั่ว", unit: "แผ่น" },
+    ],
+  },
+  pack: {
+    label: "📦 แพ็คสินค้า/คลังสินค้า",
+    items: [
+      { name: "แอร์บับเบิล (กันกระแทก)", unit: "ม้วน" }, { name: "กล่องพัสดุ เบอร์ S", unit: "ใบ" },
+      { name: "กล่องพัสดุ เบอร์ M", unit: "ใบ" }, { name: "กล่องพัสดุ เบอร์ L", unit: "ใบ" },
+      { name: "ซองไปรษณีย์พลาสติก", unit: "ใบ" }, { name: "ซองกันกระแทก", unit: "ใบ" },
+      { name: "เทปปิดกล่อง", unit: "ม้วน" }, { name: "เทปใสขนาดใหญ่", unit: "ม้วน" },
+      { name: "ฟิล์มยืดพันพาเลท", unit: "ม้วน" }, { name: "เชือกฟาง", unit: "ม้วน" },
+      { name: "เคเบิ้ลไทร์", unit: "ถุง" }, { name: "สติ๊กเกอร์ Fragile", unit: "ม้วน" },
+      { name: "สติ๊กเกอร์ส่งด่วน", unit: "ม้วน" }, { name: "สติ๊กเกอร์โลโก้บริษัท", unit: "ม้วน" },
+      { name: "เครื่องยิงเทป", unit: "อัน" }, { name: "คัตเตอร์งานคลัง", unit: "อัน" },
+      { name: "ถุงซิปล็อค", unit: "แพ็ค" }, { name: "ถุงคราฟท์", unit: "แพ็ค" },
+      { name: "ถุงกระดาษ", unit: "แพ็ค" }, { name: "ถุงพลาสติกใส", unit: "กิโลกรัม" },
+      { name: "ป้ายแท็กสินค้า", unit: "แพ็ค" }, { name: "เครื่องชั่งสินค้า", unit: "เครื่อง" },
+      { name: "กระดาษใบปะหน้า", unit: "รีม" }, { name: "หมึกเครื่องปริ้นใบปะหน้า", unit: "ตลับ" },
+    ],
+  },
+  general: {
+    label: "🔧 อุปกรณ์ทั่วไปองค์กร",
+    items: [
+      { name: "หลอดไฟ", unit: "หลอด" }, { name: "ถ่าน AA", unit: "ก้อน" },
+      { name: "ถ่าน AAA", unit: "ก้อน" }, { name: "ปลั๊กไฟ", unit: "อัน" },
+      { name: "สายไฟต่อพ่วง", unit: "เส้น" }, { name: "พัดลม", unit: "เครื่อง" },
+      { name: "อุปกรณ์ปฐมพยาบาล", unit: "ชุด" }, { name: "หน้ากากอนามัย", unit: "กล่อง" },
+      { name: "หมวกคลุมผม", unit: "แพ็ค" }, { name: "ผ้ากันเปื้อน", unit: "ตัว" },
+      { name: "รองเท้าบูท", unit: "คู่" }, { name: "ถุงมือยาง", unit: "กล่อง" },
+      { name: "ไม้กวาด", unit: "อัน" }, { name: "ที่โกยผง", unit: "อัน" },
+      { name: "ไม้ม็อบ", unit: "อัน" },
+    ],
+  },
 };
 
-const STAFF = [
-  { id: 1, name: "น้องแนน", avatar: "น", status: "กำลังแพ็ค", packedToday: 34, current: "HC-20240517-001" },
-  { id: 2, name: "พี่ตั้ม", avatar: "ต", status: "พัก", packedToday: 28, current: null },
-  { id: 3, name: "น้องเม", avatar: "ม", status: "กำลังแพ็ค", packedToday: 41, current: "HC-20240517-003" },
+const BRANCHES_INIT = [
+  { id: "HQ",  name: "สำนักงานใหญ่",  nameEn: "Headquarters", icon: "🏢", color: "#166534" },
+  { id: "CPK", name: "สาขาช้างเผือก", nameEn: "Chang Phueak",  icon: "🌿", color: "#15803D" },
+  { id: "MHD", name: "สาขามหิดล",     nameEn: "Mahidol",       icon: "🎓", color: "#16A34A" },
+  { id: "PPG", name: "สาขาป่าแพ่ง",   nameEn: "Pa Phaeng",     icon: "🌳", color: "#22C55E" },
+  { id: "TD",  name: "สาขาทับเดื่อ",  nameEn: "Thap Duea",     icon: "☕", color: "#4ADE80" },
+  { id: "RTK", name: "สาขาราติก้า",   nameEn: "Ratica",        icon: "🫘", color: "#0f766e" },
 ];
 
-const ALERTS = [
-  { id: 1, type: "stock", msg: "HC-DRIP-100 เหลือแค่ 5 ชิ้น!", time: "09:01", icon: "⚠️" },
-  { id: 2, type: "stock", msg: "HC-COLD-BREW-250 เหลือ 3 ขวด – ต่ำกว่า Min!", time: "09:05", icon: "🔴" },
-  { id: 3, type: "stock", msg: "HC-FILTER-50 เหลือ 2 ชุด!", time: "09:18", icon: "🔴" },
-  { id: 4, type: "order", msg: "ออเดอร์ด่วนมาก HC-003 รอเกิน 30 นาที", time: "09:32", icon: "🚨" },
-];
+const MONTHS = ["ม.ค.","ก.พ.","มี.ค.","เม.ย.","พ.ค.","มิ.ย.","ก.ค.","ส.ค.","ก.ย.","ต.ค.","พ.ย.","ธ.ค."];
 
-const PRIORITY_CONFIG = {
-  "ด่วนมาก": { color: "bg-red-500", text: "text-white", border: "border-red-500", badge: "bg-red-500 text-white" },
-  "ด่วน": { color: "bg-amber-400", text: "text-black", border: "border-amber-400", badge: "bg-amber-400 text-black" },
-  "ปกติ": { color: "bg-slate-600", text: "text-white", border: "border-slate-600", badge: "bg-slate-600 text-white" },
-};
+const numFmt = (n) => n >= 1000 ? (Math.round(n / 100) / 10) + "k" : n;
 
-const CHANNEL_CONFIG = {
-  "Shopee": { bg: "bg-orange-500", text: "text-white" },
-  "Lazada": { bg: "bg-blue-600", text: "text-white" },
-  "TikTok Shop": { bg: "bg-black", text: "text-white" },
-  "Line": { bg: "bg-green-500", text: "text-white" },
-};
+// ─── Styles ───────────────────────────────────────────────────────────────────
+const css = `
+  @import url('https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap');
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --g1:#0f4c2a;--g2:#166534;--g3:#15803d;--g4:#16a34a;--g5:#22c55e;
+    --g6:#4ade80;--g7:#86efac;--g8:#bbf7d0;--g9:#dcfce7;--g10:#f0fdf4;
+    --bg:#f0fdf4;--card:#ffffff;--text:#14532d;--text2:#166534;
+    --text3:#6b7280;--border:#d1fae5;
+    --shadow:0 4px 24px rgba(22,101,52,.08);
+    --shadow-lg:0 8px 40px rgba(22,101,52,.14);
+    --radius:20px;--font:'Prompt',sans-serif;--mono:'DM Mono',monospace;
+    --nav-h:72px;
+  }
+  html{scroll-behavior:smooth}
+  body{font-family:var(--font);background:var(--bg);color:var(--text);overflow-x:hidden}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes slideIn{from{transform:translateX(120%)}to{transform:translateX(0)}}
+  @keyframes blink{0%,100%{opacity:1}50%{opacity:.4}}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  @keyframes progress{from{width:0}to{width:100%}}
+  .fadeUp{animation:fadeUp .35s ease}
+  canvas{border-radius:12px}
+  input[type=number]::-webkit-inner-spin-button,
+  input[type=number]::-webkit-outer-spin-button{opacity:1}
+`;
 
-export default function HillCoffPackingSystem() {
-  const [orders, setOrders] = useState(MOCK_ORDERS);
-  const [activeOrder, setActiveOrder] = useState(null);
-  const [scanInput, setScanInput] = useState("");
-  const [scanResult, setScanResult] = useState(null);
-  const [alerts, setAlerts] = useState(ALERTS);
-  const [clock, setClock] = useState(new Date());
-  const [packedToday] = useState(103);
-  const [activeTab, setActiveTab] = useState("queue");
-  const scanRef = useRef(null);
+// ─── Mini Bar Chart (pure CSS) ─────────────────────────────────────────────────
+function MiniBarChart({ data, labels, color = "#16a34a" }) {
+  const max = Math.max(...data, 0.001);
+  return (
+    <div style={{ display: "flex", alignItems: "flex-end", gap: 4, height: 80, padding: "0 4px" }}>
+      {data.map((v, i) => (
+        <div key={i} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 2 }}>
+          <div style={{
+            width: "100%", background: v > 0 ? color + "cc" : "#e5e7eb",
+            borderRadius: "3px 3px 0 0",
+            height: `${(v / max) * 64}px`,
+            minHeight: v > 0 ? 4 : 2,
+            transition: "height .6s ease"
+          }} />
+          <span style={{ fontSize: 8, color: "#9ca3af", whiteSpace: "nowrap" }}>{labels[i]}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
 
-  useEffect(() => {
-    const t = setInterval(() => setClock(new Date()), 1000);
-    return () => clearInterval(t);
-  }, []);
+// ─── Donut Chart (SVG) ─────────────────────────────────────────────────────────
+function DonutChart({ slices, labels }) {
+  const total = slices.reduce((s, v) => s + v, 0);
+  const colors = ["#16a34a", "#22d3ee", "#f59e0b"];
+  let cumAngle = -Math.PI / 2;
+  const r = 44, cx = 60, cy = 60;
 
-  const timeStr = clock.toLocaleTimeString("th-TH", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
-  const dateStr = clock.toLocaleDateString("th-TH", { weekday: "long", year: "numeric", month: "long", day: "numeric" });
-
-  const handleScan = (e) => {
-    e.preventDefault();
-    const sku = scanInput.trim().toUpperCase();
-    if (!sku) return;
-    const product = MOCK_SKU_DB[sku];
-    if (product) {
-      setScanResult({ ok: true, sku, ...product });
-      if (activeOrder) {
-        setOrders(prev => prev.map(o => {
-          if (o.id !== activeOrder.id) return o;
-          const updatedItems = o.items.map(item => {
-            if (item.sku === sku && item.packed < item.qty) {
-              return { ...item, packed: item.packed + 1 };
-            }
-            return item;
-          });
-          return { ...o, items: updatedItems };
-        }));
-        setActiveOrder(prev => ({
-          ...prev,
-          items: prev.items.map(item =>
-            item.sku === sku && item.packed < item.qty
-              ? { ...item, packed: item.packed + 1 }
-              : item
-          )
-        }));
-      }
-    } else {
-      setScanResult({ ok: false, sku, msg: "ไม่พบ SKU นี้ในระบบ!" });
-    }
-    setScanInput("");
-    setTimeout(() => setScanResult(null), 3000);
-    setTimeout(() => scanRef.current?.focus(), 50);
-  };
-
-  const selectOrder = (order) => {
-    setActiveOrder(order);
-    setActiveTab("scan");
-    setTimeout(() => scanRef.current?.focus(), 100);
-  };
-
-  const completeOrder = () => {
-    if (!activeOrder) return;
-    setOrders(prev => prev.filter(o => o.id !== activeOrder.id));
-    setActiveOrder(null);
-    setActiveTab("queue");
-  };
-
-  const dismissAlert = (id) => setAlerts(prev => prev.filter(a => a.id !== id));
-
-  const pendingUrgent = orders.filter(o => o.priority === "ด่วนมาก" || o.priority === "ด่วน").length;
-  const allDone = activeOrder?.items.every(i => i.packed >= i.qty);
+  const paths = total > 0 ? slices.map((v, i) => {
+    const angle = (v / total) * 2 * Math.PI;
+    const x1 = cx + r * Math.cos(cumAngle);
+    const y1 = cy + r * Math.sin(cumAngle);
+    cumAngle += angle;
+    const x2 = cx + r * Math.cos(cumAngle);
+    const y2 = cy + r * Math.sin(cumAngle);
+    const large = angle > Math.PI ? 1 : 0;
+    return <path key={i} d={`M${cx},${cy} L${x1},${y1} A${r},${r} 0 ${large},1 ${x2},${y2} Z`} fill={colors[i]} opacity={0.85} />;
+  }) : <circle cx={cx} cy={cy} r={r} fill="#e5e7eb" />;
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-white font-mono flex flex-col" style={{ fontFamily: "'IBM Plex Mono', 'Courier New', monospace" }}>
-      
-      {/* ── TOP STATUS BAR ── */}
-      <div className="bg-zinc-900 border-b-2 border-amber-400 px-4 py-2 flex items-center justify-between flex-wrap gap-2">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 bg-amber-400 rounded flex items-center justify-center">
-            <span className="text-black font-black text-xs">HC</span>
+    <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+      <svg width={120} height={120}>
+        {paths}
+        <circle cx={cx} cy={cy} r={28} fill="white" />
+        <text x={cx} y={cy - 4} textAnchor="middle" fontSize="9" fill="#6b7280">tCO₂e</text>
+        <text x={cx} y={cy + 8} textAnchor="middle" fontSize="10" fontWeight="700" fill="#14532d">{total > 0 ? total.toFixed(2) : "—"}</text>
+      </svg>
+      <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+        {labels.map((l, i) => (
+          <div key={i} style={{ display: "flex", alignItems: "center", gap: 6 }}>
+            <div style={{ width: 10, height: 10, borderRadius: 3, background: colors[i], flexShrink: 0 }} />
+            <span style={{ fontSize: 11, color: "#374151" }}>{l}</span>
           </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ─── Radar Chart (SVG) ────────────────────────────────────────────────────────
+function RadarChart({ branches }) {
+  const axes = ["Score", "ประสิทธิภาพ", "ลด Carbon", "ค่าไฟ↓", "น้ำ↓"];
+  const n = axes.length;
+  const cx = 100, cy = 100, r = 70;
+  const angleStep = (2 * Math.PI) / n;
+  const angleOf = (i) => -Math.PI / 2 + i * angleStep;
+
+  const rings = [25, 50, 75, 100];
+  const ringPaths = rings.map(pct => {
+    const rr = (pct / 100) * r;
+    const pts = axes.map((_, i) => `${cx + rr * Math.cos(angleOf(i))},${cy + rr * Math.sin(angleOf(i))}`);
+    return <polygon key={pct} points={pts.join(" ")} fill="none" stroke="#e5e7eb" strokeWidth={1} />;
+  });
+
+  const axisLines = axes.map((ax, i) => {
+    const x = cx + r * Math.cos(angleOf(i));
+    const y = cy + r * Math.sin(angleOf(i));
+    const lx = cx + (r + 14) * Math.cos(angleOf(i));
+    const ly = cy + (r + 14) * Math.sin(angleOf(i));
+    return (
+      <g key={i}>
+        <line x1={cx} y1={cy} x2={x} y2={y} stroke="#e5e7eb" strokeWidth={1} />
+        <text x={lx} y={ly} textAnchor="middle" dominantBaseline="middle" fontSize="9" fill="#6b7280">{ax}</text>
+      </g>
+    );
+  });
+
+  const dataPolygons = branches.filter(b => b.hasData).map((b, bi) => {
+    const vals = [b.score, Math.min(100, b.score + 5), Math.min(100, b.score - 5), Math.min(100, b.score + 2), Math.min(100, b.score - 3)];
+    const pts = vals.map((v, i) => {
+      const rr = (v / 100) * r;
+      return `${cx + rr * Math.cos(angleOf(i))},${cy + rr * Math.sin(angleOf(i))}`;
+    });
+    return <polygon key={bi} points={pts.join(" ")} fill={b.color + "33"} stroke={b.color} strokeWidth={2} />;
+  });
+
+  return (
+    <svg width="100%" viewBox="0 0 200 200">
+      {ringPaths}{axisLines}{dataPolygons}
+    </svg>
+  );
+}
+
+// ─── Toast ────────────────────────────────────────────────────────────────────
+function Toast({ msg, show }) {
+  return (
+    <div style={{
+      position: "fixed", top: 20, left: "50%", transform: "translateX(-50%)",
+      background: "#0f4c2a", color: "#fff", padding: "10px 20px", borderRadius: 20,
+      fontSize: 13, fontWeight: 500, zIndex: 300,
+      boxShadow: "0 8px 40px rgba(22,101,52,.14)",
+      opacity: show ? 1 : 0, transition: "opacity .25s", pointerEvents: "none",
+      whiteSpace: "nowrap", fontFamily: "var(--font)"
+    }}>{msg}</div>
+  );
+}
+
+// ─── Branch Card ──────────────────────────────────────────────────────────────
+function BranchCard({ b, onClick }) {
+  return (
+    <div onClick={onClick} style={{
+      background: "#fff", borderRadius: 18, padding: 14,
+      boxShadow: "0 4px 24px rgba(22,101,52,.08)",
+      border: "1px solid #d1fae5", cursor: "pointer",
+      transition: "all .2s", position: "relative", overflow: "hidden",
+      fontFamily: "var(--font)"
+    }}
+      onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.boxShadow = "0 8px 40px rgba(22,101,52,.14)"; }}
+      onMouseLeave={e => { e.currentTarget.style.transform = ""; e.currentTarget.style.boxShadow = "0 4px 24px rgba(22,101,52,.08)"; }}
+    >
+      <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 3, background: b.color, borderRadius: "18px 18px 0 0" }} />
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
+        <span style={{ fontSize: 22 }}>{b.icon}</span>
+        <div style={{
+          width: 8, height: 8, borderRadius: "50%",
+          background: b.hasData ? "#22c55e" : "#86efac",
+          boxShadow: b.hasData ? "0 0 0 3px rgba(34,197,94,.2)" : "0 0 0 3px rgba(134,239,172,.2)"
+        }} />
+      </div>
+      <div style={{ fontSize: 12, fontWeight: 600, color: "#14532d" }}>{b.name}</div>
+      <div style={{ fontSize: 10, color: "#6b7280" }}>{b.nameEn} · {b.id}</div>
+      <div style={{ fontSize: 22, fontWeight: 800, color: b.hasData ? "#166534" : "#6b7280", margin: "6px 0 2px" }}>
+        {b.hasData ? b.co2 : "—"}
+      </div>
+      <div style={{ fontSize: 9, color: "#6b7280", letterSpacing: ".5px" }}>{b.hasData ? "tCO₂e" : "ยังไม่มีข้อมูล"}</div>
+      <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 8 }}>
+        <div style={{ flex: 1, height: 4, background: "#dcfce7", borderRadius: 4, overflow: "hidden" }}>
+          <div style={{ height: "100%", borderRadius: 4, background: "linear-gradient(90deg,#16a34a,#22c55e)", width: `${b.score}%`, transition: "width 1s ease" }} />
+        </div>
+        <span style={{ fontSize: 10, fontWeight: 600, color: b.hasData ? "#15803d" : "#6b7280" }}>{b.hasData ? b.score : "—"}</span>
+      </div>
+    </div>
+  );
+}
+
+// ─── Branch Modal ─────────────────────────────────────────────────────────────
+function BranchModal({ b, onClose, onGoUpload }) {
+  if (!b) return null;
+  const wTotal = (b.waste.general || 0) + (b.waste.recycle || 0) + (b.waste.organic || 0) + (b.waste.hazard || 0);
+  const rr = wTotal > 0 ? (((b.waste.recycle || 0) + (b.waste.organic || 0)) / wTotal * 100).toFixed(1) : "-";
+  const rows = b.hasData ? [
+    ["Carbon Emission", b.co2 + " tCO₂e"],
+    ["Sustainability Score", b.score + " / 100"],
+    ["ไฟฟ้า", b.elec.toLocaleString() + " kWh"],
+    ["น้ำ", b.water + " m³"],
+    ["เชื้อเพลิง", b.fuel + " ลิตร"],
+    ["ขยะทิ้ง", b.waste.general + " กก."],
+    ["รีไซเคิล + ปุ๋ย", ((b.waste.recycle || 0) + (b.waste.organic || 0)) + " กก."],
+    ["อัตรา Zero Waste", rr + "%", "#15803d"],
+    ["Carbon Credits", Math.round(b.co2 * 2.4) + " credits"],
+    ["รายการที่กรอก", b.entries + " รายการ"],
+    ["สถานะ", b.status === "excellent" ? "🟢 ดีเยี่ยม" : b.status === "good" ? "🔵 ดี" : "🟡 ปานกลาง",
+      b.status === "excellent" ? "#16a34a" : b.status === "good" ? "#15803d" : "#d97706"],
+  ] : [];
+
+  return (
+    <div onClick={onClose} style={{
+      position: "fixed", inset: 0, background: "rgba(0,0,0,.4)",
+      backdropFilter: "blur(6px)", display: "flex", alignItems: "flex-end",
+      zIndex: 200, padding: "0 0 var(--nav-h)", opacity: 1
+    }}>
+      <div onClick={e => e.stopPropagation()} style={{
+        background: "#fff", borderRadius: "28px 28px 0 0", padding: 20,
+        width: "100%", maxWidth: 600, margin: "0 auto", fontFamily: "var(--font)",
+        maxHeight: "80dvh", overflowY: "auto"
+      }}>
+        <div style={{ width: 40, height: 4, background: "#bbf7d0", borderRadius: 4, margin: "0 auto 16px" }} />
+        <button onClick={onClose} style={{
+          position: "absolute", top: 16, right: 16, background: "#f0fdf4",
+          border: "none", borderRadius: 10, width: 32, height: 32, fontSize: 16,
+          cursor: "pointer", color: "#6b7280"
+        }}>✕</button>
+        <div style={{ fontSize: 18, fontWeight: 700, color: "#14532d" }}>{b.icon} {b.name}</div>
+        <div style={{ fontSize: 12, color: "#6b7280", marginBottom: 16 }}>{b.nameEn} · {b.id}</div>
+        {!b.hasData ? (
+          <div style={{ textAlign: "center", padding: "32px 20px", color: "#6b7280" }}>
+            <div style={{ fontSize: 44, marginBottom: 12 }}>📋</div>
+            <div style={{ fontSize: 14, fontWeight: 600, color: "#14532d", marginBottom: 6 }}>ยังไม่มีข้อมูล</div>
+            <button onClick={() => { onClose(); onGoUpload(); }} style={{
+              marginTop: 14, padding: "10px 20px", background: "#166534", color: "#fff",
+              border: "none", borderRadius: 12, fontFamily: "var(--font)", fontSize: 13,
+              fontWeight: 600, cursor: "pointer"
+            }}>📝 ไปกรอกข้อมูล</button>
+          </div>
+        ) : (
+          <>
+            {rows.map(([lbl, val, col], i) => (
+              <div key={i} style={{ display: "flex", justifyContent: "space-between", padding: "10px 0", borderBottom: i < rows.length - 1 ? "1px solid #d1fae5" : "none" }}>
+                <span style={{ fontSize: 13, color: "#6b7280" }}>{lbl}</span>
+                <span style={{ fontSize: 13, fontWeight: 600, color: col || "#14532d" }}>{val}</span>
+              </div>
+            ))}
+            <button style={{
+              width: "100%", padding: 14, marginTop: 16,
+              background: "linear-gradient(135deg,#166534,#16a34a)", color: "#fff",
+              border: "none", borderRadius: 14, fontFamily: "var(--font)",
+              fontSize: 14, fontWeight: 700, cursor: "pointer"
+            }}>📄 สร้างรายงานสาขา</button>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ─── AI Panel ─────────────────────────────────────────────────────────────────
+function AIPanel({ open, onClose, branches }) {
+  const [msgs, setMsgs] = useState([{ type: "bot", text: "สวัสดีครับ! ผมคือ AI ที่ช่วยวิเคราะห์ข้อมูล ESG, Carbon Footprint และ Zero Waste ของ Hillkoff กรอกข้อมูลในหน้า Upload แล้วถามผมได้เลยครับ 🌱" }]);
+  const [input, setInput] = useState("");
+  const msgsRef = useRef(null);
+
+  const hasData = branches.some(b => b.hasData);
+  const totals = branches.reduce((acc, b) => ({ co2: acc.co2 + b.co2, elec: acc.elec + b.elec, entries: acc.entries + b.entries }), { co2: 0, elec: 0, entries: 0 });
+
+  const getResponse = () => {
+    if (!hasData) return "ยังไม่มีข้อมูลครับ กรุณากรอกข้อมูลสาขาในหน้า Upload ก่อนครับ 📝";
+    const rs = [
+      `Carbon Emission รวม ${totals.co2.toFixed(2)} tCO₂e จาก ${totals.entries} รายการ 🌱`,
+      `สาขาที่มี Score สูงสุด: ${[...branches].filter(b => b.hasData).sort((a, b) => b.score - a.score)[0]?.name || "—"}`,
+      `Carbon Credit รวม ${Math.round(totals.co2 * 2.4)} credits มูลค่าราว ฿${(Math.round(totals.co2 * 2.4) * 2000).toLocaleString()} บาท 💰`,
+      `ไฟฟ้ารวม ${totals.elec.toLocaleString()} kWh ⚡`,
+    ];
+    return rs[Math.floor(Math.random() * rs.length)];
+  };
+
+  const send = () => {
+    if (!input.trim()) return;
+    const txt = input.trim();
+    setInput("");
+    setMsgs(m => [...m, { type: "user", text: txt }, { type: "bot", text: "…", loading: true }]);
+    setTimeout(() => {
+      setMsgs(m => {
+        const copy = [...m];
+        copy[copy.length - 1] = { type: "bot", text: getResponse() };
+        return copy;
+      });
+    }, 1200);
+  };
+
+  useEffect(() => { if (msgsRef.current) msgsRef.current.scrollTop = msgsRef.current.scrollHeight; }, [msgs]);
+
+  return (
+    <>
+      <button onClick={onClose} style={{
+        position: "fixed", bottom: "calc(var(--nav-h) + 16px)", right: 16,
+        width: 52, height: 52, background: "linear-gradient(135deg,#166534,#16a34a)",
+        border: "none", borderRadius: "50%", fontSize: 24, cursor: "pointer",
+        boxShadow: "0 4px 20px rgba(22,101,52,.4)", zIndex: 90,
+        display: "flex", alignItems: "center", justifyContent: "center"
+      }}>🤖</button>
+      <div style={{
+        position: "fixed", bottom: "calc(var(--nav-h) + 76px)", right: 16,
+        width: "min(340px,calc(100vw - 32px))", background: "#fff",
+        borderRadius: 24, boxShadow: "0 8px 40px rgba(22,101,52,.14)",
+        border: "1px solid #d1fae5", zIndex: 90, overflow: "hidden",
+        transform: open ? "scale(1) translateY(0)" : "scale(.9) translateY(20px)",
+        opacity: open ? 1 : 0, pointerEvents: open ? "all" : "none",
+        transition: "all .25s cubic-bezier(.4,0,.2,1)", transformOrigin: "bottom right",
+        fontFamily: "var(--font)"
+      }}>
+        <div style={{ background: "linear-gradient(135deg,#0f4c2a,#15803d)", padding: "14px 16px", display: "flex", alignItems: "center", gap: 10 }}>
+          <span style={{ fontSize: 22 }}>🤖</span>
           <div>
-            <div className="text-amber-400 font-bold text-sm tracking-widest uppercase">Hill Coff · ห้องแพ็คสินค้า</div>
-            <div className="text-zinc-400 text-xs">{dateStr}</div>
+            <div style={{ fontSize: 13, fontWeight: 700, color: "#fff" }}>AI Sustainability Assistant</div>
+            <div style={{ fontSize: 10, color: "rgba(255,255,255,.65)" }}>วิเคราะห์ ESG · Carbon · Zero Waste</div>
           </div>
         </div>
-        <div className="flex items-center gap-4 text-xs flex-wrap">
-          <div className="text-center">
-            <div className="text-zinc-400">แพ็ควันนี้</div>
-            <div className="text-amber-400 font-black text-xl leading-none">{packedToday}</div>
+        <div ref={msgsRef} style={{ padding: 14, height: 220, overflowY: "auto", display: "flex", flexDirection: "column", gap: 8 }}>
+          {msgs.map((m, i) => (
+            <div key={i} style={{
+              padding: "10px 12px", borderRadius: 14, fontSize: 12, lineHeight: 1.5,
+              maxWidth: "88%", opacity: m.loading ? .6 : 1,
+              alignSelf: m.type === "user" ? "flex-end" : "flex-start",
+              background: m.type === "user" ? "#166534" : "#f0fdf4",
+              color: m.type === "user" ? "#fff" : "#14532d",
+              borderBottomLeftRadius: m.type === "bot" ? 4 : 14,
+              borderBottomRightRadius: m.type === "user" ? 4 : 14,
+            }}>{m.text}</div>
+          ))}
+        </div>
+        <div style={{ display: "flex", gap: 8, padding: "12px 14px", borderTop: "1px solid #d1fae5" }}>
+          <input value={input} onChange={e => setInput(e.target.value)}
+            onKeyDown={e => e.key === "Enter" && send()}
+            placeholder="ถามเกี่ยวกับ ESG / Carbon / ขยะ..."
+            style={{ flex: 1, padding: "9px 12px", border: "1px solid #d1fae5", borderRadius: 12, fontFamily: "var(--font)", fontSize: 12, background: "#f0fdf4", color: "#14532d", outline: "none" }} />
+          <button onClick={send} style={{ width: 36, height: 36, background: "#166534", color: "#fff", border: "none", borderRadius: 10, fontSize: 16, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>➤</button>
+        </div>
+      </div>
+    </>
+  );
+}
+
+// ─── PAGE: HOME ───────────────────────────────────────────────────────────────
+function PageHome({ branches, monthlyCo2, onBranchClick, onGoUpload }) {
+  const totals = branches.reduce((acc, b) => ({ co2: +(acc.co2 + b.co2).toFixed(4), elec: acc.elec + b.elec, water: acc.water + b.water, fuel: acc.fuel + b.fuel, entries: acc.entries + b.entries }), { co2: 0, elec: 0, water: 0, fuel: 0, entries: 0 });
+  const hasData = branches.some(b => b.hasData);
+
+  return (
+    <div style={{ animation: "fadeUp .35s ease" }}>
+      {/* Hero */}
+      <div style={{ background: "linear-gradient(135deg,#0f4c2a 0%,#166534 50%,#15803d 100%)", padding: "20px 20px 32px", margin: "0 -16px", marginBottom: 24, borderRadius: "0 0 32px 32px", position: "relative", overflow: "hidden" }}>
+        <div style={{ position: "absolute", inset: 0, opacity: .04, backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='60' height='60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4z' fill='white'/%3E%3C/svg%3E\")" }} />
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20, position: "relative", zIndex: 1 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <div style={{ width: 40, height: 40, background: "rgba(255,255,255,.15)", borderRadius: 12, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20, border: "1px solid rgba(255,255,255,.2)" }}>☕</div>
+            <div>
+              <div style={{ fontSize: 14, fontWeight: 700, color: "#fff", lineHeight: 1 }}>Hillkoff</div>
+              <div style={{ fontSize: 10, fontWeight: 300, color: "rgba(255,255,255,.75)", marginTop: 2 }}>Zero Waste Analytics</div>
+            </div>
           </div>
-          <div className="w-px h-8 bg-zinc-700" />
-          <div className="text-center">
-            <div className="text-zinc-400">รอแพ็ค</div>
-            <div className="text-white font-black text-xl leading-none">{orders.length}</div>
+          <div style={{ background: "rgba(255,255,255,.15)", border: "1px solid rgba(255,255,255,.25)", borderRadius: 20, padding: "4px 12px", color: "#fff", fontSize: 10, fontWeight: 500 }}>📊 Analytics Platform</div>
+        </div>
+        <div style={{ background: "rgba(255,255,255,.1)", border: "1px solid rgba(255,255,255,.2)", borderRadius: 24, padding: 20, backdropFilter: "blur(12px)", position: "relative", zIndex: 1 }}>
+          <div style={{ fontSize: 10, fontWeight: 500, color: "rgba(255,255,255,.65)", letterSpacing: "1.5px", textTransform: "uppercase", marginBottom: 4 }}>Carbon Footprint รวมองค์กร</div>
+          <div style={{ display: "flex", alignItems: "flex-end", gap: 4 }}>
+            <div style={{ fontSize: 52, fontWeight: 800, color: "#fff", lineHeight: 1, letterSpacing: -2 }}>{totals.co2}</div>
+            <div style={{ color: "rgba(255,255,255,.6)", fontSize: 13, marginBottom: 10 }}>tCO₂e</div>
           </div>
-          <div className="w-px h-8 bg-zinc-700" />
-          <div className="text-center">
-            <div className="text-zinc-400">ด่วน/ด่วนมาก</div>
-            <div className="text-red-400 font-black text-xl leading-none">{pendingUrgent}</div>
+          <div style={{ fontSize: 12, color: "rgba(255,255,255,.6)", marginTop: 4 }}>{hasData ? "ข้อมูลสะสมทุกสาขา" : "ยังไม่มีข้อมูล — เริ่มกรอกข้อมูลในหน้า Upload"}</div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 8, margin: "14px 0" }}>
+            {[["🏢", totals.entries, "รายการ"], [totals.elec > 0 ? numFmt(totals.elec) : "0", "kWh", "kWh"], ["6", "สาขา", "สาขา"]].map(([v, l], i) => (
+              <div key={i} style={{ background: "rgba(255,255,255,.1)", borderRadius: 12, padding: "10px 8px", textAlign: "center", border: "1px solid rgba(255,255,255,.12)" }}>
+                <div style={{ fontSize: 18, fontWeight: 700, color: "#fff" }}>{i === 0 ? totals.entries : i === 1 ? (totals.elec > 0 ? numFmt(totals.elec) : "0") : "6"}</div>
+                <div style={{ fontSize: 9, color: "rgba(255,255,255,.6)", marginTop: 2 }}>{["รายการ", "kWh", "สาขา"][i]}</div>
+              </div>
+            ))}
           </div>
-          <div className="w-px h-8 bg-zinc-700" />
-          <div className="text-right">
-            <div className="text-zinc-400 text-xs">เวลาปัจจุบัน</div>
-            <div className="text-green-400 font-black text-lg leading-none tabular-nums">{timeStr}</div>
+          <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+            {["ESG", "Net Zero", "Scope 1·2·3", "TCFD", "Zero Waste"].map(t => (
+              <span key={t} style={{ padding: "3px 10px", borderRadius: 20, fontSize: 9, fontWeight: 600, letterSpacing: ".6px", textTransform: "uppercase", border: "1px solid rgba(255,255,255,.25)", color: "rgba(255,255,255,.85)", background: "rgba(255,255,255,.08)" }}>{t}</span>
+            ))}
+          </div>
+          <button onClick={onGoUpload} style={{ width: "100%", marginTop: 14, padding: 13, background: "rgba(255,255,255,.95)", color: "#166534", border: "none", borderRadius: 14, fontFamily: "var(--font)", fontSize: 14, fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, boxShadow: "0 4px 20px rgba(0,0,0,.15)" }}>
+            📝 กรอก / อัปโหลดข้อมูลสาขา
+          </button>
+        </div>
+      </div>
+
+      {/* Branch Grid */}
+      <SectionTitle>สาขาทั้งหมด</SectionTitle>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(2,1fr)", gap: 12 }}>
+        {branches.map((b, i) => <BranchCard key={i} b={b} onClick={() => onBranchClick(i)} />)}
+      </div>
+
+      {/* Monthly Chart */}
+      <SectionTitle style={{ marginTop: 32 }}>Carbon รายเดือน</SectionTitle>
+      <div style={{ background: "#fff", borderRadius: 20, padding: 18, boxShadow: "0 4px 24px rgba(22,101,52,.08)", border: "1px solid #d1fae5" }}>
+        <div style={{ fontSize: 13, fontWeight: 600, color: "#14532d" }}>Carbon Emission 2024</div>
+        <div style={{ fontSize: 11, color: "#6b7280", marginBottom: 14 }}>tCO₂e รายเดือน</div>
+        <MiniBarChart data={monthlyCo2} labels={MONTHS} color="#16a34a" />
+      </div>
+
+      {/* KPIs */}
+      <SectionTitle style={{ marginTop: 32 }}>การใช้ทรัพยากรรวม</SectionTitle>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 10 }}>
+        {[["⚡", totals.elec, "kWh", "ไฟฟ้า"], ["💧", totals.water, "m³", "น้ำ"], ["⛽", totals.fuel, "L", "เชื้อเพลิง"]].map(([icon, val, unit, lbl]) => (
+          <div key={lbl} style={{ background: "#fff", borderRadius: 16, padding: "14px 12px", textAlign: "center", boxShadow: "0 4px 24px rgba(22,101,52,.08)", border: "1px solid #d1fae5" }}>
+            <div style={{ fontSize: 22, marginBottom: 4 }}>{icon}</div>
+            <div style={{ fontSize: 18, fontWeight: 800, color: val > 0 ? "#166534" : "#6b7280", lineHeight: 1 }}>{val > 0 ? numFmt(val) : "0"}</div>
+            <div style={{ fontSize: 9, fontWeight: 500, color: "#6b7280" }}>{unit}</div>
+            <div style={{ fontSize: 10, color: "#6b7280", marginTop: 3 }}>{lbl}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* About */}
+      <div style={{ marginTop: 32, background: "linear-gradient(135deg,#0f4c2a,#166534)", borderRadius: 20, padding: 20, color: "#fff", textAlign: "center", position: "relative", overflow: "hidden" }}>
+        <div style={{ position: "absolute", right: -10, bottom: -10, fontSize: 80, opacity: .1 }}>🌿</div>
+        <div style={{ fontSize: 15, fontWeight: 700, marginBottom: 8 }}>🌱 Zero Waste & Sustainability</div>
+        <div style={{ fontSize: 12, lineHeight: 1.7, opacity: .8 }}>"ระบบนี้ถูกพัฒนาขึ้นภายใต้แนวคิด Zero Waste และ Sustainability เพื่อช่วยให้องค์กรเห็นภาพการใช้ทรัพยากรได้ชัดขึ้น ลดต้นทุน ลด Carbon Emission และสนับสนุนแนวทาง ESG / Net Zero อย่างเป็นรูปธรรม"</div>
+      </div>
+    </div>
+  );
+}
+
+// ─── PAGE: UPLOAD ─────────────────────────────────────────────────────────────
+function PageUpload({ branches, onSave, showToast }) {
+  const [branchId, setBranchId] = useState("HQ");
+  const [month, setMonth] = useState("2024-06");
+  const [elec, setElec] = useState(""); const [elecThb, setElecThb] = useState("");
+  const [water, setWater] = useState(""); const [waterThb, setWaterThb] = useState("");
+  const [fuel, setFuel] = useState(""); const [fuelType, setFuelType] = useState("diesel");
+  const [matCat, setMatCat] = useState(""); const [matItemIdx, setMatItemIdx] = useState("");
+  const [matQty, setMatQty] = useState("");
+  const [matEntries, setMatEntries] = useState([]);
+  const [waste, setWaste] = useState({ food: "", paper: "", plastic: "", rPaper: "", rPlastic: "", rMetal: "", oCoffee: "", oFood: "", oOther: "", hChem: "", hBatt: "", hLandfill: "" });
+  const [note, setNote] = useState("");
+  const [analyzing, setAnalyzing] = useState(false);
+  const [result, setResult] = useState(null);
+  const [uploadedFiles, setUploadedFiles] = useState([]);
+  const fileRef = useRef();
+
+  const currentItems = matCat && MAT_CATALOG[matCat] ? MAT_CATALOG[matCat].items : [];
+  const currentUnit = matCat && matItemIdx !== "" && MAT_CATALOG[matCat]?.items[parseInt(matItemIdx)] ? MAT_CATALOG[matCat].items[parseInt(matItemIdx)].unit : "—";
+
+  const addMat = () => {
+    if (!matCat) { showToast("⚠️ เลือกหมวดหมู่ก่อน"); return; }
+    if (matItemIdx === "") { showToast("⚠️ เลือกรายการก่อน"); return; }
+    const q = parseFloat(matQty); if (!q || q <= 0) { showToast("⚠️ กรอกจำนวนให้ถูกต้อง"); return; }
+    const item = MAT_CATALOG[matCat].items[parseInt(matItemIdx)];
+    const catLabel = MAT_CATALOG[matCat].label.replace(/^[^ ]+ /, "");
+    setMatEntries(prev => {
+      const ex = prev.find(e => e.cat === matCat && e.name === item.name);
+      if (ex) return prev.map(e => e.cat === matCat && e.name === item.name ? { ...e, qty: e.qty + q } : e);
+      return [...prev, { cat: matCat, catLabel, name: item.name, qty: q, unit: item.unit }];
+    });
+    setMatQty("");
+  };
+
+  const handleFile = (file) => {
+    const ext = file.name.split(".").pop().toLowerCase();
+    if (!["xlsx", "csv", "pdf"].includes(ext)) { showToast("⚠️ ไฟล์นี้ไม่รองรับ"); return; }
+    const id = Date.now() + Math.random();
+    setUploadedFiles(prev => [{ id, name: file.name, ext, size: file.size > 1048576 ? (file.size / 1048576).toFixed(1) + "MB" : Math.round(file.size / 1024) + "KB", status: "processing" }, ...prev]);
+    setTimeout(() => { setUploadedFiles(prev => prev.map(f => f.id === id ? { ...f, status: "done" } : f)); showToast("✅ นำเข้าสำเร็จ: " + file.name); }, 2000);
+  };
+
+  const analyze = () => {
+    const e = parseFloat(elec) || 0, w = parseFloat(water) || 0, f = parseFloat(fuel) || 0;
+    if (!e && !w && !f && matEntries.length === 0) { showToast("⚠️ กรุณากรอกข้อมูลอย่างน้อย 1 รายการ"); return; }
+    setAnalyzing(true);
+    setTimeout(() => {
+      const co2Elec = +(e * 0.4716 / 1000).toFixed(4);
+      const co2Water = +(w * 0.00149).toFixed(4);
+      const ff = { diesel: 2.67, gasoline: 2.31, lpg: 2.98, cng: 2.15 }[fuelType] || 2.31;
+      const co2Fuel = +(f * ff / 1000).toFixed(4);
+      const co2Total = +(co2Elec + co2Water + co2Fuel).toFixed(4);
+      const wGen = (parseFloat(waste.food) || 0) + (parseFloat(waste.paper) || 0) + (parseFloat(waste.plastic) || 0);
+      const wRec = (parseFloat(waste.rPaper) || 0) + (parseFloat(waste.rPlastic) || 0) + (parseFloat(waste.rMetal) || 0);
+      const wOrg = (parseFloat(waste.oCoffee) || 0) + (parseFloat(waste.oFood) || 0) + (parseFloat(waste.oOther) || 0);
+      const wHaz = (parseFloat(waste.hChem) || 0) + (parseFloat(waste.hBatt) || 0) + (parseFloat(waste.hLandfill) || 0);
+      const wTotal = wGen + wRec + wOrg + wHaz;
+      const rr = wTotal > 0 ? ((wRec + wOrg) / wTotal * 100).toFixed(1) : 0;
+      onSave({ branchId, month, elec: e, water: w, fuel: f, co2Total, co2Elec, co2Water, co2Fuel, wGen, wRec, wOrg, wHaz, matCount: matEntries.length, recycleRate: rr });
+      setResult({ co2Elec, co2Water, co2Fuel, co2Total, wGen, wRec, wOrg, wHaz, wTotal, rr, matEntries: [...matEntries], branchName: branches.find(b => b.id === branchId)?.name || branchId });
+      setMatEntries([]);
+      setAnalyzing(false);
+    }, 1200);
+  };
+
+  const inp = (val, set, ph = "0") => (
+    <input type="number" value={val} onChange={e => set(e.target.value)} placeholder={ph} min="0"
+      style={{ padding: "9px 12px", border: "1.5px solid #d1fae5", borderRadius: 10, fontFamily: "var(--font)", fontSize: 13, color: "#14532d", background: "#f0fdf4", outline: "none", width: "100%" }} />
+  );
+  const sel = (val, set, opts) => (
+    <select value={val} onChange={e => set(e.target.value)}
+      style={{ padding: "9px 12px", border: "1.5px solid #d1fae5", borderRadius: 10, fontFamily: "var(--font)", fontSize: 13, color: "#14532d", background: "#f0fdf4", outline: "none", width: "100%", appearance: "none", cursor: "pointer" }}>
+      {opts.map(([v, l]) => <option key={v} value={v}>{l}</option>)}
+    </select>
+  );
+  const WasteIn = ({ label, k }) => (
+    <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
+      <div style={{ fontSize: 10, color: "#6b7280" }}>{label}</div>
+      <input type="number" value={waste[k]} onChange={e => setWaste(p => ({ ...p, [k]: e.target.value }))} placeholder="0" min="0"
+        style={{ padding: "8px 10px", border: "1.5px solid #d1fae5", borderRadius: 8, fontFamily: "var(--mono)", fontSize: 12, color: "#14532d", background: "#f0fdf4", outline: "none", textAlign: "right" }} />
+    </div>
+  );
+
+  return (
+    <div style={{ animation: "fadeUp .35s ease" }}>
+      {/* Header */}
+      <div style={{ background: "linear-gradient(135deg,#0f4c2a,#15803d)", padding: "20px 20px 14px", margin: "0 -16px 24px", borderRadius: "0 0 32px 32px" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <div style={{ width: 40, height: 40, background: "rgba(255,255,255,.15)", borderRadius: 12, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20, border: "1px solid rgba(255,255,255,.2)" }}>☕</div>
+          <div>
+            <div style={{ fontSize: 14, fontWeight: 700, color: "#fff" }}>Hillkoff</div>
+            <div style={{ fontSize: 10, color: "rgba(255,255,255,.75)" }}>Zero Waste Analytics</div>
+          </div>
+        </div>
+        <div style={{ background: "rgba(255,255,255,.1)", border: "1px solid rgba(255,255,255,.2)", borderRadius: 16, padding: "12px 16px", marginTop: 14 }}>
+          <div style={{ fontSize: 10, color: "rgba(255,255,255,.65)", letterSpacing: "1.5px", textTransform: "uppercase" }}>Data Entry & File Import</div>
+          <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 4 }}>
+            <span style={{ fontSize: 28 }}>📝</span>
+            <div>
+              <div style={{ color: "#fff", fontSize: 15, fontWeight: 700 }}>กรอกข้อมูล / นำเข้าไฟล์</div>
+              <div style={{ color: "rgba(255,255,255,.65)", fontSize: 11 }}>กรอกบิล · ขยะ · วัสดุ (90 รายการ) หรืออัปโหลด Excel/CSV</div>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* ── ALERT STRIP ── */}
-      {alerts.length > 0 && (
-        <div className="bg-red-950 border-b border-red-800 px-4 py-1 flex items-center gap-2 overflow-x-auto">
-          <span className="text-red-400 text-xs font-bold uppercase tracking-widest whitespace-nowrap">⚡ แจ้งเตือน</span>
-          {alerts.map(a => (
-            <div key={a.id} className="flex items-center gap-1 bg-red-900 border border-red-700 rounded px-2 py-0.5 text-xs whitespace-nowrap">
-              <span>{a.icon}</span>
-              <span className="text-red-200">{a.msg}</span>
-              <span className="text-red-500">[{a.time}]</span>
-              <button onClick={() => dismissAlert(a.id)} className="text-red-400 hover:text-white ml-1 font-bold">✕</button>
-            </div>
-          ))}
+      {/* Upload Zone */}
+      <SectionTitle>อัปโหลดไฟล์</SectionTitle>
+      <div onClick={() => fileRef.current?.click()} style={{ border: "2px dashed #86efac", borderRadius: 20, padding: "40px 20px", textAlign: "center", background: "#f0fdf4", cursor: "pointer", transition: "all .2s" }}
+        onDragOver={e => e.preventDefault()} onDrop={e => { e.preventDefault(); Array.from(e.dataTransfer.files).forEach(handleFile); }}>
+        <input ref={fileRef} type="file" multiple accept=".xlsx,.csv,.pdf" style={{ display: "none" }} onChange={e => Array.from(e.target.files).forEach(handleFile)} />
+        <div style={{ fontSize: 44, marginBottom: 10 }}>📂</div>
+        <div style={{ fontSize: 14, fontWeight: 600, color: "#14532d" }}>ลากไฟล์มาวางที่นี่</div>
+        <div style={{ fontSize: 12, color: "#6b7280" }}>หรือคลิกเพื่อเลือกไฟล์</div>
+        <div style={{ display: "flex", gap: 8, justifyContent: "center", marginTop: 10 }}>
+          {["Excel", "CSV", "PDF"].map(t => <span key={t} style={{ padding: "4px 10px", borderRadius: 8, fontSize: 10, fontWeight: 600, background: "#fff", color: "#15803d", border: "1px solid #d1fae5" }}>{t}</span>)}
         </div>
-      )}
+      </div>
 
-      {/* ── MAIN LAYOUT ── */}
-      <div className="flex flex-1 overflow-hidden">
+      {/* Upload History */}
+      <SectionTitle style={{ marginTop: 20 }}>ประวัติการนำเข้าไฟล์</SectionTitle>
+      {uploadedFiles.length === 0 ? (
+        <div style={{ textAlign: "center", padding: 30, color: "#6b7280", fontSize: 13 }}>ยังไม่มีไฟล์</div>
+      ) : uploadedFiles.map(f => (
+        <div key={f.id} style={{ background: "#fff", borderRadius: 14, padding: "12px 14px", marginBottom: 8, display: "flex", alignItems: "center", gap: 12, border: "1px solid #d1fae5", boxShadow: "0 4px 24px rgba(22,101,52,.08)", animation: "fadeUp .3s ease" }}>
+          <span style={{ fontSize: 28 }}>{({ xlsx: "📊", csv: "📋", pdf: "📄" })[f.ext] || "📄"}</span>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ fontSize: 13, fontWeight: 600, color: "#14532d", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{f.name}</div>
+            <div style={{ fontSize: 10, color: "#6b7280", marginTop: 2 }}>{f.size} · {f.ext.toUpperCase()}</div>
+            {f.status === "processing" && <div style={{ width: "100%", height: 3, background: "#dcfce7", borderRadius: 3, marginTop: 6, overflow: "hidden" }}><div style={{ height: "100%", borderRadius: 3, background: "linear-gradient(90deg,#16a34a,#22c55e)", animation: "progress 1.5s ease forwards" }} /></div>}
+          </div>
+          <span style={{ fontSize: 10, fontWeight: 600, padding: "3px 8px", borderRadius: 8, background: f.status === "done" ? "#dcfce7" : "#fef9c3", color: f.status === "done" ? "#166534" : "#854d0e" }}>{f.status === "done" ? "✓ สำเร็จ" : "กำลังประมวลผล"}</span>
+        </div>
+      ))}
 
-        {/* ── LEFT: STAFF STATUS ── */}
-        <div className="hidden lg:flex flex-col w-48 bg-zinc-900 border-r border-zinc-800 p-3 gap-3">
-          <div className="text-zinc-400 text-xs uppercase tracking-widest font-bold border-b border-zinc-700 pb-2">พนักงาน</div>
-          {STAFF.map(s => (
-            <div key={s.id} className={`rounded-lg p-2 border ${s.status === "กำลังแพ็ค" ? "border-green-600 bg-green-950" : "border-zinc-700 bg-zinc-800"}`}>
-              <div className="flex items-center gap-2 mb-1">
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center font-black text-sm ${s.status === "กำลังแพ็ค" ? "bg-green-500 text-black" : "bg-zinc-600 text-zinc-300"}`}>
-                  {s.avatar}
-                </div>
-                <div>
-                  <div className="text-white text-xs font-bold">{s.name}</div>
-                  <div className={`text-xs ${s.status === "กำลังแพ็ค" ? "text-green-400" : "text-zinc-500"}`}>
-                    {s.status === "กำลังแพ็ค" ? "🟢 แพ็คอยู่" : "🟡 พัก"}
-                  </div>
-                </div>
-              </div>
-              <div className="text-zinc-400 text-xs">วันนี้: <span className="text-amber-400 font-bold">{s.packedToday} ออเดอร์</span></div>
-              {s.current && <div className="text-zinc-500 text-xs mt-0.5 truncate">{s.current}</div>}
-            </div>
-          ))}
+      {/* Manual Entry */}
+      <SectionTitle style={{ marginTop: 24 }}>กรอกข้อมูลด้วยตนเอง</SectionTitle>
 
-          {/* Low Stock Warnings */}
-          <div className="mt-2">
-            <div className="text-zinc-400 text-xs uppercase tracking-widest font-bold border-b border-zinc-700 pb-2 mb-2">Stock ใกล้หมด</div>
-            {Object.entries(MOCK_SKU_DB).filter(([, v]) => v.stock <= 5).map(([sku, val]) => (
-              <div key={sku} className="mb-1 bg-red-950 border border-red-800 rounded p-1.5">
-                <div className="text-red-300 text-xs font-bold truncate">{sku}</div>
-                <div className="text-red-400 text-xs">{val.stock} {val.unit} ⚠️</div>
+      {/* ① Branch + Month */}
+      <FormCard title="🏢 เลือกสาขาและช่วงเวลา" sub="เลือกสาขาที่ต้องการบันทึก และระบุเดือน/ปี">
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+          <FormGroup label="สาขา">{sel(branchId, setBranchId, [["HQ", "🏢 สำนักงานใหญ่"], ["CPK", "🌿 ช้างเผือก"], ["MHD", "🎓 มหิดล"], ["PPG", "🌳 ป่าแพ่ง"], ["TD", "☕ ทับเดื่อ"], ["RTK", "🫘 ราติก้า"]])}</FormGroup>
+          <FormGroup label="เดือน / ปี"><input type="month" value={month} onChange={e => setMonth(e.target.value)} style={{ padding: "9px 12px", border: "1.5px solid #d1fae5", borderRadius: 10, fontFamily: "var(--font)", fontSize: 13, color: "#14532d", background: "#f0fdf4", outline: "none", width: "100%" }} /></FormGroup>
+        </div>
+      </FormCard>
+
+      {/* ② Utilities */}
+      <FormCard title="⚡ ค่าสาธารณูปโภค" sub="กรอกข้อมูลจากบิลค่าน้ำ ค่าไฟ และเชื้อเพลิง">
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 10 }}>
+          <FormGroup label="ค่าไฟฟ้า (kWh)"><div>{inp(elec, setElec)}<div style={{ fontSize: 10, color: "#6b7280", marginTop: 2 }}>หน่วยไฟฟ้าตามบิล</div></div></FormGroup>
+          <FormGroup label="ค่าไฟฟ้า (บาท)"><div>{inp(elecThb, setElecThb)}<div style={{ fontSize: 10, color: "#6b7280", marginTop: 2 }}>ยอดรวมในใบแจ้งหนี้</div></div></FormGroup>
+        </div>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 10 }}>
+          <FormGroup label="ค่าน้ำประปา (m³)">{inp(water, setWater)}</FormGroup>
+          <FormGroup label="ค่าน้ำประปา (บาท)">{inp(waterThb, setWaterThb)}</FormGroup>
+        </div>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+          <FormGroup label="เชื้อเพลิง (ลิตร)">{inp(fuel, setFuel)}</FormGroup>
+          <FormGroup label="ประเภทเชื้อเพลิง">{sel(fuelType, setFuelType, [["diesel", "ดีเซล"], ["gasoline", "เบนซิน"], ["lpg", "LPG (กก.)"], ["cng", "CNG (กก.)"]])}</FormGroup>
+        </div>
+      </FormCard>
+
+      {/* ③ Materials */}
+      <FormCard title="📦 รายการเบิกใช้วัสดุ" sub="เลือกหมวดหมู่ → เลือกรายการ → กรอกจำนวน → กด เพิ่ม">
+        <div style={{ border: "1.5px solid #d1fae5", borderRadius: 12, overflow: "hidden", background: "#f0fdf4" }}>
+          <div style={{ display: "flex", gap: 8, padding: "10px 12px", background: "#f0fdf4", borderBottom: "1.5px solid #d1fae5", flexWrap: "wrap" }}>
+            <select value={matCat} onChange={e => { setMatCat(e.target.value); setMatItemIdx(""); }}
+              style={{ flex: 1, minWidth: 0, padding: "8px 12px", border: "1.5px solid #d1fae5", borderRadius: 9, fontFamily: "var(--font)", fontSize: 12, color: "#14532d", background: "#fff", outline: "none", cursor: "pointer" }}>
+              <option value="">— เลือกหมวด —</option>
+              {Object.entries(MAT_CATALOG).map(([k, v]) => <option key={k} value={k}>{v.label}</option>)}
+            </select>
+            <select value={matItemIdx} onChange={e => setMatItemIdx(e.target.value)}
+              style={{ flex: 1.5, minWidth: 0, padding: "8px 12px", border: "1.5px solid #d1fae5", borderRadius: 9, fontFamily: "var(--font)", fontSize: 12, color: "#14532d", background: "#fff", outline: "none", cursor: "pointer" }}>
+              <option value="">— เลือกรายการ —</option>
+              {currentItems.map((item, i) => <option key={i} value={i}>{item.name}</option>)}
+            </select>
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "10px 12px", background: "#f0fdf4", borderBottom: "1.5px solid #d1fae5" }}>
+            <input type="number" value={matQty} onChange={e => setMatQty(e.target.value)} onKeyDown={e => e.key === "Enter" && addMat()} placeholder="0" min="0"
+              style={{ width: 90, padding: "8px 10px", border: "1.5px solid #d1fae5", borderRadius: 9, fontFamily: "var(--mono)", fontSize: 13, color: "#14532d", background: "#fff", outline: "none", textAlign: "right" }} />
+            <span style={{ fontSize: 11, color: "#6b7280", whiteSpace: "nowrap" }}>{currentUnit}</span>
+            <button onClick={addMat} style={{ padding: "8px 16px", background: "#166534", color: "#fff", border: "none", borderRadius: 9, fontFamily: "var(--font)", fontSize: 12, fontWeight: 700, cursor: "pointer", whiteSpace: "nowrap" }}>+ เพิ่มรายการ</button>
+          </div>
+          <div style={{ padding: 12 }}>
+            {matEntries.length === 0 ? (
+              <div style={{ textAlign: "center", padding: 20, color: "#6b7280", fontSize: 12, border: "1.5px dashed #d1fae5", borderRadius: 10 }}>ยังไม่มีรายการ — เลือกและกด "เพิ่มรายการ"</div>
+            ) : matEntries.map((e, i) => (
+              <div key={i} style={{ display: "flex", alignItems: "center", gap: 8, padding: "9px 12px", background: "#f0fdf4", borderRadius: 10, border: "1px solid #d1fae5", marginBottom: 6, animation: "fadeUp .2s ease" }}>
+                <span style={{ fontSize: 9, fontWeight: 600, padding: "2px 7px", borderRadius: 6, background: "#dcfce7", color: "#166534", whiteSpace: "nowrap", border: "1px solid #d1fae5" }}>{e.catLabel}</span>
+                <span style={{ flex: 1, fontSize: 12, fontWeight: 600, color: "#14532d" }}>{e.name}</span>
+                <span style={{ fontFamily: "var(--mono)", fontSize: 12, fontWeight: 600, color: "#166534", whiteSpace: "nowrap" }}>{e.qty} {e.unit}</span>
+                <button onClick={() => setMatEntries(prev => prev.filter((_, j) => j !== i))} style={{ width: 24, height: 24, border: "none", background: "rgba(239,68,68,.1)", borderRadius: 6, color: "#ef4444", fontSize: 13, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>✕</button>
               </div>
             ))}
           </div>
-        </div>
-
-        {/* ── CENTER CONTENT ── */}
-        <div className="flex-1 flex flex-col overflow-hidden">
-
-          {/* Tab Bar (mobile) */}
-          <div className="flex bg-zinc-900 border-b border-zinc-800">
-            {[{ key: "queue", label: `คิวแพ็ค (${orders.length})` }, { key: "scan", label: "สแกน SKU" }].map(tab => (
-              <button
-                key={tab.key}
-                onClick={() => setActiveTab(tab.key)}
-                className={`flex-1 py-3 text-sm font-bold tracking-wide transition-all ${activeTab === tab.key ? "bg-amber-400 text-black" : "text-zinc-400 hover:text-white hover:bg-zinc-800"}`}
-              >
-                {tab.label}
-              </button>
-            ))}
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "8px 12px", background: "linear-gradient(90deg,#0f4c2a,#15803d)", borderRadius: "0 0 10px 10px" }}>
+            <span style={{ fontSize: 11, color: "rgba(255,255,255,.8)" }}>รายการที่เพิ่มแล้ว</span>
+            <span style={{ fontSize: 13, fontWeight: 700, color: "#fff" }}>{matEntries.length} รายการ</span>
           </div>
-
-          {/* ── ORDER QUEUE TAB ── */}
-          {activeTab === "queue" && (
-            <div className="flex-1 overflow-y-auto p-3 space-y-2">
-              {orders.length === 0 && (
-                <div className="flex flex-col items-center justify-center h-64 text-zinc-500">
-                  <div className="text-6xl mb-4">✅</div>
-                  <div className="text-xl font-bold text-green-400">แพ็คหมดแล้ว!</div>
-                  <div className="text-sm mt-1">ไม่มีออเดอร์รอแพ็ค</div>
-                </div>
-              )}
-              {/* Priority sort */}
-              {["ด่วนมาก", "ด่วน", "ปกติ"].map(pri => {
-                const grp = orders.filter(o => o.priority === pri);
-                if (!grp.length) return null;
-                const cfg = PRIORITY_CONFIG[pri];
-                return (
-                  <div key={pri}>
-                    <div className={`text-xs font-bold uppercase tracking-widest mb-2 px-1 ${pri === "ด่วนมาก" ? "text-red-400" : pri === "ด่วน" ? "text-amber-400" : "text-zinc-400"}`}>
-                      {pri === "ด่วนมาก" ? "🚨" : pri === "ด่วน" ? "⚡" : "📦"} {pri} ({grp.length})
-                    </div>
-                    {grp.map(order => {
-                      const chCfg = CHANNEL_CONFIG[order.channel] || { bg: "bg-zinc-700", text: "text-white" };
-                      const isActive = activeOrder?.id === order.id;
-                      return (
-                        <div
-                          key={order.id}
-                          onClick={() => selectOrder(order)}
-                          className={`rounded-xl border-2 p-3 mb-2 cursor-pointer transition-all active:scale-95 ${isActive ? "border-amber-400 bg-amber-950" : `${cfg.border} bg-zinc-900 hover:bg-zinc-800`}`}
-                        >
-                          <div className="flex items-center justify-between mb-2 flex-wrap gap-1">
-                            <div className="flex items-center gap-2">
-                              <span className={`text-xs font-black px-2 py-0.5 rounded ${cfg.badge}`}>{order.priority}</span>
-                              <span className={`text-xs font-bold px-2 py-0.5 rounded ${chCfg.bg} ${chCfg.text}`}>{order.channel}</span>
-                            </div>
-                            <span className="text-zinc-500 text-xs">{order.created} น.</span>
-                          </div>
-                          <div className="font-bold text-white text-sm mb-0.5">{order.id}</div>
-                          <div className="text-zinc-400 text-xs mb-2">{order.customer}</div>
-                          <div className="space-y-1">
-                            {order.items.map((item, i) => {
-                              const done = item.packed >= item.qty;
-                              const stockInfo = MOCK_SKU_DB[item.sku];
-                              const lowStock = stockInfo && stockInfo.stock <= 5;
-                              return (
-                                <div key={i} className={`flex items-center justify-between text-xs rounded px-2 py-1 ${done ? "bg-green-900/40 text-green-400" : "bg-zinc-800 text-zinc-300"}`}>
-                                  <div className="flex items-center gap-1 flex-1 min-w-0">
-                                    <span>{done ? "✅" : "⬜"}</span>
-                                    <span className="font-mono text-zinc-500 truncate">{item.sku}</span>
-                                    {lowStock && <span className="text-red-400">⚠️</span>}
-                                  </div>
-                                  <div className="flex items-center gap-2 ml-2">
-                                    <span className="text-zinc-400 truncate max-w-[100px]">{item.name}</span>
-                                    <span className={`font-black ${done ? "text-green-400" : "text-white"}`}>{item.packed}/{item.qty}</span>
-                                  </div>
-                                </div>
-                              );
-                            })}
-                          </div>
-                          <div className="mt-2">
-                            <button
-                              onClick={(e) => { e.stopPropagation(); selectOrder(order); }}
-                              className="w-full py-2 rounded-lg bg-amber-400 text-black font-black text-sm active:bg-amber-500 transition"
-                            >
-                              เริ่มแพ็ค →
-                            </button>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                );
-              })}
-            </div>
-          )}
-
-          {/* ── SCAN TAB ── */}
-          {activeTab === "scan" && (
-            <div className="flex-1 overflow-y-auto p-3 flex flex-col gap-3">
-
-              {/* Active Order Header */}
-              {activeOrder ? (
-                <div className="bg-zinc-900 border-2 border-amber-400 rounded-xl p-3">
-                  <div className="flex items-center justify-between mb-1 flex-wrap gap-1">
-                    <div className="flex items-center gap-2">
-                      <span className={`text-xs font-black px-2 py-0.5 rounded ${PRIORITY_CONFIG[activeOrder.priority]?.badge}`}>{activeOrder.priority}</span>
-                      <span className="text-amber-400 font-bold text-sm">{activeOrder.id}</span>
-                    </div>
-                    <button onClick={() => { setActiveOrder(null); setActiveTab("queue"); }} className="text-zinc-500 hover:text-white text-xs">← กลับ</button>
-                  </div>
-                  <div className="text-white font-bold">{activeOrder.customer}</div>
-                  <div className="text-zinc-400 text-xs">{activeOrder.channel} · {activeOrder.created} น.</div>
-
-                  <div className="mt-2 space-y-1">
-                    {activeOrder.items.map((item, i) => {
-                      const done = item.packed >= item.qty;
-                      const stockInfo = MOCK_SKU_DB[item.sku];
-                      const lowStock = stockInfo && stockInfo.stock <= 5;
-                      return (
-                        <div key={i} className={`flex items-center justify-between rounded-lg px-3 py-2 text-sm border ${done ? "bg-green-900 border-green-600" : "bg-zinc-800 border-zinc-700"}`}>
-                          <div className="flex items-center gap-2 min-w-0 flex-1">
-                            <span className="text-lg">{done ? "✅" : "⬜"}</span>
-                            <div className="min-w-0">
-                              <div className="font-mono text-xs text-zinc-400">{item.sku}</div>
-                              <div className="text-white text-xs truncate">{item.name}</div>
-                              {lowStock && <div className="text-red-400 text-xs">⚠️ stock เหลือน้อย</div>}
-                            </div>
-                          </div>
-                          <div className={`font-black text-lg ml-2 ${done ? "text-green-400" : item.packed > 0 ? "text-amber-400" : "text-white"}`}>
-                            {item.packed}/{item.qty}
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-
-                  {allDone && (
-                    <button
-                      onClick={completeOrder}
-                      className="mt-3 w-full py-4 rounded-xl bg-green-500 text-black font-black text-lg active:bg-green-600 transition animate-pulse"
-                    >
-                      ✅ แพ็คเสร็จ! ยืนยันออเดอร์
-                    </button>
-                  )}
-                </div>
-              ) : (
-                <div className="bg-zinc-900 border border-zinc-700 rounded-xl p-4 text-center text-zinc-500">
-                  <div className="text-3xl mb-2">📦</div>
-                  <div className="text-sm">เลือกออเดอร์จากคิวก่อนสแกน</div>
-                  <button onClick={() => setActiveTab("queue")} className="mt-2 px-4 py-2 bg-amber-400 text-black rounded-lg font-bold text-sm">ดูคิว →</button>
-                </div>
-              )}
-
-              {/* SCAN BOX */}
-              <div className="bg-zinc-900 border-2 border-zinc-700 rounded-xl p-4">
-                <div className="text-zinc-400 text-xs uppercase tracking-widest mb-3 font-bold">📷 สแกน Barcode / กรอก SKU</div>
-                <form onSubmit={handleScan} className="flex gap-2">
-                  <input
-                    ref={scanRef}
-                    type="text"
-                    value={scanInput}
-                    onChange={e => setScanInput(e.target.value.toUpperCase())}
-                    placeholder="สแกนหรือพิมพ์ SKU..."
-                    className="flex-1 bg-black border-2 border-zinc-600 focus:border-amber-400 rounded-lg px-4 py-3 text-white text-lg font-mono outline-none placeholder-zinc-600 transition"
-                    autoComplete="off"
-                    autoFocus
-                  />
-                  <button type="submit" className="px-5 py-3 bg-amber-400 text-black font-black text-lg rounded-lg active:bg-amber-500 transition whitespace-nowrap">
-                    ✓ ตรวจ
-                  </button>
-                </form>
-
-                {/* Scan Result */}
-                {scanResult && (
-                  <div className={`mt-3 rounded-xl p-4 border-2 ${scanResult.ok ? "bg-green-900 border-green-500" : "bg-red-900 border-red-500"}`}>
-                    {scanResult.ok ? (
-                      <div>
-                        <div className="text-green-400 font-black text-lg">✅ พบสินค้า!</div>
-                        <div className="text-white font-bold mt-1">{scanResult.name}</div>
-                        <div className="text-zinc-300 text-sm font-mono">{scanResult.sku}</div>
-                        <div className={`text-sm mt-1 ${scanResult.stock <= 5 ? "text-red-400 font-bold" : "text-green-300"}`}>
-                          Stock: {scanResult.stock} {scanResult.unit} {scanResult.stock <= 5 ? "⚠️ ใกล้หมด!" : ""}
-                        </div>
-                      </div>
-                    ) : (
-                      <div>
-                        <div className="text-red-400 font-black text-lg">❌ ไม่พบ SKU!</div>
-                        <div className="text-zinc-300 font-mono text-sm mt-1">{scanResult.sku}</div>
-                        <div className="text-red-300 text-sm mt-1">{scanResult.msg}</div>
-                        <div className="text-zinc-400 text-xs mt-1">กรุณาตรวจสอบสินค้าอีกครั้ง</div>
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                {/* Quick SKU Buttons */}
-                <div className="mt-3">
-                  <div className="text-zinc-500 text-xs mb-2">กด SKU ด่วน:</div>
-                  <div className="flex flex-wrap gap-1">
-                    {Object.keys(MOCK_SKU_DB).map(sku => (
-                      <button
-                        key={sku}
-                        onClick={() => { setScanInput(sku); setTimeout(() => scanRef.current?.focus(), 50); }}
-                        className="text-xs font-mono bg-zinc-800 border border-zinc-700 hover:border-amber-400 hover:text-amber-400 text-zinc-400 px-2 py-1 rounded transition"
-                      >
-                        {sku}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              {/* SKU Lookup Table */}
-              <div className="bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden">
-                <div className="text-zinc-400 text-xs uppercase tracking-widest font-bold p-3 border-b border-zinc-800 flex justify-between">
-                  <span>รายการ SKU ทั้งหมด</span>
-                  <span className="text-zinc-600">stock ปัจจุบัน</span>
-                </div>
-                {Object.entries(MOCK_SKU_DB).map(([sku, val], i) => {
-                  const low = val.stock <= 5;
-                  return (
-                    <div key={sku} className={`flex items-center justify-between px-3 py-2 text-sm ${i % 2 === 0 ? "bg-zinc-900" : "bg-zinc-950"} ${low ? "border-l-4 border-red-500" : "border-l-4 border-transparent"}`}>
-                      <div>
-                        <div className="font-mono text-xs text-zinc-400">{sku}</div>
-                        <div className="text-white text-xs">{val.name}</div>
-                      </div>
-                      <div className={`font-black text-base ${low ? "text-red-400" : "text-green-400"}`}>
-                        {val.stock} <span className="text-xs font-normal text-zinc-500">{val.unit}</span>
-                        {low && <span className="text-red-400 ml-1">⚠️</span>}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          )}
         </div>
+      </FormCard>
 
-        {/* ── RIGHT: REALTIME ALERTS ── */}
-        <div className="hidden xl:flex flex-col w-56 bg-zinc-900 border-l border-zinc-800 p-3">
-          <div className="text-zinc-400 text-xs uppercase tracking-widest font-bold border-b border-zinc-700 pb-2 mb-3">แจ้งเตือน Realtime</div>
-          <div className="space-y-2 flex-1">
-            {alerts.map(a => (
-              <div key={a.id} className={`rounded-lg p-2 border text-xs ${a.type === "stock" ? "border-red-800 bg-red-950" : "border-orange-800 bg-orange-950"}`}>
-                <div className="flex items-start justify-between gap-1">
-                  <span className="text-base">{a.icon}</span>
-                  <button onClick={() => dismissAlert(a.id)} className="text-zinc-600 hover:text-white ml-auto">✕</button>
+      {/* ④ Waste */}
+      <FormCard title="♻️ ปริมาณขยะ" sub="บันทึกขยะแต่ละประเภทที่เกิดขึ้นในเดือนนี้ (กิโลกรัม)">
+        {[
+          ["🗑️ ขยะทั่วไป (ทิ้ง)", [["อาหาร/เศษอาหาร","food"],["กระดาษ","paper"],["พลาสติก","plastic"]]],
+          ["♻️ รีไซเคิล", [["กระดาษ","rPaper"],["พลาสติก/แก้ว","rPlastic"],["โลหะ/อื่นๆ","rMetal"]]],
+          ["🌱 ขยะอินทรีย์ (ทำปุ๋ย)", [["กากกาแฟ","oCoffee"],["เศษอาหาร","oFood"],["อื่นๆ","oOther"]]],
+          ["⚠️ ขยะอันตราย / ฝังกลบ", [["สารเคมี","hChem"],["แบตเตอรี่","hBatt"],["ฝังกลบอื่นๆ","hLandfill"]]],
+        ].map(([lbl, fields]) => (
+          <div key={lbl}>
+            <div style={{ fontSize: 11, fontWeight: 600, color: "#14532d", display: "flex", alignItems: "center", gap: 6, margin: "10px 0 6px", padding: "6px 10px", background: "#f0fdf4", borderRadius: 8 }}>{lbl}</div>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8 }}>
+              {fields.map(([l, k]) => <WasteIn key={k} label={l} k={k} />)}
+            </div>
+          </div>
+        ))}
+      </FormCard>
+
+      {/* ⑤ Note */}
+      <FormCard title="📝 หมายเหตุเพิ่มเติม">
+        <FormGroup label="บันทึกข้อความ (ถ้ามี)">
+          <textarea value={note} onChange={e => setNote(e.target.value)} rows={3} placeholder="เช่น มีการปิดปรับปรุง / กิจกรรมพิเศษในเดือนนี้..."
+            style={{ padding: "9px 12px", border: "1.5px solid #d1fae5", borderRadius: 10, fontFamily: "var(--font)", fontSize: 13, color: "#14532d", background: "#f0fdf4", outline: "none", width: "100%", resize: "vertical", lineHeight: 1.6 }} />
+        </FormGroup>
+      </FormCard>
+
+      <button onClick={analyze} disabled={analyzing} style={{
+        width: "100%", padding: 14, background: "linear-gradient(135deg,#166534,#16a34a)",
+        color: "#fff", border: "none", borderRadius: 14, fontFamily: "var(--font)",
+        fontSize: 14, fontWeight: 700, cursor: analyzing ? "not-allowed" : "pointer",
+        display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+        boxShadow: "0 4px 20px rgba(22,101,52,.3)", marginTop: 14,
+        opacity: analyzing ? .7 : 1
+      }}>
+        {analyzing ? <><span style={{ display: "inline-block", animation: "spin .8s linear infinite" }}>⏳</span> กำลังคำนวณ Carbon...</> : "🔍 วิเคราะห์และบันทึกข้อมูล"}
+      </button>
+
+      {result && (
+        <div style={{ marginTop: 12, animation: "fadeUp .3s ease" }}>
+          <div style={{ background: "linear-gradient(135deg,#0f4c2a,#15803d)", borderRadius: 14, padding: "14px 16px", display: "flex", alignItems: "center", gap: 12 }}>
+            <span style={{ fontSize: 28 }}>✅</span>
+            <div>
+              <div style={{ fontSize: 13, fontWeight: 700, color: "#fff" }}>บันทึกสำเร็จ — {result.branchName} · {month}</div>
+              <div style={{ fontSize: 11, color: "rgba(255,255,255,.7)", marginTop: 2 }}>Carbon: {result.co2Total} tCO₂e · ขยะรีไซเคิล: {result.rr}% · วัสดุ: {result.matEntries.length} รายการ</div>
+            </div>
+          </div>
+          <div style={{ background: "#fff", borderRadius: 14, padding: 12, marginTop: 8, border: "1px solid #d1fae5" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+              {[["Carbon จากไฟฟ้า", result.co2Elec, "tCO₂e"], ["Carbon จากน้ำ", result.co2Water, "tCO₂e"], ["Carbon จากเชื้อเพลิง", result.co2Fuel, "tCO₂e"], ["อัตรารีไซเคิล", result.rr + "%", "ของขยะทั้งหมด"]].map(([l, v, u]) => (
+                <div key={l} style={{ textAlign: "center", padding: 10, background: "#f0fdf4", borderRadius: 10 }}>
+                  <div style={{ fontSize: 9, color: "#6b7280" }}>{l}</div>
+                  <div style={{ fontSize: 16, fontWeight: 800, color: "#166534" }}>{v}</div>
+                  <div style={{ fontSize: 9, color: "#6b7280" }}>{u}</div>
                 </div>
-                <div className={`mt-1 font-bold ${a.type === "stock" ? "text-red-300" : "text-orange-300"}`}>{a.msg}</div>
-                <div className="text-zinc-500 mt-1">{a.time} น.</div>
-              </div>
-            ))}
-            {alerts.length === 0 && (
-              <div className="text-zinc-600 text-center text-xs mt-8">
-                <div className="text-2xl mb-2">✅</div>
-                ไม่มีแจ้งเตือน
+              ))}
+            </div>
+            {result.wTotal > 0 && (
+              <div style={{ marginTop: 8, padding: 10, background: "#fef9c3", borderRadius: 10, border: "1px solid #fde68a" }}>
+                <div style={{ fontSize: 11, fontWeight: 600, color: "#92400e", marginBottom: 4 }}>♻️ สรุปขยะ</div>
+                <div style={{ fontSize: 11, color: "#78350f", lineHeight: 1.7 }}>
+                  ทิ้ง: <b>{result.wGen} กก.</b> · รีไซเคิล: <b>{result.wRec} กก.</b> · ปุ๋ย: <b>{result.wOrg} กก.</b> · อันตราย: <b>{result.wHaz} กก.</b><br />
+                  รวม: <b>{(result.wTotal).toFixed(1)} กก.</b> · Zero Waste Rate: <b>{result.rr}%</b>
+                </div>
               </div>
             )}
           </div>
+        </div>
+      )}
+    </div>
+  );
+}
 
-          {/* Today Summary */}
-          <div className="border-t border-zinc-800 pt-3 mt-3">
-            <div className="text-zinc-400 text-xs uppercase tracking-widest font-bold mb-2">สรุปวันนี้</div>
-            <div className="space-y-2 text-xs">
-              <div className="flex justify-between">
-                <span className="text-zinc-400">แพ็คแล้ว</span>
-                <span className="text-amber-400 font-black">{packedToday}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-zinc-400">รอแพ็ค</span>
-                <span className="text-white font-black">{orders.length}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-zinc-400">ออเดอร์ด่วน</span>
-                <span className="text-red-400 font-black">{pendingUrgent}</span>
-              </div>
-              <div className="w-full bg-zinc-800 rounded-full h-2 mt-2">
-                <div
-                  className="bg-amber-400 h-2 rounded-full transition-all"
-                  style={{ width: `${Math.round((packedToday / (packedToday + orders.length)) * 100)}%` }}
-                />
-              </div>
-              <div className="text-zinc-500 text-center">
-                {Math.round((packedToday / (packedToday + orders.length)) * 100)}% เสร็จแล้ว
+// ─── PAGE: ANALYTICS ──────────────────────────────────────────────────────────
+function PageAnalytics({ branches, monthlyCo2 }) {
+  const hasData = branches.some(b => b.hasData);
+  const totals = branches.reduce((acc, b) => ({ co2: +(acc.co2 + b.co2).toFixed(4), elec: acc.elec + b.elec, water: acc.water + b.water, fuel: acc.fuel + b.fuel, entries: acc.entries + b.entries }), { co2: 0, elec: 0, water: 0, fuel: 0, entries: 0 });
+
+  const baseCO2 = totals.co2;
+  const futureMonths = ["ก.ค.", "ส.ค.", "ก.ย."];
+  const forecasts = futureMonths.map((m, i) => {
+    const seed = (baseCO2 * 1000 + i * 77) | 0;
+    const r = ((seed * 1103515245 + 12345) & 0x7fffffff) / 0x7fffffff;
+    const trend = (r - .4) * 8;
+    return { month: m, val: (baseCO2 * (1 + trend / 100)).toFixed(2), trend };
+  });
+
+  const e = +(totals.elec * 0.4716 / 1000).toFixed(2);
+  const w = +(totals.water * 0.00149).toFixed(2);
+  const f = +(totals.fuel * 2.31 / 1000).toFixed(2);
+
+  return (
+    <div style={{ animation: "fadeUp .35s ease" }}>
+      <PageHeader title="📊 Analytics + AI Forecast" sub="วิเคราะห์และคาดการณ์ด้วย AI" />
+
+      {/* AI Forecast */}
+      <SectionTitle>AI Forecast · คาดการณ์</SectionTitle>
+      <div style={{ background: "#fff", borderRadius: 20, padding: 16, border: "1px solid #d1fae5", boxShadow: "0 4px 24px rgba(22,101,52,.08)", marginBottom: 12 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
+          <span style={{ fontSize: 20 }}>🤖</span>
+          <span style={{ fontSize: 13, fontWeight: 700, color: "#14532d" }}>AI Carbon Forecast (3 เดือนข้างหน้า)</span>
+          <span style={{ marginLeft: "auto", fontSize: 9, padding: "2px 8px", borderRadius: 8, background: "linear-gradient(90deg,#7c3aed,#4f46e5)", color: "#fff", fontWeight: 600 }}>AI Powered</span>
+        </div>
+        {!hasData ? (
+          <div style={{ textAlign: "center", padding: "24px 20px", color: "#6b7280" }}>
+            <div style={{ fontSize: 36, marginBottom: 10 }}>🤖</div>
+            <div style={{ fontSize: 13, fontWeight: 600, color: "#14532d", marginBottom: 6 }}>ยังไม่มีข้อมูลสำหรับคาดการณ์</div>
+            <div style={{ fontSize: 12 }}>กรอกข้อมูลสาขาอย่างน้อย 1 รายการเพื่อให้ AI เริ่มคาดการณ์ได้</div>
+          </div>
+        ) : (
+          <>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 8 }}>
+              {forecasts.map(fc => (
+                <div key={fc.month} style={{ background: "#f0fdf4", borderRadius: 12, padding: 10, textAlign: "center", border: "1px solid #d1fae5" }}>
+                  <div style={{ fontSize: 10, color: "#6b7280", marginBottom: 4 }}>{fc.month} 2024</div>
+                  <div style={{ fontSize: 16, fontWeight: 800, color: "#166534" }}>{fc.val}</div>
+                  <div style={{ fontSize: 9, color: "#6b7280" }}>tCO₂e</div>
+                  <div style={{ fontSize: 9, marginTop: 2, fontWeight: 600, color: fc.trend > 0 ? "#ef4444" : "#16a34a" }}>
+                    {fc.trend > 0 ? "▲" : "▼"} {Math.abs(fc.trend).toFixed(1)}%
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div style={{ background: "rgba(124,58,237,.08)", border: "1px solid rgba(124,58,237,.2)", borderRadius: 12, padding: 12, marginTop: 10 }}>
+              <div style={{ fontSize: 11, fontWeight: 600, color: "#7c3aed", marginBottom: 6 }}>💡 AI Insight</div>
+              <div style={{ fontSize: 11, lineHeight: 1.6, color: "#6b7280" }}>
+                จากข้อมูล {totals.entries} รายการ — Carbon Emission รวม {totals.co2} tCO₂e แนะนำติดตามการใช้ไฟฟ้าเป็นหลัก เพราะเป็นแหล่ง Scope 2 ที่ใหญ่ที่สุด 🌱
               </div>
             </div>
-          </div>
-        </div>
+          </>
+        )}
       </div>
 
-      {/* ── BOTTOM NAV (Mobile) ── */}
-      <div className="lg:hidden bg-zinc-900 border-t-2 border-zinc-800 flex">
-        <div className="flex-1 p-2 text-center text-xs text-zinc-400">
-          <div className="text-xl">👥</div>
-          <div>{STAFF.filter(s => s.status === "กำลังแพ็ค").length}/{STAFF.length} คน</div>
+      {/* Metrics */}
+      <SectionTitle>วิเคราะห์ข้อมูล</SectionTitle>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(2,1fr)", gap: 8, marginBottom: 14 }}>
+        {[["Carbon รวม", totals.co2, "tCO₂e", totals.co2 > 0], ["ไฟฟ้ารวม", totals.elec > 0 ? numFmt(totals.elec) : "0", "kWh", totals.elec > 0], ["น้ำรวม", totals.water > 0 ? numFmt(totals.water) : "0", "m³", totals.water > 0], ["เชื้อเพลิง", totals.fuel > 0 ? numFmt(totals.fuel) : "0", "ลิตร", totals.fuel > 0]].map(([lbl, val, unit, hasD]) => (
+          <div key={lbl} style={{ background: "#fff", borderRadius: 14, padding: 12, border: "1px solid #d1fae5", boxShadow: "0 4px 24px rgba(22,101,52,.08)" }}>
+            <div style={{ fontSize: 10, color: "#6b7280", fontWeight: 500, marginBottom: 4 }}>{lbl}</div>
+            <div style={{ fontSize: 22, fontWeight: 800, color: hasD ? "#166534" : "#6b7280", lineHeight: 1 }}>{val}</div>
+            <div style={{ fontSize: 10, color: "#6b7280" }}>{unit}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* Monthly trend bar */}
+      <div style={{ background: "#fff", borderRadius: 20, padding: 18, boxShadow: "0 4px 24px rgba(22,101,52,.08)", border: "1px solid #d1fae5", marginBottom: 14 }}>
+        <div style={{ fontSize: 13, fontWeight: 600, color: "#14532d" }}>Carbon รายเดือน</div>
+        <div style={{ fontSize: 11, color: "#6b7280", marginBottom: 14 }}>tCO₂e แต่ละเดือน</div>
+        <MiniBarChart data={monthlyCo2} labels={MONTHS} />
+      </div>
+
+      {/* Branch score bars */}
+      <SectionTitle>เปรียบเทียบสาขา</SectionTitle>
+      <div style={{ background: "#fff", borderRadius: 20, padding: 18, boxShadow: "0 4px 24px rgba(22,101,52,.08)", border: "1px solid #d1fae5", marginBottom: 14 }}>
+        <div style={{ fontSize: 13, fontWeight: 600, color: "#14532d", marginBottom: 4 }}>Sustainability Score</div>
+        <div style={{ fontSize: 11, color: "#6b7280", marginBottom: 12 }}>คะแนนความยั่งยืนแต่ละสาขา</div>
+        {branches.map((b, i) => (
+          <div key={i} style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
+            <div style={{ width: 28, textAlign: "center", fontSize: 14 }}>{b.icon}</div>
+            <div style={{ width: 32, fontSize: 10, color: "#6b7280" }}>{b.id}</div>
+            <div style={{ flex: 1, height: 10, background: "#f0fdf4", borderRadius: 5, overflow: "hidden" }}>
+              <div style={{ height: "100%", borderRadius: 5, background: b.hasData ? b.color : "#e5e7eb", width: `${b.score}%`, transition: "width 1s ease" }} />
+            </div>
+            <div style={{ width: 28, textAlign: "right", fontSize: 11, fontWeight: 700, color: b.hasData ? "#166534" : "#6b7280" }}>{b.hasData ? b.score : "—"}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* Donut */}
+      <SectionTitle>Carbon Breakdown</SectionTitle>
+      <div style={{ background: "#fff", borderRadius: 20, padding: 18, boxShadow: "0 4px 24px rgba(22,101,52,.08)", border: "1px solid #d1fae5" }}>
+        <div style={{ fontSize: 13, fontWeight: 600, color: "#14532d", marginBottom: 4 }}>สัดส่วน Carbon Emission</div>
+        <div style={{ fontSize: 11, color: "#6b7280", marginBottom: 14 }}>แยกตามแหล่งกำเนิด</div>
+        <DonutChart slices={[e, w, f]} labels={["ไฟฟ้า · " + e + " tCO₂e", "น้ำ · " + w + " tCO₂e", "เชื้อเพลิง · " + f + " tCO₂e"]} />
+      </div>
+    </div>
+  );
+}
+
+// ─── PAGE: RANKING ────────────────────────────────────────────────────────────
+function PageRanking({ branches, onBranchClick }) {
+  const [mode, setMode] = useState("score");
+  const hasData = branches.some(b => b.hasData);
+
+  let sorted = [...branches];
+  sorted.sort((a, b) => {
+    if (a.hasData && !b.hasData) return -1;
+    if (!a.hasData && b.hasData) return 1;
+    if (mode === "score") return b.score - a.score;
+    if (mode === "carbon") return a.co2 - b.co2;
+    return a.elec - b.elec;
+  });
+
+  const withData = sorted.filter(b => b.hasData);
+  const maxVal = withData.length > 0 ? (mode === "score" ? 100 : mode === "carbon" ? Math.max(...withData.map(b => b.co2)) : Math.max(...withData.map(b => b.elec))) : 1;
+  const medals = ["🥇", "🥈", "🥉"];
+  const unit = mode === "score" ? "pts" : mode === "carbon" ? "tCO₂e" : "kWh";
+
+  return (
+    <div style={{ animation: "fadeUp .35s ease" }}>
+      <PageHeader title="🏆 Ranking" sub="จัดอันดับสาขา Sustainability" />
+      <SectionTitle>จัดอันดับสาขา</SectionTitle>
+      <div style={{ display: "flex", gap: 6, marginBottom: 16, overflowX: "auto", paddingBottom: 2 }}>
+        {[["score", "Sustainability"], ["carbon", "Carbon ต่ำสุด"], ["energy", "ประหยัดพลังงาน"]].map(([k, l]) => (
+          <button key={k} onClick={() => setMode(k)} style={{ padding: "7px 16px", borderRadius: 20, fontFamily: "var(--font)", fontSize: 12, fontWeight: 600, border: "1px solid #d1fae5", background: mode === k ? "#166534" : "#fff", color: mode === k ? "#fff" : "#6b7280", cursor: "pointer", whiteSpace: "nowrap", transition: "all .2s" }}>{l}</button>
+        ))}
+      </div>
+
+      {!hasData ? (
+        <div style={{ background: "#fff", borderRadius: 20, padding: 16, border: "1px solid #d1fae5", textAlign: "center", padding: "32px 20px", color: "#6b7280" }}>
+          <div style={{ fontSize: 40, marginBottom: 10 }}>🏆</div>
+          <div style={{ fontSize: 14, fontWeight: 600, color: "#14532d", marginBottom: 6 }}>ยังไม่มีข้อมูลจัดอันดับ</div>
+          <div style={{ fontSize: 12 }}>กรอกข้อมูลสาขาเพื่อเริ่มการจัดอันดับ</div>
         </div>
-        <div className="flex-1 p-2 text-center text-xs text-amber-400">
-          <div className="text-xl">📦</div>
-          <div>{packedToday} ออเดอร์วันนี้</div>
-        </div>
-        <div className="flex-1 p-2 text-center text-xs text-red-400">
-          <div className="text-xl">⚠️</div>
-          <div>{alerts.length} แจ้งเตือน</div>
+      ) : sorted.map((b, i) => {
+        const val = mode === "score" ? b.score : mode === "carbon" ? b.co2 : b.elec;
+        const pct = b.hasData ? Math.round((mode === "carbon" || mode === "energy" ? (maxVal - val) / maxVal : val / maxVal) * 100) : 0;
+        const rankIdx = withData.indexOf(b);
+        return (
+          <div key={b.id} onClick={() => onBranchClick(branches.indexOf(b))} style={{
+            background: "#fff", borderRadius: 20, padding: 16, boxShadow: "0 4px 24px rgba(22,101,52,.08)",
+            border: "1px solid #d1fae5", marginBottom: 10, display: "flex", alignItems: "center", gap: 14,
+            cursor: "pointer", transition: "all .2s", animation: "fadeUp .3s ease"
+          }}
+            onMouseEnter={e => { e.currentTarget.style.transform = "translateX(4px)"; e.currentTarget.style.boxShadow = "0 8px 40px rgba(22,101,52,.14)"; }}
+            onMouseLeave={e => { e.currentTarget.style.transform = ""; e.currentTarget.style.boxShadow = "0 4px 24px rgba(22,101,52,.08)"; }}
+          >
+            <div style={{ fontSize: 28, fontWeight: 800, minWidth: 40, textAlign: "center", color: rankIdx === 0 ? "#f59e0b" : rankIdx === 1 ? "#94a3b8" : rankIdx === 2 ? "#b45309" : "#86efac" }}>
+              {b.hasData && rankIdx < 3 ? medals[rankIdx] : b.hasData ? rankIdx + 1 : "—"}
+            </div>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: 14, fontWeight: 700, color: "#14532d" }}>{b.icon} {b.name}</div>
+              <div style={{ fontSize: 11, color: "#6b7280", marginTop: 2 }}>{b.hasData ? b.nameEn : "ยังไม่มีข้อมูล"}</div>
+              <div style={{ marginTop: 6, height: 6, background: "#f0fdf4", borderRadius: 6, overflow: "hidden" }}>
+                <div style={{ height: "100%", borderRadius: 6, background: "linear-gradient(90deg,#16a34a,#22c55e)", width: `${pct}%`, transition: "width 1s ease" }} />
+              </div>
+            </div>
+            <div style={{ textAlign: "right" }}>
+              <div style={{ fontSize: 22, fontWeight: 800, color: b.hasData ? "#166534" : "#6b7280" }}>{b.hasData ? val : "—"}</div>
+              <div style={{ fontSize: 9, color: "#6b7280" }}>{b.hasData ? unit : ""}</div>
+            </div>
+          </div>
+        );
+      })}
+
+      {/* Radar */}
+      <SectionTitle style={{ marginTop: 8 }}>ESG Radar</SectionTitle>
+      <div style={{ background: "#fff", borderRadius: 20, padding: 18, boxShadow: "0 4px 24px rgba(22,101,52,.08)", border: "1px solid #d1fae5" }}>
+        <div style={{ fontSize: 13, fontWeight: 600, color: "#14532d", marginBottom: 4 }}>ประสิทธิภาพรอบด้าน</div>
+        <div style={{ fontSize: 11, color: "#6b7280", marginBottom: 8 }}>Score · Efficiency · Reduction · ทุกสาขา</div>
+        <RadarChart branches={branches} />
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 8 }}>
+          {branches.filter(b => b.hasData).map(b => (
+            <div key={b.id} style={{ display: "flex", alignItems: "center", gap: 5 }}>
+              <div style={{ width: 10, height: 10, borderRadius: 3, background: b.color }} />
+              <span style={{ fontSize: 10, color: "#374151" }}>{b.id}</span>
+            </div>
+          ))}
         </div>
       </div>
     </div>
+  );
+}
+
+// ─── PAGE: REPORTS ────────────────────────────────────────────────────────────
+function PageReports({ branches, showToast }) {
+  const totals = branches.reduce((acc, b) => ({ co2: +(acc.co2 + b.co2).toFixed(4) }), { co2: 0 });
+  const credits = Math.round(parseFloat(totals.co2) * 2.4);
+
+  const downloadReport = (type) => {
+    const names = { esg: "Executive ESG Report", carbon: "Carbon Emission Report", tcfd: "TCFD Disclosure Report", monthly: "Monthly Sustainability Report", branch: "Branch Comparison Report" };
+    showToast("📥 กำลังสร้าง " + names[type] + "...");
+    setTimeout(() => showToast("✅ พร้อมดาวน์โหลด " + names[type]), 2000);
+  };
+
+  return (
+    <div style={{ animation: "fadeUp .35s ease" }}>
+      <PageHeader title="📄 AI Reports" sub="TCFD · Carbon Credit · ESG Platform" />
+
+      {/* AI Report */}
+      <SectionTitle>รายงานอัตโนมัติ · AI</SectionTitle>
+      <div style={{ background: "linear-gradient(135deg,#0f4c2a,#166534)", borderRadius: 20, padding: 18, marginBottom: 12, position: "relative", overflow: "hidden" }}>
+        <div style={{ position: "absolute", right: -8, bottom: -12, fontSize: 70, opacity: .1 }}>📊</div>
+        <div style={{ fontSize: 15, fontWeight: 700, color: "#fff", marginBottom: 4 }}>🤖 สร้าง ESG Report อัตโนมัติ</div>
+        <div style={{ fontSize: 11, color: "rgba(255,255,255,.65)", marginBottom: 14 }}>AI วิเคราะห์ข้อมูลทั้งหมดและสร้างรายงานพร้อมส่งผู้บริหาร</div>
+        <button onClick={() => { showToast("🤖 AI กำลังวิเคราะห์..."); setTimeout(() => showToast("✅ ESG Report พร้อมแล้ว"), 3000); }}
+          style={{ background: "rgba(255,255,255,.95)", color: "#166534", border: "none", borderRadius: 12, padding: "10px 20px", fontFamily: "var(--font)", fontSize: 13, fontWeight: 700, cursor: "pointer", display: "inline-flex", alignItems: "center", gap: 6 }}>
+          ✨ สร้างรายงานทันที
+        </button>
+      </div>
+
+      {/* TCFD */}
+      <SectionTitle>TCFD Framework</SectionTitle>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginBottom: 12 }}>
+        {[["🏛️", "Governance", "การกำกับดูแลด้านสภาพภูมิอากาศ", "✓ 92%", "#15803d"], ["⚠️", "Risk & Opp.", "ความเสี่ยงและโอกาสด้านภูมิอากาศ", "● 74%", "#d97706"], ["🎯", "Strategy", "กลยุทธ์รับมือการเปลี่ยนแปลง", "✓ 88%", "#15803d"], ["📏", "Metrics", "ตัวชี้วัดและเป้าหมาย Net Zero", "✓ 95%", "#15803d"]].map(([icon, title, desc, score, col]) => (
+          <div key={title} style={{ background: "#fff", borderRadius: 12, padding: 12, border: "1px solid #d1fae5", boxShadow: "0 4px 24px rgba(22,101,52,.08)" }}>
+            <div style={{ fontSize: 18, marginBottom: 4 }}>{icon}</div>
+            <div style={{ fontSize: 11, fontWeight: 700, color: "#14532d", marginBottom: 2 }}>{title}</div>
+            <div style={{ fontSize: 10, color: "#6b7280", lineHeight: 1.4 }}>{desc}</div>
+            <div style={{ fontSize: 16, fontWeight: 800, marginTop: 6, color: col }}>{score}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* Carbon Credit */}
+      <SectionTitle>Carbon Credit Platform</SectionTitle>
+      <div style={{ background: "linear-gradient(135deg,#1e3a5f,#1d4ed8)", borderRadius: 20, padding: 18, marginBottom: 12, position: "relative", overflow: "hidden" }}>
+        <div style={{ position: "absolute", top: -30, right: -30, width: 120, height: 120, borderRadius: "50%", background: "rgba(255,255,255,.05)" }} />
+        <div style={{ fontSize: 10, fontWeight: 500, color: "rgba(255,255,255,.6)", letterSpacing: "1.5px", textTransform: "uppercase" }}>Carbon Credits Available</div>
+        <div style={{ fontSize: 40, fontWeight: 800, color: "#fff", margin: "4px 0" }}>{credits} <span style={{ fontSize: 16, opacity: .7 }}>tCO₂e</span></div>
+        <div style={{ fontSize: 11, color: "rgba(255,255,255,.6)" }}>มูลค่าตลาดโดยประมาณ ฿ {(credits * 2000).toLocaleString()}</div>
+        <div style={{ display: "flex", gap: 8, marginTop: 12 }}>
+          <button onClick={() => showToast("💰 เชื่อมต่อ Carbon Credit Exchange...")} style={{ flex: 1, padding: 10, border: "none", borderRadius: 10, fontFamily: "var(--font)", fontSize: 12, fontWeight: 700, cursor: "pointer", background: "rgba(255,255,255,.95)", color: "#1d4ed8" }}>🛒 ซื้อ Credits</button>
+          <button onClick={() => showToast("📈 ส่งคำสั่งขาย...")} style={{ flex: 1, padding: 10, border: "1px solid rgba(255,255,255,.3)", borderRadius: 10, fontFamily: "var(--font)", fontSize: 12, fontWeight: 700, cursor: "pointer", background: "rgba(255,255,255,.15)", color: "#fff" }}>💸 ขาย Credits</button>
+        </div>
+      </div>
+      <div style={{ background: "#fff", borderRadius: 14, padding: 14, border: "1px solid #d1fae5", boxShadow: "0 4px 24px rgba(22,101,52,.08)", marginBottom: 12 }}>
+        <div style={{ fontSize: 12, fontWeight: 700, color: "#14532d", marginBottom: 8 }}>ราคาตลาด Carbon Credit</div>
+        {[["TGO VER", "Thailand Greenhouse Gas", "฿ 1,850", "▲ 2.1%", "#15803d", true], ["Gold Standard", "International Standard", "$ 12.40", "▲ 0.8%", "#15803d", true], ["Verra VCS", "Verified Carbon Standard", "$ 9.70", "▼ 1.3%", "#ef4444", false]].map(([name, sub, price, change, col, pos]) => (
+          <div key={name} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "8px 0", borderBottom: name !== "Verra VCS" ? "1px solid #d1fae5" : "none" }}>
+            <div>
+              <div style={{ fontSize: 12, fontWeight: 600, color: "#14532d" }}>{name}</div>
+              <div style={{ fontSize: 10, color: "#6b7280" }}>{sub}</div>
+            </div>
+            <div style={{ textAlign: "right" }}>
+              <div style={{ fontFamily: "var(--mono)", fontSize: 13, fontWeight: 600, color: col }}>{price}</div>
+              <span style={{ fontSize: 10, fontWeight: 600, padding: "2px 6px", borderRadius: 6, background: pos ? "#dcfce7" : "#fee2e2", color: pos ? "#15803d" : "#991b1b" }}>{change}</span>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Report list */}
+      <SectionTitle>รายงานผู้บริหาร</SectionTitle>
+      {[["📊", "Executive ESG Report", "สรุปผลการดำเนินงาน ESG ประจำเดือน พร้อม KPI และ Carbon Summary", "PDF · Excel", "esg"],
+        ["🌍", "Carbon Emission Report", "รายงาน Carbon Footprint รายสาขา พร้อม Scope 1, 2, 3", "PDF", "carbon"],
+        ["🏛️", "TCFD Disclosure Report", "รายงานตามมาตรฐาน TCFD ครบทั้ง 4 เสาหลัก", "PDF · TCFD Ready", "tcfd"],
+        ["📅", "Monthly Sustainability Report", "รายงานสรุปรายเดือน ค่าไฟ ค่าน้ำ เชื้อเพลิง และแนวโน้ม", "Excel", "monthly"],
+        ["🏢", "Branch Comparison Report", "เปรียบเทียบประสิทธิภาพการใช้ทรัพยากรทุกสาขา", "PDF · Excel", "branch"],
+      ].map(([icon, title, desc, badge, type]) => (
+        <div key={type} onClick={() => downloadReport(type)} style={{
+          background: "#fff", borderRadius: 20, padding: 16, boxShadow: "0 4px 24px rgba(22,101,52,.08)",
+          border: "1px solid #d1fae5", marginBottom: 10, display: "flex", alignItems: "center", gap: 14,
+          cursor: "pointer", transition: "all .2s"
+        }}
+          onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-1px)"; e.currentTarget.style.boxShadow = "0 8px 40px rgba(22,101,52,.14)"; }}
+          onMouseLeave={e => { e.currentTarget.style.transform = ""; e.currentTarget.style.boxShadow = "0 4px 24px rgba(22,101,52,.08)"; }}
+        >
+          <span style={{ fontSize: 36 }}>{icon}</span>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: 14, fontWeight: 700, color: "#14532d" }}>{title}</div>
+            <div style={{ fontSize: 11, color: "#6b7280", marginTop: 2 }}>{desc}</div>
+            <span style={{ fontSize: 9, fontWeight: 600, padding: "3px 9px", borderRadius: 8, background: "#f0fdf4", color: "#15803d", border: "1px solid #d1fae5", display: "inline-block", marginTop: 6 }}>{badge}</span>
+          </div>
+          <span style={{ fontSize: 22 }}>⬇️</span>
+        </div>
+      ))}
+      <button onClick={() => { showToast("🔄 กำลังสร้างรายงานทั้งหมด..."); setTimeout(() => showToast("✅ สร้างรายงาน 5 ฉบับเรียบร้อย"), 2500); }}
+        style={{ width: "100%", padding: 14, background: "linear-gradient(135deg,#166534,#16a34a)", color: "#fff", border: "none", borderRadius: 14, fontFamily: "var(--font)", fontSize: 14, fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, boxShadow: "0 4px 20px rgba(22,101,52,.3)", marginTop: 8 }}>
+        <span>🔄</span> สร้างรายงานทั้งหมด
+      </button>
+    </div>
+  );
+}
+
+// ─── Helper Components ────────────────────────────────────────────────────────
+function SectionTitle({ children, style }) {
+  return (
+    <div style={{ fontSize: 13, fontWeight: 600, color: "#6b7280", letterSpacing: ".8px", textTransform: "uppercase", marginBottom: 12, display: "flex", alignItems: "center", gap: 8, marginTop: 8, ...style }}>
+      {children}
+      <div style={{ flex: 1, height: 1, background: "#d1fae5" }} />
+    </div>
+  );
+}
+function FormCard({ title, sub, children }) {
+  return (
+    <div style={{ background: "#fff", borderRadius: 20, padding: 18, boxShadow: "0 4px 24px rgba(22,101,52,.08)", border: "1px solid #d1fae5", marginBottom: 12 }}>
+      <div style={{ fontSize: 14, fontWeight: 700, color: "#14532d", marginBottom: sub ? 4 : 14 }}>{title}</div>
+      {sub && <div style={{ fontSize: 11, color: "#6b7280", marginBottom: 14 }}>{sub}</div>}
+      {children}
+    </div>
+  );
+}
+function FormGroup({ label, children }) {
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+      <div style={{ fontSize: 10, fontWeight: 600, color: "#6b7280", letterSpacing: ".4px" }}>{label}</div>
+      {children}
+    </div>
+  );
+}
+function PageHeader({ title, sub }) {
+  return (
+    <div style={{ background: "linear-gradient(135deg,#0f4c2a,#15803d)", padding: "20px 20px 14px", margin: "0 -16px 24px", borderRadius: "0 0 32px 32px" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+        <div style={{ width: 40, height: 40, background: "rgba(255,255,255,.15)", borderRadius: 12, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20, border: "1px solid rgba(255,255,255,.2)" }}>☕</div>
+        <div>
+          <div style={{ fontSize: 14, fontWeight: 700, color: "#fff" }}>Hillkoff</div>
+          <div style={{ fontSize: 10, color: "rgba(255,255,255,.75)" }}>Zero Waste Analytics</div>
+        </div>
+      </div>
+      <div style={{ background: "rgba(255,255,255,.1)", border: "1px solid rgba(255,255,255,.2)", borderRadius: 16, padding: "12px 16px" }}>
+        <div style={{ color: "#fff", fontSize: 15, fontWeight: 700 }}>{title}</div>
+        <div style={{ color: "rgba(255,255,255,.65)", fontSize: 11, marginTop: 2 }}>{sub}</div>
+      </div>
+    </div>
+  );
+}
+
+// ─── MAIN APP ─────────────────────────────────────────────────────────────────
+export default function App() {
+  const [page, setPage] = useState("home");
+  const [branches, setBranches] = useState(BRANCHES_INIT.map(b => ({ ...b, elec: 0, water: 0, fuel: 0, co2: 0, score: 0, entries: 0, hasData: false, waste: { general: 0, recycle: 0, organic: 0, hazard: 0 }, status: "none" })));
+  const [monthlyCo2, setMonthlyCo2] = useState(Array(12).fill(0));
+  const [modalBranchIdx, setModalBranchIdx] = useState(null);
+  const [toast, setToast] = useState({ msg: "", show: false });
+  const [aiOpen, setAiOpen] = useState(false);
+  const toastTimer = useRef(null);
+
+  const showToast = useCallback((msg) => {
+    setToast({ msg, show: true });
+    clearTimeout(toastTimer.current);
+    toastTimer.current = setTimeout(() => setToast(t => ({ ...t, show: false })), 2500);
+  }, []);
+
+  const handleSave = useCallback(({ branchId, month, elec, water, fuel, co2Total, co2Elec, co2Water, co2Fuel, wGen, wRec, wOrg, wHaz, recycleRate }) => {
+    setBranches(prev => prev.map(b => {
+      if (b.id !== branchId) return b;
+      const newCo2 = +(b.co2 + co2Total).toFixed(4);
+      const newEntries = b.entries + 1;
+      const co2PerEntry = newCo2 / newEntries;
+      const baseScore = Math.min(100, Math.round(50 + parseFloat(recycleRate) * 0.5 - co2PerEntry * 10));
+      const score = Math.max(1, Math.min(100, baseScore));
+      return { ...b, elec: b.elec + elec, water: b.water + water, fuel: b.fuel + fuel, co2: newCo2, entries: newEntries, hasData: true, waste: { general: b.waste.general + wGen, recycle: b.waste.recycle + wRec, organic: b.waste.organic + wOrg, hazard: b.waste.hazard + wHaz }, score, status: score >= 85 ? "excellent" : score >= 70 ? "good" : "fair" };
+    }));
+    const monthIdx = month ? (parseInt(month.split("-")[1]) - 1) : new Date().getMonth();
+    setMonthlyCo2(prev => { const c = [...prev]; c[monthIdx] = +(c[monthIdx] + co2Total).toFixed(4); return c; });
+    const bn = BRANCHES_INIT.find(b => b.id === branchId)?.name || branchId;
+    showToast("✅ อัปเดตข้อมูล " + bn + " เรียบร้อย");
+  }, [showToast]);
+
+  const navItems = [
+    { id: "home", icon: "🏠", label: "หน้าหลัก" },
+    { id: "upload", icon: "📤", label: "Upload" },
+    { id: "analytics", icon: "📊", label: "Analytics" },
+    { id: "ranking", icon: "🏆", label: "Ranking" },
+    { id: "reports", icon: "📄", label: "Reports" },
+  ];
+
+  return (
+    <>
+      <style>{css}</style>
+      <div style={{ fontFamily: "var(--font)", background: "#f0fdf4", minHeight: "100dvh", paddingBottom: "calc(var(--nav-h) + 16px)", overflowX: "hidden" }}>
+        <div style={{ maxWidth: 600, margin: "0 auto", padding: 16 }}>
+          {page === "home" && <PageHome branches={branches} monthlyCo2={monthlyCo2} onBranchClick={i => setModalBranchIdx(i)} onGoUpload={() => setPage("upload")} />}
+          {page === "upload" && <PageUpload branches={branches} onSave={handleSave} showToast={showToast} />}
+          {page === "analytics" && <PageAnalytics branches={branches} monthlyCo2={monthlyCo2} />}
+          {page === "ranking" && <PageRanking branches={branches} onBranchClick={i => setModalBranchIdx(i)} />}
+          {page === "reports" && <PageReports branches={branches} showToast={showToast} />}
+        </div>
+      </div>
+
+      {/* Bottom Nav */}
+      <nav style={{ position: "fixed", bottom: 0, left: "50%", transform: "translateX(-50%)", background: "rgba(255,255,255,.92)", backdropFilter: "blur(20px)", borderTop: "1px solid #d1fae5", height: "var(--nav-h)", display: "flex", alignItems: "center", justifyContent: "space-around", padding: "0 8px", zIndex: 100, maxWidth: 600, boxShadow: "0 -4px 24px rgba(22,101,52,.08)", borderRadius: "24px 24px 0 0", width: "100%", fontFamily: "var(--font)" }}>
+        {navItems.map(({ id, icon, label }) => (
+          <button key={id} onClick={() => setPage(id)} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 3, cursor: "pointer", padding: "8px 12px", borderRadius: 14, transition: "all .2s", flex: 1, border: "none", background: page === id ? "#f0fdf4" : "transparent", fontFamily: "var(--font)" }}>
+            <span style={{ fontSize: 20, lineHeight: 1 }}>{icon}</span>
+            <span style={{ fontSize: 9, fontWeight: page === id ? 600 : 500, color: page === id ? "#166534" : "#6b7280", letterSpacing: ".3px" }}>{label}</span>
+          </button>
+        ))}
+      </nav>
+
+      {/* AI Panel */}
+      <AIPanel open={aiOpen} onClose={() => setAiOpen(p => !p)} branches={branches} />
+
+      {/* Branch Modal */}
+      {modalBranchIdx !== null && (
+        <BranchModal b={branches[modalBranchIdx]} onClose={() => setModalBranchIdx(null)} onGoUpload={() => setPage("upload")} />
+      )}
+
+      <Toast msg={toast.msg} show={toast.show} />
+    </>
   );
 }
